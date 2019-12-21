@@ -17,7 +17,7 @@
         app:srcCompat="@drawable/ic_settings_remote_w" />
 
     <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/channelMapSelectControlSpinner"
+        android:id="@+id/channelMapSelectControlSpinner2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"

@@ -76,7 +76,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/channel_map_channelid"
             app:layout_constraintTop_toBottomOf="@+id/channel_map_channelid"
-            app:srcCompat="@drawable/ic_action_list_2" />
+            app:srcCompat="@drawable/ic_action_tv" />
 
 
         <TextView

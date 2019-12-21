@@ -57,9 +57,9 @@ class MainActivity : AppCompatActivity() {
         )
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-
-        val selectControlHeaderView = layoutInflater.inflate(R.layout.select_control_header, null)
-        navView.addHeaderView(selectControlHeaderView)
+        val selectActiveControlSpinner = navView.getHeaderView(0).findViewById<Spinner>(R.id.channelMapSelectControlSpinner)
+        //val selectControlHeaderView = layoutInflater.inflate(R.layout.select_control_header, null)
+        //navView.addHeaderView(selectControlHeaderView)
         val navController = findNavController(R.id.nav_host_fragment)
         if (!controlViewModel.isCreated) {
             val graph = navController.navInflater.inflate(R.navigation.navigation)
@@ -91,8 +91,6 @@ class MainActivity : AppCompatActivity() {
         controlListAdapter =
             ArrayAdapter(this, R.layout.control_spinner_item, controlViewModel.getControls().value)
 
-        val selectActiveControlSpinner: Spinner =
-            selectControlHeaderView.findViewById(R.id.channelMapSelectControlSpinner)
         selectActiveControlSpinner.adapter = controlListAdapter
         selectActiveControlSpinner.setSelection(controlViewModel.getSelectedControlIndex())
 
