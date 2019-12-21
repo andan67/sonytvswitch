@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label ordering must match values -->
+    <array name="pref_start_screen_labels">
+        <item>@string/pref_start_screen_label_control</item>
+        <item>@string/pref_start_screen_label_programs</item>
+    </array>
+
+    <array name="pref_start_screen_values">
+        <item>@string/pref_start_screen_value_control</item>
+        <item>@string/pref_start_screen_value_programs</item>
+    </array>
+    <string name="pref_start_screen_label_control">Remote control</string>
+    <string name="pref_start_screen_label_programs">Program list</string>
+    <string name="pref_start_screen_value_control">control_screen</string>
+    <string name="pref_start_screen_value_programs">program_list_screen</string>
+</resources>

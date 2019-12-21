@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="channelName"
+            type="String" />
+
+        <variable
+            name="channelPosition"
+            type="Integer" />
+
+        <variable
+            name="controlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ControlViewModel" />
+
+        <variable
+            name="programTitle"
+            type="String" />
+
+        <variable
+            name="programSourceWithType"
+            type="String" />
+
+        <variable
+            name="clickListener"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="480dp"
+        android:layout_height="wrap_content"
+        android:onClick="@{(theView) -> clickListener.onClick(theView, channelName)}"
+        android:background="@drawable/rc_btn_dark_selector">
+
+        <TextView
+            android:id="@+id/channel_map_channelid"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="end"
+            android:text="@{Integer.toString(channelPosition)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="8888" />
+
+        <TextView
+            android:id="@+id/channel_map_channel_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@{channelName}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/channel_map_channelid"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Eurosport 1" />
+
+        <ImageView
+            android:id="@+id/channel_map_mapped_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/channel_map_channelid"
+            app:layout_constraintTop_toBottomOf="@+id/channel_map_channelid"
+            app:srcCompat="@drawable/ic_action_list_2" />
+
+
+        <TextView
+            android:id="@+id/channel_map_program_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{programTitle}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toStartOf="@+id/channel_map_channel_name"
+            app:layout_constraintTop_toBottomOf="@+id/channel_map_channel_name"
+            tools:text="Eurosport Deutschland HD" />
+
+
+        <ImageView
+            android:id="@+id/channel_map_program_source_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            android:visibility="@{(programSourceWithType.length >0) ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/channel_map_program_name"
+            app:layout_constraintTop_toBottomOf="@id/channel_map_channelid"
+            app:srcCompat="@drawable/ic_input" />
+
+        <TextView
+            android:id="@+id/channel_map_program_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:text="@{programSourceWithType}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constraintBottom_toBottomOf="@id/channel_map_program_source_icon"
+            app:layout_constraintStart_toEndOf="@+id/channel_map_program_source_icon"
+            app:layout_constraintTop_toTopOf="@+id/channel_map_program_source_icon"
+            tools:text="dvbs (general)" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

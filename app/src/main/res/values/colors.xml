@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="buttonBlue">#3F51B5</color>
+    <color name="buttonGreen">#4CAF50</color>
+    <color name="buttonNormal">#616161</color>
+    <color name="buttonDark">#212121</color>
+    <color name="buttonPressed">#9E9E9E</color>
+    <color name="spinnerPopupBackground">#616161</color>
+    <color name="listActivatedBackground">#616161</color>
+    <color name="commandRed">#D50000</color>
+    <color name="commandGreen">#00D500</color>
+    <color name="commandYellow">#D5D500</color>
+    <color name="commandBlue">#0000D5</color>
+</resources>

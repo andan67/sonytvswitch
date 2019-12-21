@@ -1,0 +1,11 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('libs/base64-2.3.7.jar')
+    implementation files('libs/fuzzywuzzy-1.2.0.jar')
+    implementation files('libs/gson-2.8.5.jar')
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"

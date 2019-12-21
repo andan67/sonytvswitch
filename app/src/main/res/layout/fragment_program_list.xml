@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="controlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ControlViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/activeProgram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/active_program_item" />
+
+        <View
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="?android:attr/dividerVertical"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:layout_below="@+id/activeProgram"
+        tools:layout_editor_absoluteX="4dp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/divider1"
+            android:fillViewport="true">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listProgram"
+                android:name="org.andan.android.tvbrowser.sonycontrolplugin.ProgramListFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:listitem="@layout/program_item" />
+        </HorizontalScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/listProgramFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:tint="@android:color/white"
+            app:backgroundTint="#616161"
+            app:srcCompat="@drawable/ic_loop" />
+
+    </RelativeLayout>
+
+</layout>
