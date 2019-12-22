@@ -93,7 +93,7 @@
     <string name="enable_wol_action">Enable Wake-on-LAN</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
-    <string name="channel_map_select_program_text">Best matches, long click to change mapping</string>
+    <string name="channel_map_select_program_text">Best matches, click item to change mapping</string>
     <string name="channel_map_select_program_id_text">Or set program id from program list</string>
     <string name="channel_map_select_code_text">Code:</string>
     <string name="channel_map_select_code_hint">Enter channel code</string>
