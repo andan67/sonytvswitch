@@ -90,7 +90,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/channel_map_program_source"
             app:layout_constraintStart_toEndOf="@+id/channel_map_program_source"
             app:layout_constraintTop_toTopOf="@+id/channel_map_program_source"
-            app:srcCompat="@drawable/ic_action_tv" />
+            app:srcCompat="@drawable/ic_widget_simple" />
 
         <TextView
             android:id="@+id/channel_map_program_name"

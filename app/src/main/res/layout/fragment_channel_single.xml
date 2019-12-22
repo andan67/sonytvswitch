@@ -70,7 +70,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/channel_map_program_name"
             app:layout_constraintEnd_toEndOf="@+id/channel_map_channelid"
             app:layout_constraintTop_toTopOf="@+id/channel_map_program_name"
-            app:srcCompat="@drawable/ic_action_list_2" />
+            app:srcCompat="@drawable/ic_action_tv" />
 
 
         <TextView
