@@ -29,7 +29,7 @@ android {
             //debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
