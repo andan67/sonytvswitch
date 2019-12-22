@@ -42,7 +42,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     var selectedChannelName: String = ""
 
     val noActiveProgram = SonyPlayingContentInfo("",
-        "----", "", "Active program not found",
+        "----", "", "No current program",
         "NULL","",0, "")
     var activeContentInfo = MutableLiveData<SonyPlayingContentInfo>()
     var currentProgram: SonyProgram? = null
