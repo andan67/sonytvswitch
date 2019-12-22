@@ -94,9 +94,8 @@ class ProgramListFragment : Fragment() {
                 view.findNavController()
                     .navigate(R.id.action_nav_program_list_to_activeProgramDetailsFragment)}
             binding.activeProgram.activeProgramView.setOnLongClickListener {
-                Toast.makeText(context, "Long click on ${activeProgram?.title}", Toast.LENGTH_LONG)
-                    .show()
                     getPlayingContentInfo()
+                    Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()
                     true }
 
             Log.d(TAG, "activeProgram:" + SonyIPControl.getGson().toJson(activeProgram).toString())
@@ -109,8 +108,7 @@ class ProgramListFragment : Fragment() {
                         setPlayContent(program)
                     },
                     { program: SonyProgram ->
-                        Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG)
-                            .show()
+                        // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
                         controlViewModel.onProgramLongClicked(program)
                     }), controlViewModel
             )

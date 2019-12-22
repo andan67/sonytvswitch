@@ -17,4 +17,9 @@
         android:orderInCategory="10"
         android:title="@string/get_tv_program_list_action" />
 
+    <item
+        android:id="@+id/enable_wol"
+        android:orderInCategory="10"
+        android:title="@string/enable_wol_action" />
+
 </menu>

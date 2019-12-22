@@ -24,7 +24,7 @@
         android:layout_marginLeft="24dp"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
-        android:popupBackground="@color/spinnerPopupBackground"
+        android:popupBackground="@color/grey_700"
         app:layout_constraintBottom_toBottomOf="@+id/controlListIcon"
         app:layout_constraintStart_toEndOf="@+id/controlListIcon"
         app:layout_constraintTop_toTopOf="@+id/controlListIcon" />

@@ -41,6 +41,9 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
                         setPlayContent(ipControl, action, uri, true)
 
                     }
+                    ENABLE_WOL_ACTION -> {
+                        enableWakeOnLan(ipControl, action)
+                    }
                     GET_PLAYING_CONTENT_INFO_ACTION -> getPlayingContentInfo(ipControl, action)
                     WOL_ACTION -> wakeOnLan(ipControl, action)
                     SCREEN_OFF_ACTION -> setPowerSavingMode(ipControl, action, "off")
@@ -139,6 +142,17 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         broadcastEvent(action, result, message, SonyIPControl.getGson().toJson(ipControl.toJSON()))
     }
 
+    private fun enableWakeOnLan(ipControl: SonyIPControl, action: Int) {
+        Log.i(TAG, "enableWakeOnLan")
+        val response = ipControl.setWolMode(true)
+        var result = RESULT_OK
+        if (response.hasError()) result = response.responseErrorOrStatusCode
+        broadcastEvent(
+            action, result, response.responseErrorOrStatusMessage,
+            SonyIPControl.getGson().toJson(ipControl.toJSON())
+        )
+    }
+
     private fun setPowerSavingMode(ipControl: SonyIPControl, action: Int, mode: String) {
         Log.i(TAG, "setPowerSavingMode")
         val response = ipControl.setPowerSavingMode(mode)
@@ -182,8 +196,9 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         const val GET_PLAYING_CONTENT_INFO_ACTION = 6
         const val SET_AND_GET_PLAY_CONTENT_ACTION = 7
         const val WOL_ACTION = 8
-        const val SCREEN_ON_ACTION = 9
-        const val SCREEN_OFF_ACTION = 10
+        const val ENABLE_WOL_ACTION = 9
+        const val SCREEN_ON_ACTION = 10
+        const val SCREEN_OFF_ACTION = 11
         const val RESULT_OK = 0
         const val RESULT_AUTH_REQUIRED = 1
         const val RESULT_IOERROR = 3

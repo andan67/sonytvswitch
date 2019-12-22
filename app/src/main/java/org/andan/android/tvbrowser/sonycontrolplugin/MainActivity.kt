@@ -227,6 +227,11 @@ class MainActivity : AppCompatActivity() {
                                 ).show()
                                 navController.navigate(R.id.nav_manage_control)
                             }
+                            SonyIPControlIntentService.ENABLE_WOL_ACTION -> {
+                                val control = SonyIPControl(ipControlJSON)
+                                controlViewModel.setSelectedControl(control)
+                                navController.navigate(R.id.nav_manage_control)
+                            }
                             SonyIPControlIntentService.SET_PLAY_CONTENT_ACTION -> {
                             }
                             SonyIPControlIntentService.GET_PLAYING_CONTENT_INFO_ACTION -> {

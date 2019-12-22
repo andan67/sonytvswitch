@@ -329,7 +329,11 @@ public class SonyIPControl {
     }
 
     public SonyJsonRpcResponse setWolMode(boolean enabled) {
-        return SonyJsonRpc.setWolMode(getBaseUrl(), enabled, cookie);
+        SonyJsonRpcResponse response = SonyJsonRpc.setWolMode(getBaseUrl(), enabled, cookie);
+        if (response.getResult() != null) {
+            systemWolMode = enabled;
+        }
+        return response;
     }
 
     public SonyJsonRpcResponse getWolMode() {

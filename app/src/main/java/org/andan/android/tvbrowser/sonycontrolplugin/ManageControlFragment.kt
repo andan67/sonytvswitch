@@ -105,6 +105,11 @@ class ManageControlFragment : Fragment() {
                 extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SET_PROGRAM_LIST_ACTION )
                 (activity as MainActivity).startControlService(extras)
             }
+            R.id.enable_wol -> {
+                val extras = Bundle()
+                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.ENABLE_WOL_ACTION )
+                (activity as MainActivity).startControlService(extras)
+            }
         }
         return super.onOptionsItemSelected(item)
     }

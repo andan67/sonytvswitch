@@ -10,7 +10,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
-        <item name="colorControlActivated">@color/listActivatedBackground</item>
+        <item name="colorControlActivated">@color/grey_700</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -28,4 +28,10 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="ThemeOverlay.AppCompat.navTheme">
+
+        <!-- Background color when SELECTED -->
+        <item name="colorControlHighlight">@color/grey_700</item>
+
+    </style>
 </resources>

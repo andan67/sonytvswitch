@@ -55,7 +55,7 @@
   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<p>]]></string>
     <string name="pref_channel_switch_category">CHANNEL_SWITCH_CATEGORY</string>
 
-    <string name="manage_control_host_name">Host name or IP</string>
+    <string name="manage_control_host_name">Host address</string>
     <string name="manage_control_nick_name">Nick name</string>
     <string name="manage_control_device_name">Device name</string>
     <string name="manage_control_uuid">UUID</string>
@@ -69,7 +69,7 @@
 
     <string name="channel_map_overview_clear_map">Clear all mappings</string>
     <string name="channel_map_overview_program_list_map">Match all with program list</string>
-    <string name="channel_map_get_program_list">Get program list from TV</string>
+    <string name="channel_map_get_program_list">Request program list from TV</string>
     <string name="title_activity_sony_ipcontrol_main">Sony TV Switch</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -89,7 +89,8 @@
     <string name="wol_action">Wake on LAN</string>
     <string name="screen_off_action">Power saving - screen off</string>
     <string name="screen_on_action">Power saving - off</string>
-    <string name="get_tv_program_list_action">Get TV program list</string>
+    <string name="get_tv_program_list_action">Request program list</string>
+    <string name="enable_wol_action">Enable Wake-on-LAN</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="channel_map_select_program_text">Best matches, long click to change mapping</string>
@@ -106,8 +107,8 @@
     <string name="menu_map_reset">Reset</string>
     <string name="menu_map_unmap">Unmap</string>
 
-    <string name="add_control_ip">IP address</string>
-    <string name="add_control_ip_hint">Enter IP address of your TV</string>
+    <string name="add_control_ip">Host address</string>
+    <string name="add_control_ip_hint">Enter host address of your TV</string>
     <string name="add_control_nick">Nick name</string>
     <string name="add_control_nick_hint">Enter nickname of your control</string>
     <string name="add_control_device">Device name</string>
@@ -162,7 +163,7 @@
     <string name="active_program_duration">Duration (min)</string>
     <string name="active_program_source">Source</string>
     <string name="active_program_mediaType">Media type</string>
-    <string name="active_program_fragment_label">Active program</string>
+    <string name="active_program_fragment_label">Current program</string>
 
 
 </resources>
