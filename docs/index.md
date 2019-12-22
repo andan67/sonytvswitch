@@ -31,19 +31,9 @@ More details and guides are stated in the next sections.
 ## Screens
 
 ### Navigation menu
-
-{::options parse_block_html="true" /}
-<div style="float: left; width: 50%">
 <img src="images/navigation_menu.png" width="300"/>
-</div>
-{::options parse_block_html="true" /}
-<div style="float: right; width: 50%">
 - Select active control from drop-down list in header
 - If empty, select 'Add control' item to add control 
-
-</div>
-{::options parse_block_html="true" /}
-<div style="clear: both"/>
 
 ### Remote control and program switch functions
 
