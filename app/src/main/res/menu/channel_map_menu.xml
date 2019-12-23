@@ -23,6 +23,6 @@
     <item
         android:id="@+id/clear_match"
         android:orderInCategory="10"
-        android:title="@string/menu_clear_match" />
+        android:title="@string/menu_clear_mappings" />
 
 </menu>

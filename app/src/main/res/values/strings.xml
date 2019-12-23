@@ -66,24 +66,12 @@
     <string name="manage_control_mac">MAC address</string>
     <string name="manage_control_wol_mode">Wake on LAN enabled</string>
 
-
-    <string name="channel_map_overview_clear_map">Clear all mappings</string>
-    <string name="channel_map_overview_program_list_map">Match all with program list</string>
-    <string name="channel_map_get_program_list">Request program list from TV</string>
-    <string name="title_activity_sony_ipcontrol_main">Sony TV Switch</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
-
     <string name="action_settings">Settings</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="register_control_action">Register control</string>
     <string name="delete_control_action">Delete control</string>
     <string name="wol_action">Wake on LAN</string>
@@ -91,8 +79,6 @@
     <string name="screen_on_action">Power saving - off</string>
     <string name="get_tv_program_list_action">Request program list</string>
     <string name="enable_wol_action">Enable Wake-on-LAN</string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
     <string name="channel_map_select_program_text">Best matches, click item to change mapping</string>
     <string name="channel_map_select_program_id_text">Or set program id from program list</string>
     <string name="channel_map_select_code_text">Code:</string>
@@ -103,7 +89,7 @@
     <string name="dialog_ok">OK</string>
     <string name="menu_search">Search</string>
     <string name="menu_match_programs">Match with programs</string>
-    <string name="menu_clear_match">Clear all matches</string>
+    <string name="menu_clear_mappings">Clear all mappings</string>
     <string name="menu_map_reset">Reset</string>
     <string name="menu_map_unmap">Unmap</string>
 

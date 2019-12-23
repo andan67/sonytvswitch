@@ -102,14 +102,20 @@ class ChannelMapSingleFragment : Fragment() {
             currentProgramPosition = position
             val selectedChannelMapProgramUri = programUriMatchList[currentProgramPosition]
             controlViewModel.setSelectedChannelMapProgramUri(binding.channelName, selectedChannelMapProgramUri)
-            Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
+            // Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
         }
         binding.channelMapProgramListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { adapterView, view, position, l ->
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
-            val selectedChannelMapProgramUri = programUriMatchList[currentProgramPosition]
-            controlViewModel.setSelectedChannelMapProgramUri(binding.channelName, selectedChannelMapProgramUri)
-            Toast.makeText( context, "Long clicked item #${position}",  Toast.LENGTH_SHORT).show()
+            val program = controlViewModel.uriProgramMap[programUriMatchList[currentProgramPosition]]
+            val extras = Bundle()
+            extras.putInt(
+                SonyIPControlIntentService.ACTION,
+                SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
+            )
+            extras.putString(SonyIPControlIntentService.URI, program?.uri)
+            (activity as MainActivity).startControlService(extras)
+            Toast.makeText(context, "Switched to ${program?.title}", Toast.LENGTH_LONG).show()
             true
         }
 

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_manage_control.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
+import org.andan.av.sony.model.SonyProgram
 import java.text.DateFormat
 
 /**
@@ -78,9 +79,23 @@ class ChannelMapFragment : Fragment() {
                         }
                     },
                     { channelName: String ->
-                        Toast.makeText(context, "Long clicked  $channelName}", Toast.LENGTH_LONG)
-                            .show()
-                        controlViewModel.onChannelLongClicked(channelName)
+                        val uri: String?  = (controlViewModel.getSelectedControl())!!.channelProgramUriMap[channelName]
+                        if (!uri.isNullOrEmpty()) {
+                            val program = controlViewModel.uriProgramMap[uri]
+                            val extras = Bundle()
+                            extras.putInt(
+                                SonyIPControlIntentService.ACTION,
+                                SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
+                            )
+                            extras.putString(SonyIPControlIntentService.URI, program?.uri)
+                            (activity as MainActivity).startControlService(extras)
+                            Toast.makeText(
+                                context,
+                                "Switched to ${program?.title}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        true
                     }), controlViewModel
             )
 
