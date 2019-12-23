@@ -22,7 +22,8 @@
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:context=".ChannelMapFragment"
-                tools:listitem="@layout/map_channnel_item" />
+                tools:listitem="@layout/map_channnel_item"
+                android:background="@color/grey_900"/>
 
     </HorizontalScrollView>
 </layout>

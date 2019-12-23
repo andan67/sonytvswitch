@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_remote_control,
                 R.id.nav_program_list,
                 R.id.nav_channel_list,
-                R.id.nav_help,
+                //R.id.nav_help,
                 R.id.nav_settings
             ), drawerLayout
         )

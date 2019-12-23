@@ -86,8 +86,8 @@ Switch to a TV program directly from the program guide (EPG)
 ##### Register control
 - Each control needs to be registered for use with your Sony TV
 - Ensure the Sony TV is switched on and accessible via network prior registration
-- On first registration, a challenge code will be displayed on the TV screen that needs to entered into the popped-up dialog
-- If registration has been successful, the Wake-on-LAN mode of your TV will be enabled to allow power on of the TV via network
+- On first registration, a challenge code will be displayed on the TV screen that needs to be entered into the pop-up dialog
+- If registration has been successful, the Wake-on-LAN mode of your TV will be enabled to allow switching on the TV via network
 - Registration can be performed any time
 - In case of any problem, check the settings and any information displayed by the app or on the Sony TV screen
 
