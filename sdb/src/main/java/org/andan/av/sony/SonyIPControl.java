@@ -49,34 +49,32 @@ public class SonyIPControl {
     private List<SonyProgram> programList;
     private LinkedHashMap<String, SonyProgram> programUriMap;
 
-    public Type SonyProgramListType = new TypeToken<ArrayList<SonyProgram>>() {
+    private final Type SonyProgramListType = new TypeToken<ArrayList<SonyProgram>>() {
     }.getType();
 
-    public Type ChannelMapType = new TypeToken<LinkedHashMap<String, ChannelMapEntryValue>>() {
+    private final Type ChannelMapType = new TypeToken<LinkedHashMap<String, ChannelMapEntryValue>>() {
     }.getType();
 
-    public Type ChannelProgramMapType = new TypeToken<LinkedHashMap<String, String>>() {
+    private final Type ChannelProgramMapType = new TypeToken<LinkedHashMap<String, String>>() {
     }.getType();
 
-    public Type CommandMapType = new TypeToken<LinkedHashMap<String, String>>() {
+    private final Type CommandMapType = new TypeToken<LinkedHashMap<String, String>>() {
     }.getType();
 
-    public Type SourceListType = new TypeToken<ArrayList<String>>() {
+    private final Type SourceListType = new TypeToken<ArrayList<String>>() {
     }.getType();
-
-    private Map<String, ChannelMapEntryValue> channelMap = null;
 
 
     private Map<String, String> channelProgramUriMap = null;
 
-    private static Gson gson = new Gson();
+    private static final Gson gson = new Gson();
 
     private LinkedHashMap<String, String> codeMap;
     // this type is only used for old version
-    public Type CodeMapListType = new TypeToken<ArrayList<Map<String, String>>>() {
+    private final Type CodeMapListType = new TypeToken<ArrayList<Map<String, String>>>() {
     }.getType();
 
-    private JsonObject remoteControllerInfo = null;
+    private final JsonObject remoteControllerInfo = null;
 
     public static Gson getGson() {
         return gson;
@@ -89,14 +87,14 @@ public class SonyIPControl {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public SonyIPControl(String ip, String nickname, String devicename, String uuid) {
+    private SonyIPControl(String ip, String nickname, String devicename, String uuid) {
         this.ip = ip;
         this.nickname = nickname;
         this.devicename = devicename;
         this.uuid = uuid;
     }
 
-    public SonyIPControl() {
+    private SonyIPControl() {
     }
 
     public SonyIPControl(JsonObject controlJSON) {
@@ -141,7 +139,6 @@ public class SonyIPControl {
                         }
                     } catch (Exception ex2) {
                     }
-                    ;
                 }
             }
             if (controlJSON.has("sourceList"))
@@ -151,7 +148,7 @@ public class SonyIPControl {
                 createProgramUriMap();
             }
             if (controlJSON.has("channelMap")) {
-                this.channelMap = gson.fromJson(controlJSON.get("channelMap"), ChannelMapType);
+                Map<String, ChannelMapEntryValue> channelMap = gson.fromJson(controlJSON.get("channelMap"), ChannelMapType);
                 // create new map with only uri from old map using complex type
                 channelProgramUriMap = new LinkedHashMap<>();
                 for (Map.Entry<String, ChannelMapEntryValue> channelMapEntry : channelMap.entrySet()) {
@@ -160,7 +157,7 @@ public class SonyIPControl {
                         channelProgramUriMap.put(channelMapEntry.getKey(), programList.get(programId).uri);
                     }
                 }
-                this.channelMap = null;
+                channelMap = null;
             } else if (controlJSON.has("channelProgramMap")) {
                 this.channelProgramUriMap = gson.fromJson(controlJSON.get("channelProgramMap"), ChannelProgramMapType);
             }
@@ -173,8 +170,8 @@ public class SonyIPControl {
         this(gson.fromJson(controlJSONString, JsonObject.class));
     }
 
-    public SonyIPControl(String ip, String nickname, String devicename, String uuid, String cookie,
-                         long cookieExprireTime, LinkedHashMap<String, String> codeMap) {
+    private SonyIPControl(String ip, String nickname, String devicename, String uuid, String cookie,
+                          long cookieExprireTime, LinkedHashMap<String, String> codeMap) {
         this.ip = ip;
         this.nickname = nickname;
         this.devicename = devicename;
@@ -246,7 +243,7 @@ public class SonyIPControl {
         return response;
     }
 
-    public void checkExpiryDate() {
+    private void checkExpiryDate() {
         if (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS) {
             // reauthenticate
             registerRemoteControl(null);
@@ -261,7 +258,7 @@ public class SonyIPControl {
             }
             // coe map is in second item of result array
             JsonArray jsonCodeMap = response.getResult().getAsJsonArray().get(1).getAsJsonArray();
-            codeMap = new LinkedHashMap<String, String>();
+            codeMap = new LinkedHashMap<>();
             for (Object obj : jsonCodeMap) {
                 JsonObject e = (JsonObject) obj;
                 codeMap.put(e.get("name").getAsString(), e.get("value").getAsString());
@@ -269,7 +266,7 @@ public class SonyIPControl {
         }
     }
 
-    public void setSourceListFromTV() {
+    private void setSourceListFromTV() {
         SonyJsonRpcResponse response = SonyJsonRpc.getSourceList(getBaseUrl(), "tv", cookie);
         if (response.getResult() != null) {
             JsonArray jsonSourceList = response.getResult().getAsJsonArray().get(0).getAsJsonArray();
@@ -300,7 +297,7 @@ public class SonyIPControl {
         SonyJsonRpcResponse response = SonyJsonRpc.getPlayingContentInfo(getBaseUrl(), cookie);
         if (response.getResult() != null) {
             JsonObject resultItem = response.getResult().getAsJsonArray().get(0).getAsJsonObject();
-            SonyPlayingContentInfo sonyPlayingContentInfo = new SonyPlayingContentInfo(
+            return new SonyPlayingContentInfo(
                     resultItem.has("source") ? resultItem.get("source").getAsString() : "",
                     resultItem.has("dispNum") ? resultItem.get("dispNum").getAsString() : "",
                     resultItem.has("programMediaType") ? resultItem.get("programMediaType").getAsString() : "",
@@ -310,13 +307,12 @@ public class SonyIPControl {
                     resultItem.has("durationSec") ? resultItem.get("durationSec").getAsInt() : 0,
                     resultItem.has("programTitle") ? resultItem.get("programTitle").getAsString() : ""
             );
-            return sonyPlayingContentInfo;
         }
         return null;
     }
 
 
-    public SonyJsonRpcResponse getSystemInformation() {
+    private SonyJsonRpcResponse getSystemInformation() {
         SonyJsonRpcResponse response = SonyJsonRpc.getSystemInformation(getBaseUrl(), cookie);
         if (response.getResult() != null) {
             JsonObject resultItem = response.getResult().getAsJsonArray().get(0).getAsJsonObject();
@@ -336,7 +332,7 @@ public class SonyIPControl {
         return response;
     }
 
-    public SonyJsonRpcResponse getWolMode() {
+    private SonyJsonRpcResponse getWolMode() {
         SonyJsonRpcResponse response = SonyJsonRpc.getWolMode(getBaseUrl(), cookie);
         if (response.getResult() != null) {
             JsonObject resultItem = response.getResult().getAsJsonArray().get(0).getAsJsonObject();
@@ -359,7 +355,7 @@ public class SonyIPControl {
         if (sList != null) {
             for (String sonySource : sList) {
                 // get programs in pages
-                SonyJsonRpcResponse response=null;
+                SonyJsonRpcResponse response;
                 int stidx = 0;
                 do {
                     //resultCode = getTvContentList(103, sonySource, stidx, PAGE_SIZE, "1.0", sonyProgramList);
@@ -497,7 +493,7 @@ public class SonyIPControl {
         return ip;
     }
 
-    public void setIp(String ip) {
+    private void setIp(String ip) {
         this.ip = ip;
     }
 
@@ -521,7 +517,7 @@ public class SonyIPControl {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
+    private void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
@@ -529,7 +525,7 @@ public class SonyIPControl {
         return devicename;
     }
 
-    public void setDevicename(String devicename) {
+    private void setDevicename(String devicename) {
         this.devicename = devicename;
     }
 
@@ -541,7 +537,7 @@ public class SonyIPControl {
         this.uuid = uuid;
     }
 
-    public String getSystemModel() {
+    private String getSystemModel() {
         return systemModel;
     }
 
@@ -549,7 +545,7 @@ public class SonyIPControl {
         this.systemModel = systemModel;
     }
 
-    public String getSystemName() {
+    private String getSystemName() {
         return systemName;
     }
 
@@ -557,7 +553,7 @@ public class SonyIPControl {
         this.systemName = systemName;
     }
 
-    public String getSystemProduct() {
+    private String getSystemProduct() {
         return systemProduct;
     }
 

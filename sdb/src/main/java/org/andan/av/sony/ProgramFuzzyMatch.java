@@ -1,7 +1,5 @@
 package org.andan.av.sony;
 
-import org.andan.av.sony.model.SonyProgram;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,29 +12,18 @@ import me.xdrop.fuzzywuzzy.Applicable;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.ToStringFunction;
 import me.xdrop.fuzzywuzzy.algorithms.TokenSet;
-import me.xdrop.fuzzywuzzy.algorithms.TokenSort;
-import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio;
 import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
-import me.xdrop.fuzzywuzzy.model.ExtractedResult;
-import me.xdrop.fuzzywuzzy.ratios.PartialRatio;
-import me.xdrop.fuzzywuzzy.ratios.SimpleRatio;
 
 import static java.lang.Math.min;
 
 public class ProgramFuzzyMatch {
 
-    //static Applicable simpleRatio = new SimpleRatio();
-    //static Applicable partialRatio = new PartialRatio();
-    static Applicable tokenSet = new TokenSet();
-    //static Applicable tokenSort= new TokenSort();
-    //static Applicable weightedRtio = new WeightedRatio();
+    private static final Applicable tokenSet = new TokenSet();
 
-    static ToStringFunction toStringFunction = new NormalizeString();
+    private static final ToStringFunction toStringFunction = new NormalizeString();
 
     public static Set<Integer> matchTop(String channelName, List<String> programTitleList, int ntop, boolean regExMatch) {
         Set<Integer> topChannelNameToProgramTitleMatchIndexSet = new LinkedHashSet<>();
-
-        int index1 = -1;
 
         String cs = channelName.toLowerCase();
         int whiteSpaceIndex = channelName.indexOf(" ");
@@ -51,7 +38,6 @@ public class ProgramFuzzyMatch {
             for (int i = 0; i < programTitleList.size(); i++) {
                 String ps = programTitleList.get(i).toLowerCase();
                 if (ps.matches(cs + "\\b.*")) {
-                    //if(programTitleList.get(i).toLowerCase().contains(channelName.toLowerCase())) {
                     topChannelNameToProgramTitleMatchIndexSet.add(i);
                     numberMatches++;
                     if(numberMatches==ntop) break;
@@ -61,7 +47,6 @@ public class ProgramFuzzyMatch {
                 for (int i = 0; i < programTitleList.size(); i++) {
                     String ps = programTitleList.get(i).toLowerCase();
                     if (ps.matches(cs1 + "\\b.*")) {
-                        //if(programTitleList.get(i).toLowerCase().contains(channelName.toLowerCase())) {
                         topChannelNameToProgramTitleMatchIndexSet.add(i);
                         numberMatches++;
                         if(numberMatches==ntop) break;

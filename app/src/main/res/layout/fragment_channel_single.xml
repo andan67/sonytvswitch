@@ -29,8 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp">
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:background="@color/grey_800">
 
         <TextView
             android:id="@+id/channel_map_channelid"
@@ -141,7 +142,7 @@
             android:layout_height="0dp"
             android:choiceMode="singleChoice"
             android:clipToPadding="false"
-            android:listSelector="@android:color/darker_gray"
+            android:background="@color/grey_900"
             android:paddingBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

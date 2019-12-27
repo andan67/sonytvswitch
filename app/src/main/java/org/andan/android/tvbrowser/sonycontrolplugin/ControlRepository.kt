@@ -10,8 +10,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.andan.android.tvbrowser.sonycontrolplugin.TVBrowserSonyIPControlPlugin.CHANNELS_LIST_CONFIG
 import org.andan.av.sony.SonyIPControl
-import java.util.*
-import kotlin.collections.ArrayList
 
 class ControlRepository(application: Application) {
     private val TAG = ControlRepository::class.java.name
@@ -34,7 +32,7 @@ class ControlRepository(application: Application) {
         loadControls()
     }
 
-    fun <T> MutableLiveData<T>.notifyObserver() {
+    private fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value
     }
 
@@ -140,7 +138,6 @@ class ControlRepository(application: Application) {
     }
 
     fun getChannelNameList(): MutableList<String> {
-        //var channelNameList: ArrayList<String> = ArrayList()
         val channelNameConfig = channelPreferences.getString(CHANNELS_LIST_CONFIG, "")
         if (channelNameConfig!!.isNotEmpty()) {
             val channelsJSON =

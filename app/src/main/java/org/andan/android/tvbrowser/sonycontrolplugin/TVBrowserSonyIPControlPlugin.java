@@ -42,7 +42,6 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
 
     /* The id for the remove marking PluginMenu */
     private static final int SWITCH_TO_CHANNEL = 4;
-    private static final int OPEN_SETTINGS_APP = 5;
 
     /* The plugin manager of TV-Browser */
     private PluginManager mPluginManager;
@@ -117,7 +116,7 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
 
         @Override
         public PluginMenu[] getContextMenuActionsForProgram(Program program) {
-            ArrayList<PluginMenu> menuList = new ArrayList<PluginMenu>();
+            ArrayList<PluginMenu> menuList = new ArrayList<>();
             String channelName = program.getChannel().getChannelName();
             String title = getString(R.string.service_sonycontrol_context_menu) + " '" + channelName + "' on TV";
             menuList.add(new PluginMenu(SWITCH_TO_CHANNEL, title));
@@ -261,7 +260,7 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
 
         String controlConfig = controlPreferences.getString(CONTROL_CONFIG, "");
 
-        if (!controlConfig.isEmpty()) {
+        if (controlConfig!=null && !controlConfig.isEmpty()) {
             int selectedControlIndex = -1;
             JsonObject controlsJSON = SonyIPControl.getGson().fromJson(controlConfig, JsonObject.class);
             JsonArray controls = (JsonArray) controlsJSON.get("controls");
@@ -275,10 +274,10 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
                 // try conversion of old config/preferences
                 SharedPreferences mapChannelPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 String mapConfig = mapChannelPreferences.getString(getString(R.string.pref_map_channel_key), "");
-                LinkedHashMap<String, String> channelMap = new LinkedHashMap<String, String>();
+                LinkedHashMap<String, String> channelMap = new LinkedHashMap<>();
                 String mapsForControlKey = null;
                 Log.i(TAG, "setControlAndChannelMapFromPreferences():mapconfig " + mapConfig);
-                if (!mapConfig.isEmpty()) {
+                if (mapConfig!=null && !mapConfig.isEmpty()) {
                     Log.i(TAG, "setControlAndChannelMapFromPreferences(): mapConfig exists, try convert");
                     try {
                         JsonObject mapsForControlJSON = SonyIPControl.getGson().fromJson(mapConfig, JsonObject.class);

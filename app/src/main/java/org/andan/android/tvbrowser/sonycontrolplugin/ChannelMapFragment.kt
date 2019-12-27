@@ -4,24 +4,19 @@ package org.andan.android.tvbrowser.sonycontrolplugin
 import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
-import androidx.databinding.DataBindingUtil
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_manage_control.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
-import org.andan.av.sony.model.SonyProgram
-import java.text.DateFormat
 
 /**
  * A simple [Fragment] subclass.
@@ -117,7 +112,7 @@ class ChannelMapFragment : Fragment() {
 
 
             if (view is RecyclerView) {
-                view.isNestedScrollingEnabled = false
+                view.isNestedScrollingEnabled = true
             }
 
             val manager = LinearLayoutManager(activity)
@@ -192,12 +187,6 @@ class ChannelMapFragment : Fragment() {
                 // Not implemented here
                 return true
             R.id.match_channels -> {
-                //ToDo:
-                // 1. Plugin uses channelMap which maps channel name to either code or index of program list
-                // 2. channelMap is stored as shared preference and used by plugin for actual channel switch to eiher code or program
-                // via index and uri from SonyProgram
-                // 3. this fragment shows list of channel maps whic can be used to specify mapping
-                // 4. final result is stored as channelMap in shared preference
                 if (controlViewModel.programTitleList.isEmpty()) {
                     alertNoPrograms()
                 } else {

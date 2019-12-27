@@ -42,11 +42,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        //supportActionBar?.setDisplayUseLogoEnabled(true)
-        //supportActionBar?.setLogo(R.mipmap.ic_launcher_small)
         controlViewModel =
             ViewModelProviders.of(this).get(ControlViewModel::class.java)
-        //controlViewModel.sonyIPControl = SonyIPControl("1","nickname", "device")
         Log.d(
             TAG,
             "onCreate: controlViewModel.getControls().value.size=${controlViewModel.getControls().value!!.size}"
@@ -58,8 +55,6 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val selectActiveControlSpinner = navView.getHeaderView(0).findViewById<Spinner>(R.id.channelMapSelectControlSpinner)
-        //val selectControlHeaderView = layoutInflater.inflate(R.layout.select_control_header, null)
-        //navView.addHeaderView(selectControlHeaderView)
         val navController = findNavController(R.id.nav_host_fragment)
         if (!controlViewModel.isCreated) {
             val graph = navController.navInflater.inflate(R.navigation.navigation)
@@ -81,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_remote_control,
                 R.id.nav_program_list,
                 R.id.nav_channel_list,
-                //R.id.nav_help,
+                R.id.nav_help,
                 R.id.nav_settings
             ), drawerLayout
         )
@@ -162,12 +157,6 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent()")
         controlViewModel.setChannelNameListFromPreference()
-        /*val channelList = intent.getParcelableArrayListExtra<Channel>("channelList")
-        if (channelList != null) {
-            Log.i(TAG, "onNewIntent:channelList from intent!=null with size ${channelList.size}")
-            controlViewModel.setChannelList(channelList)
-            controlViewModel.getChannelList()
-        }*/
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -200,8 +189,8 @@ class MainActivity : AppCompatActivity() {
 
                 when (resultCode) {
                     SonyIPControlIntentService.RESULT_AUTH_REQUIRED -> {
-                        //enterChallenge(ipControlJSON);
                         Log.i(TAG, "onReceive:AUTH_REQUIRED" + ipControlJSON!!)
+                        // navigate to dialog for entering challenge code
                         navController.navigate(R.id.nav_enter_challenge)
                     }
                     SonyIPControlIntentService.RESULT_OK -> {

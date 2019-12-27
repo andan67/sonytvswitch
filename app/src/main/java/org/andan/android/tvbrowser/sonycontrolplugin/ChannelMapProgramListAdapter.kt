@@ -6,19 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ListView
 import android.widget.TextView
 import org.andan.av.sony.model.SonyProgram
-
-import java.util.ArrayList
+import java.util.*
 
 class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram>) :
     BaseAdapter() {
 
 
-    internal var ctx: Context? = null
-    internal var programUriMap: MutableMap<String, SonyProgram>? = null
-    internal var programUriMatchList: ArrayList<String>? = null
+    private var ctx: Context? = null
+    private var programUriMap: MutableMap<String, SonyProgram>? = null
+    private var programUriMatchList: ArrayList<String>? = null
 
     private var mInflater: LayoutInflater? = null
 
@@ -65,8 +63,7 @@ class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: Array
             holder = convertView.tag as ViewHolder
         }
 
-        //convertView.setBackgroundResource(R.drawable.list_selector)
-        holder.programPosView!!.text = Integer.toString(position+1) + "."
+        holder.programPosView!!.text = (position + 1).toString() + "."
         holder.programNameView!!.text = program?.title
         holder.programSourceView!!.text = program?.sourceWithType
 

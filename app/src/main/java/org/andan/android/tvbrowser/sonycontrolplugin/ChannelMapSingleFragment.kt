@@ -1,34 +1,22 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
 
-import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import androidx.fragment.app.Fragment
-import androidx.databinding.DataBindingUtil
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_channel_single.*
-import kotlinx.android.synthetic.main.fragment_manage_control.*
-import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelSingleBinding
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyProgram
-import java.text.DateFormat
-import java.util.ArrayList
-import kotlin.math.absoluteValue
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -40,12 +28,12 @@ class ChannelMapSingleFragment : Fragment() {
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     private var searchQuery: String? = null
     var currentProgramPosition: Int = -1
-    var programPosition: Int = -1
-    var initialProgramUri: String? = ""
+    private var programPosition: Int = -1
+    private var initialProgramUri: String? = ""
     lateinit var binding: FragmentChannelSingleBinding
     lateinit var arrayAdapter: ChannelMapProgramListAdapter
-    var selectedChannelName: String? = null
-    var programUriMatchList: ArrayList<String> = ArrayList()
+    private var selectedChannelName: String? = null
+    private var programUriMatchList: ArrayList<String> = ArrayList()
     var control: SonyIPControl? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +84,7 @@ class ChannelMapSingleFragment : Fragment() {
         binding.channelMapProgramListView.setItemChecked(currentProgramPosition, true)
         arrayAdapter.notifyDataSetChanged()
 
-        binding.channelMapProgramListView.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, position, l ->
+        binding.channelMapProgramListView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             binding.channelMapProgramListView.setSelection(position)
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
@@ -104,7 +92,7 @@ class ChannelMapSingleFragment : Fragment() {
             controlViewModel.setSelectedChannelMapProgramUri(binding.channelName, selectedChannelMapProgramUri)
             // Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
         }
-        binding.channelMapProgramListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { adapterView, view, position, l ->
+        binding.channelMapProgramListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
             val program = controlViewModel.uriProgramMap[programUriMatchList[currentProgramPosition]]
@@ -203,7 +191,7 @@ class ChannelMapSingleFragment : Fragment() {
             }
             R.id.channel_map_unmap -> {
                 controlViewModel.setSelectedChannelMapProgramUri( binding.channelName, "")
-                Toast.makeText( context, "Selected item with currentProgramPosition: ${currentProgramPosition}",  Toast.LENGTH_SHORT).show()
+                Toast.makeText( context, "Selected item with currentProgramPosition: $currentProgramPosition",  Toast.LENGTH_SHORT).show()
                 binding.channelMapProgramListView.setItemChecked(currentProgramPosition, false)
                 binding.channelMapProgramListView.clearChoices()
 

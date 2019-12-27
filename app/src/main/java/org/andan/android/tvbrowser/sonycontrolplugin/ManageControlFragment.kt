@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
-import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
@@ -11,12 +10,8 @@ import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_manage_control.*
 import java.text.DateFormat.getDateTimeInstance
 
-
 class ManageControlFragment : Fragment() {
     private val TAG = ManageControlFragment::class.java.name
-    companion object {
-        fun newInstance() = ManageControlFragment()
-    }
 
     private lateinit var controlViewModel: ControlViewModel
 
@@ -30,11 +25,6 @@ class ManageControlFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_manage_control, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

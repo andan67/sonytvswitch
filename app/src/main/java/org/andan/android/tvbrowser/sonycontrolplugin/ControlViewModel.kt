@@ -1,24 +1,17 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
 import android.app.Application
-import android.content.Intent
 import android.util.Log
-import androidx.annotation.MainThread
-import androidx.annotation.Nullable
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import org.andan.av.sony.ProgramFuzzyMatch
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyPlayingContentInfo
 import org.andan.av.sony.model.SonyProgram
-import java.util.LinkedHashSet
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
-import kotlin.collections.MutableMap
 
 
 class ControlViewModel(application: Application) : AndroidViewModel(application) {
@@ -30,13 +23,12 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
 
     //private var controlList: MutableLiveData<ArrayList<SonyIPControl>> = controlRepository.getControls()
 
-    private var selectedControl: SonyIPControl? = null
     private var programSearchQuery: String? = null
 
     private var filteredProgramList = MutableLiveData<List<SonyProgram>>()
 
     // derived variables for selected control
-    var programChannelMap: MutableMap<String, String> = HashMap()
+    private var programChannelMap: MutableMap<String, String> = HashMap()
     var uriProgramMap: MutableMap<String, SonyProgram> = HashMap()
     var programTitleList: MutableList<String> = ArrayList()
     var selectedChannelName: String = ""
@@ -45,7 +37,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
         "----", "", "No current program",
         "NULL","",0, "")
     var activeContentInfo = MutableLiveData<SonyPlayingContentInfo>()
-    var currentProgram: SonyProgram? = null
+    private var currentProgram: SonyProgram? = null
     var lastProgram: SonyProgram? = null
 
     var isCreated: Boolean = false
@@ -56,7 +48,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     private var filteredChannelNameList = MutableLiveData<List<String>>()
     private var channelNameSearchQuery: String? = null
 
-    fun <T> MutableLiveData<T>.notifyObserver() {
+    private fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value
         Log.d(TAG, "notifyObserver")
     }
@@ -106,12 +98,6 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
             .toJson(controlRepository.getControls().value!![getSelectedControlIndex()].toJSON())
     }
 
-    fun getCodeMap(): LinkedHashMap<String, String>
-    {
-        Log.d(TAG,"getCodeMap()")
-        return getSelectedControl()!!.codeMap
-    }
-
     fun setSelectedControlIndex(index: Int) {
         Log.d(TAG,"setSelectedControlIndex(index: Int)")
         if(controlRepository.setSelectedControlIndex(index)) onSelectedIndexChange()
@@ -158,13 +144,6 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getFilteredProgramList(): MutableLiveData<List<SonyProgram>> {
-        //Log.d(TAG,"getFilteredProgramList()")
-        /*if(filteredProgramList.value==null) {
-            filteredProgramList.value= ArrayList()
-        }*/
-
-        //filteredProgramList.value = getSelectedControl().programList.filter { p -> programSearchQuery.isNullOrEmpty() || p.title.contains(programSearchQuery, true)}
-
         return filteredProgramList
     }
 
@@ -203,34 +182,9 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun onProgramLongClicked(program: SonyProgram): Boolean {
-        //programOnClickEvent.call()
-
         Log.d(TAG, "onProgramLongClicked: ${program.index}")
         return true
     }
-
-
-    fun onChannelLongClicked(channelName: String): Boolean {
-        //programOnClickEvent.call()
-        Log.d(TAG, "onChannelLongClicked: ${channelName}")
-        return true
-    }
-
-
-    /*fun setChannelList(list: ArrayList<Channel>?) {
-        if(list != null) channelList = list
-        updateChannelMapsFromNewChannelList()
-    }
-
-    fun getChannelList():ArrayList<Channel>? {
-        if (channelList.isNotEmpty()) {
-            return channelList
-        }
-        else {
-            // create channel list from selected control
-            return channelList
-        }
-    }*/
 
     fun setChannelNameListFromPreference() {
         Log.d(TAG,"setChannelNameListFromPreference()")
@@ -258,7 +212,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
                 )
             }
             Log.d(TAG, "channelNameList!=null ${filteredChannelNameList.value!!.size} ")
-            Log.d(TAG, "channelNameList!=null ${channelNameList!!.size} ")
+            Log.d(TAG, "channelNameList!=null ${channelNameList.size} ")
         }
         else {
             filteredChannelNameList.value = ArrayList()
@@ -280,7 +234,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
 
     private fun updateChannelMapsFromChannelNameList() {
         Log.d(TAG, "updateChannelMapsFromChannelNameList()")
-        var isUpdated: Boolean = false
+        var isUpdated = false
 
         for (control in getControls().value!!) {
             if (control.channelProgramUriMap == null) {
@@ -329,7 +283,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun saveControls(hasChanged: Boolean) {
+    private fun saveControls(hasChanged: Boolean) {
         Log.d(TAG, "caveControls(hasChanged: Boolean) $hasChanged")
         controlRepository.saveControls(hasChanged)
     }

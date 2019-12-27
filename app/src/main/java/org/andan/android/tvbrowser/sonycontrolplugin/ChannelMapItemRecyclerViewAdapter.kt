@@ -3,13 +3,8 @@ package org.andan.android.tvbrowser.sonycontrolplugin
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.persistableBundleOf
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
-import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyProgram
 
 class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val controlViewModel: ControlViewModel) :
@@ -35,15 +30,6 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
         fun bind(item: String, clickListener: ChannelMapListener, controlViewModel: ControlViewModel) {
             binding.channelName = item
             binding.channelPosition = adapterPosition+1
-            //binding.channelPosition = 1
-            //binding.channelPosition = layoutPosition+1
-            //binding.channelPosition = position
-            /*
-            SonyIPControl.ChannelMapEntryValue channelMapEntryValue = mControl.getChannelMap().get(channelName);
-            if (channelMapEntryValue != null) {
-                if (channelMapEntryValue.getProgramId() >= 0 && channelMapEntryValue.getProgramId() < mProgramTitleList.size()) {
-            */
-
             val programUri: String? = controlViewModel.getSelectedControl()!!.channelProgramUriMap[item]
             if (!programUri.isNullOrEmpty()) {
                 val program: SonyProgram? = controlViewModel.getSelectedControl()!!.programUriMap[programUri]

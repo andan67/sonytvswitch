@@ -1,26 +1,12 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
-
 import android.app.AlertDialog
-import android.app.SearchManager
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
-import android.widget.Toast
-import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentRemoteControlBinding
-import org.andan.av.sony.model.SonyProgram
 
 /**
  * A simple [Fragment] subclass.
@@ -63,7 +49,7 @@ class RemoteControlFragment : Fragment() {
             alertDialogBuilder.create().show()
         } else
         {
-            binding.clickListener = CommandListener(){name: String -> sendCode(name)}
+            binding.clickListener = CommandListener { name: String -> sendCode(name)}
 
         }
         return binding.root
@@ -89,7 +75,7 @@ class RemoteControlFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun sendCode(name:String) {
+    private fun sendCode(name:String) {
         val extras = Bundle()
         extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SEND_IRCC_BY_NAME_ACTION )
         extras.putString(SonyIPControlIntentService.CODE, name)

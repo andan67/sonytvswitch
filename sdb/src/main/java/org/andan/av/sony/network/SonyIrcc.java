@@ -1,18 +1,9 @@
 package org.andan.av.sony.network;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import net.iharder.Base64;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 public class SonyIrcc {
     private static final String XML_REQUEST_TEMPLATE =

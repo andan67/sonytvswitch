@@ -2,8 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
 import org.andan.av.sony.model.SonyProgram
@@ -48,21 +46,7 @@ class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val con
 
 }
 
-class ProgramDiffCallback : DiffUtil.ItemCallback<SonyProgram>() {
-
-    override fun areItemsTheSame(oldItem: SonyProgram, newItem: SonyProgram): Boolean {
-        return oldItem.uri == newItem.uri
-    }
-
-
-    override fun areContentsTheSame(oldItem: SonyProgram, newItem: SonyProgram): Boolean {
-        //TODO: Implement more advanced comparison
-        return oldItem.uri == newItem.uri
-    }
-}
-
 class ProgramListener(val clickListener: (program: SonyProgram) -> Unit,
                       val longClickListener: (program: SonyProgram) -> Boolean) {
     fun onClick(program: SonyProgram) = clickListener(program)
-    fun onLongClick(program: SonyProgram) = longClickListener(program)
 }

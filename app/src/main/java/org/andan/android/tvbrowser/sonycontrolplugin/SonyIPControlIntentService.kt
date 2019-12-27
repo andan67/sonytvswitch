@@ -80,10 +80,10 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         val response = ipControl.registerRemoteControl(code)
         var result = RESULT_OK
         if (response.hasError()) {
-            if (response.responseErrorOrStatusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                result = RESULT_AUTH_REQUIRED
+            result = if (response.responseErrorOrStatusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                RESULT_AUTH_REQUIRED
             } else
-                result = RESULT_IOERROR
+                RESULT_IOERROR
         }
         ipControl.setCodeMapFromRemoteControllerInfo()
         Log.i(TAG, "registerControl:" + SonyIPControl.getGson().toJson(ipControl.toJSON()))
