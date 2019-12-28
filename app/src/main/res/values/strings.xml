@@ -127,7 +127,7 @@
     <string name="alert_no_channels_message">Channels must be get from TV Browser first by opening the plugin settings</string>
 
     <string name="alert_no_programs_title">No programs!</string>
-    <string name="alert_no_programs_message">Programs must be get from TV first using the Manage Control menu entry</string>
+    <string name="alert_no_programs_message">Programs must be requested from TV first using the Manage Control menu entry</string>
 
     <string name="dialog_enter_challenge_code_title">Enter challenge code from TV screen</string>
 

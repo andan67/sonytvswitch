@@ -33,6 +33,7 @@ class ProgramListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        getPlayingContentInfo()
     }
 
     override fun onCreateView(
@@ -55,7 +56,6 @@ class ProgramListFragment : Fragment() {
         }
 
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
-        getPlayingContentInfo()
 
         if (controlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
