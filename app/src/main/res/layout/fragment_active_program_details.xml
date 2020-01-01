@@ -24,7 +24,7 @@
             android:padding="@dimen/activity_horizontal_margin">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/currentProgramTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/active_program_title"
@@ -32,7 +32,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailIPValueTextView"
+                android:id="@+id/currentProgramTitleValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -42,7 +42,7 @@
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/currentProgramTitleDispNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -51,7 +51,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailNicknameValueTextView"
+                android:id="@+id/currentProgramTitleDispNumberValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -61,7 +61,7 @@
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/currentProgramTitleDispProgram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -70,7 +70,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailDevicenameValueTextView"
+                android:id="@+id/currentProgramTitleDispProgramValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -80,7 +80,7 @@
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/currentProgramStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -89,17 +89,36 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailUuidValueTextView"
+                android:id="@+id/currentProgramStartValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.startDateTime}"
+                android:text="@{activeProgram.startDateTimeFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/currentProgramEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_end_time"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramEndValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{activeProgram.endDateTimeFormatted}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -108,7 +127,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailCookieValueTextView"
+                android:id="@+id/currentProgramDurationValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -118,7 +137,7 @@
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/currentProgramSource"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -127,7 +146,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailCookieExpireValueTextView"
+                android:id="@+id/currentProgramSourceValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -137,7 +156,7 @@
             <View style="@style/Divider"/>
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/currentProgramMediaType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -146,7 +165,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/controlDetailNumberOfProgramsTextView"
+                android:id="@+id/currentProgramMediaTypeValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"

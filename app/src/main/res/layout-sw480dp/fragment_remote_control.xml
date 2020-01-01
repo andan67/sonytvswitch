@@ -105,7 +105,8 @@
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Up&quot;)}"
                 android:tint="@android:color/white"
-                app:layout_constraintStart_toStartOf="@+id/arrow_cross"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sen"
                 app:srcCompat="@drawable/ic_keyboard_arrow_up" />
 
@@ -113,46 +114,49 @@
                 android:id="@+id/arrow_left"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Left&quot;)}"
                 android:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/arrow_cross"
                 app:layout_constraintEnd_toStartOf="@+id/arrow_cross"
+                app:layout_constraintTop_toTopOf="@+id/arrow_cross"
                 app:srcCompat="@drawable/ic_keyboard_arrow_left" />
 
             <ImageButton
                 android:id="@+id/arrow_right"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginLeft="12dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Right&quot;)}"
                 android:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/arrow_cross"
                 app:layout_constraintStart_toEndOf="@+id/arrow_cross"
+                app:layout_constraintTop_toTopOf="@+id/arrow_cross"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
 
             <ImageButton
                 android:id="@+id/arrow_down"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Down&quot;)}"
                 android:tint="@android:color/white"
-                app:layout_constraintStart_toStartOf="@+id/arrow_cross"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/arrow_cross"
                 app:srcCompat="@drawable/ic_keyboard_arrow_down" />
 
             <Button
                 android:id="@+id/arrow_cross"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/rc_btn_dark_selector"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rc_ok_button"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="@{() -> clickListener.onClick(&quot;Confirm&quot;)}"
                 android:text="OK"
@@ -204,24 +208,24 @@
                 android:id="@+id/vol_down"
                 android:layout_width="64dp"
                 android:layout_height="48dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;VolumeDown&quot;)}"
                 android:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/vol_up"
-                app:layout_constraintStart_toStartOf="@+id/arrow_left"
+                app:layout_constraintEnd_toStartOf="@+id/vol_up"
                 app:srcCompat="@drawable/ic_remove" />
 
             <ImageButton
                 android:id="@+id/vol_up"
                 android:layout_width="64dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;VolumeUp&quot;)}"
                 android:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/prg_up"
-                app:layout_constraintStart_toEndOf="@+id/vol_down"
+                app:layout_constraintStart_toStartOf="@+id/arrow_down"
                 app:srcCompat="@drawable/ic_add" />
 
             <ImageButton

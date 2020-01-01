@@ -33,7 +33,7 @@ class ProgramListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        getPlayingContentInfo()
+        //getPlayingContentInfo()
     }
 
     override fun onCreateView(
@@ -56,6 +56,7 @@ class ProgramListFragment : Fragment() {
         }
 
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+        getPlayingContentInfo()
 
         if (controlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
@@ -81,10 +82,17 @@ class ProgramListFragment : Fragment() {
 
 
             binding.activeProgram.activeProgramView.setOnClickListener {
-                Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG)
-                    .show()
-                view.findNavController()
-                    .navigate(R.id.action_nav_program_list_to_activeProgramDetailsFragment)}
+                //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
+                if (activeProgram?.title.isNullOrEmpty() || activeProgram?.title!!.contentEquals(
+                        controlViewModel.noActiveProgram.title
+                    )
+                ) {
+                    Toast.makeText(context, "No current program", Toast.LENGTH_LONG).show()
+                } else {
+                    view.findNavController()
+                        .navigate(R.id.action_nav_program_list_to_activeProgramDetailsFragment)
+                }
+            }
             binding.activeProgram.activeProgramView.setOnLongClickListener {
                     getPlayingContentInfo()
                     Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()

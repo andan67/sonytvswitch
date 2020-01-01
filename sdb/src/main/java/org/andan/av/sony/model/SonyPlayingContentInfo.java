@@ -1,5 +1,11 @@
 package org.andan.av.sony.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+
 public class SonyPlayingContentInfo {
     public String source;
     public String dispNumber;
@@ -10,6 +16,9 @@ public class SonyPlayingContentInfo {
     public int durationSec;
     public String programTitle;
 
+    private static SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ");
+    private static SimpleDateFormat sdfOutput = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static Calendar cal = Calendar.getInstance();
 
     @Override
     public String toString() {
@@ -68,6 +77,27 @@ public class SonyPlayingContentInfo {
         return durationSec;
     }
 
+    public String getStartDateTimeFormatted() {
+        try {
+            Date date = sdfInput.parse(startDateTime);
+            return sdfOutput.format(date);
+        } catch (ParseException e) {
+            return startDateTime;
+        }
+    }
+
+    public String getEndDateTimeFormatted() {
+        try {
+            Date date = sdfInput.parse(startDateTime);
+            cal.setTime(date);
+            cal.add(Calendar.SECOND,durationSec);
+            return sdfOutput.format(cal.getTime());
+
+        } catch (ParseException e) {
+            return "";
+        }
+    }
+
     public String getProgramTitle() {
         return programTitle;
     }
@@ -99,4 +129,25 @@ public class SonyPlayingContentInfo {
     public void setProgramTitle(String programTitle) {
         this.programTitle = programTitle;
     }
+
+
+    public static void main(String[] args) {
+        System.out.print("Test");
+
+        try {
+            Date date = sdfInput.parse("2019-12-31T19:05:00+0100");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.SECOND, 70*60); //minus number would decrement the days
+            cal.getTime();
+            System.out.println(date);
+            System.out.println(cal.getTime());
+            System.out.println(sdfOutput.format(cal.getTime()));
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
