@@ -58,6 +58,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
         getSelectedControlIndex()
         // init
         onSelectedIndexChange()
+        activeContentInfo.value = noActiveProgram
     }
 
     fun getControls(): MutableLiveData<ArrayList<SonyIPControl>> {
