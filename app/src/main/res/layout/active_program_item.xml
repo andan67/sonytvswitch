@@ -21,7 +21,7 @@
         android:background="@color/grey_800">
 
         <TextView
-            android:id="@+id/channel_map_channelid"
+            android:id="@+id/active_program_channelid"
             android:layout_width="48dp"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
@@ -35,7 +35,7 @@
             tools:text="8888" />
 
         <TextView
-            android:id="@+id/channel_map_channel_name"
+            android:id="@+id/active_program_channel_name"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
@@ -43,23 +43,23 @@
             android:text="@{activeProgram.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@+id/channel_map_channelid"
-            app:layout_constraintStart_toEndOf="@+id/channel_map_channelid"
+            app:layout_constraintBaseline_toBaselineOf="@+id/active_program_channelid"
+            app:layout_constraintStart_toEndOf="@+id/active_program_channelid"
             tools:text="Eurosport Deutschland HD abcdefghijklmnopqrst" />
 
         <ImageView
-            android:id="@+id/channel_map_program_play_icon"
+            android:id="@+id/active_program_play_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:contentDescription="TODO"
             android:tint="@android:color/holo_blue_dark"
-            app:layout_constraintBottom_toBottomOf="@+id/channel_map_program_title"
-            app:layout_constraintStart_toStartOf="@+id/channel_map_channel_name"
-            app:layout_constraintTop_toTopOf="@+id/channel_map_program_title"
+            app:layout_constraintBottom_toBottomOf="@+id/active_program_title"
+            app:layout_constraintStart_toStartOf="@+id/active_program_channel_name"
+            app:layout_constraintTop_toTopOf="@+id/active_program_title"
             app:srcCompat="@drawable/ic_play_arrow" />
 
         <TextView
-            android:id="@+id/channel_map_program_title"
+            android:id="@+id/active_program_title"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_marginStart="4dp"
@@ -67,23 +67,47 @@
             android:text="@{activeProgram.programTitle}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintStart_toEndOf="@+id/channel_map_program_source_icon"
-            app:layout_constraintTop_toBottomOf="@+id/channel_map_channel_name"
+            app:layout_constraintStart_toEndOf="@+id/active_program_source_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_channel_name"
             tools:text="Tagesschau" />
 
         <ImageView
-            android:id="@+id/channel_map_program_source_icon"
+            android:id="@+id/active_program_time_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            app:layout_constraintBottom_toBottomOf="@+id/active_program_time"
+            app:layout_constraintStart_toStartOf="@+id/active_program_play_icon"
+            app:layout_constraintTop_toTopOf="@+id/active_program_time"
+            app:srcCompat="@drawable/ic_access_time" />
+
+        <TextView
+            android:id="@+id/active_program_time"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:text="@{activeProgram.startEndTimeFormatted}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_title"
+            tools:text="20:15 - 21:45" />
+
+        <ImageView
+            android:id="@+id/active_program_source_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:contentDescription="TODO"
             android:tint="@android:color/holo_blue_dark"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/channel_map_program_play_icon"
-            app:layout_constraintTop_toBottomOf="@id/channel_map_program_title"
+            app:layout_constraintStart_toStartOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toBottomOf="@id/active_program_time"
             app:srcCompat="@drawable/ic_input" />
 
         <TextView
-            android:id="@+id/channel_map_program_source"
+            android:id="@+id/active_program_source"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_marginStart="4dp"
@@ -91,25 +115,25 @@
             android:text="@{activeProgram.source}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintStart_toEndOf="@+id/channel_map_program_source_icon"
-            app:layout_constraintTop_toBottomOf="@+id/channel_map_program_title"
+            app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_time"
             tools:text="dvbs (general)" />
 
         <ImageView
-            android:id="@+id/channel_map_mapped_icon"
+            android:id="@+id/active_program_mapped_icon"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:tint="@android:color/holo_blue_dark"
             android:visibility="@{(controlViewModel.getChannelForProgramUri(activeProgram.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toBottomOf="@+id/channel_map_program_source"
-            app:layout_constraintStart_toEndOf="@+id/channel_map_program_source"
-            app:layout_constraintTop_toTopOf="@+id/channel_map_program_source"
+            app:layout_constraintBottom_toBottomOf="@+id/active_program_source"
+            app:layout_constraintStart_toEndOf="@+id/active_program_source"
+            app:layout_constraintTop_toTopOf="@+id/active_program_source"
             app:srcCompat="@drawable/ic_widget_simple" />
 
         <TextView
-            android:id="@+id/channel_map_program_name"
+            android:id="@+id/active_program_name"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_marginStart="4dp"
@@ -117,8 +141,8 @@
             android:text="@{controlViewModel.getChannelForProgramUri(activeProgram.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintBaseline_toBaselineOf="@+id/channel_map_program_source"
-            app:layout_constraintStart_toEndOf="@+id/channel_map_mapped_icon"
+            app:layout_constraintBaseline_toBaselineOf="@+id/active_program_source"
+            app:layout_constraintStart_toEndOf="@+id/active_program_mapped_icon"
             tools:text="Eurosport" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

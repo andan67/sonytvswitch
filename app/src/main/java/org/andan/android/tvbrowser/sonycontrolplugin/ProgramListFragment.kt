@@ -78,12 +78,10 @@ class ProgramListFragment : Fragment() {
 
             binding.activeProgram.activeProgram=controlViewModel.noActiveProgram
             binding.activeProgram.controlViewModel = controlViewModel
-            val activeProgram = controlViewModel.activeContentInfo.value
-
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
-                if (activeProgram?.title.isNullOrEmpty() || activeProgram?.title!!.contentEquals(
+                if (controlViewModel.activeContentInfo.value?.title.isNullOrEmpty() || controlViewModel.activeContentInfo.value?.title!!.contentEquals(
                         controlViewModel.noActiveProgram.title
                     )
                 ) {
@@ -97,8 +95,6 @@ class ProgramListFragment : Fragment() {
                     getPlayingContentInfo()
                     Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()
                     true }
-
-            Log.d(TAG, "activeProgram:" + SonyIPControl.getGson().toJson(activeProgram).toString())
 
             val adapter = ProgramItemRecyclerViewAdapter(
                 ProgramListener(

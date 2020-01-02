@@ -1,10 +1,11 @@
 package org.andan.av.sony.model;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class SonyPlayingContentInfo {
     public String source;
@@ -17,7 +18,8 @@ public class SonyPlayingContentInfo {
     public String programTitle;
 
     private static SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ");
-    private static SimpleDateFormat sdfOutput = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static DateFormat DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT);
+    private static DateFormat TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT);
     private static Calendar cal = Calendar.getInstance();
 
     @Override
@@ -80,7 +82,7 @@ public class SonyPlayingContentInfo {
     public String getStartDateTimeFormatted() {
         try {
             Date date = sdfInput.parse(startDateTime);
-            return sdfOutput.format(date);
+            return DateTimeFormat.format(date);
         } catch (ParseException e) {
             return startDateTime;
         }
@@ -91,7 +93,21 @@ public class SonyPlayingContentInfo {
             Date date = sdfInput.parse(startDateTime);
             cal.setTime(date);
             cal.add(Calendar.SECOND,durationSec);
-            return sdfOutput.format(cal.getTime());
+            return DateTimeFormat.format(cal.getTime());
+
+        } catch (ParseException e) {
+            return "";
+        }
+    }
+
+    public String getStartEndTimeFormatted() {
+        try {
+            Date date = sdfInput.parse(startDateTime);
+            String startTime = TimeFormat.format(date);
+            cal.setTime(date);
+            cal.add(Calendar.SECOND,durationSec);
+            String endTime = TimeFormat.format(cal.getTime());
+            return startTime + " - " + endTime;
 
         } catch (ParseException e) {
             return "";
@@ -142,7 +158,12 @@ public class SonyPlayingContentInfo {
             cal.getTime();
             System.out.println(date);
             System.out.println(cal.getTime());
-            System.out.println(sdfOutput.format(cal.getTime()));
+            DateFormat DFormat2 = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.GERMAN);
+            System.out.println(DFormat2.format(cal.getTime()));
+            DateFormat DFormat3 = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
+            System.out.println(DFormat3.format(cal.getTime()));
+            DateFormat DFormat4 = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.US);
+            System.out.println(DFormat4.format(cal.getTime()));
 
         } catch (ParseException e) {
             e.printStackTrace();
