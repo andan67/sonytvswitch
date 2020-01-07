@@ -208,7 +208,6 @@ public class SonyIPControl {
     }
 
     public int sendIRCC(String code) {
-        checkExpiryDate();
         return SonyIrcc.sendIRCC(code, getBaseUrl(), cookie);
     }
 
@@ -243,11 +242,13 @@ public class SonyIPControl {
         return response;
     }
 
-    private void checkExpiryDate() {
+    public boolean checkAndRenewCookie() {
         if (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS) {
             // reauthenticate
             registerRemoteControl(null);
+            return true;
         }
+        return false;
     }
 
     public void setCodeMapFromRemoteControllerInfo() {
@@ -289,7 +290,6 @@ public class SonyIPControl {
     }
 
     public SonyJsonRpcResponse setPlayContent(String uri) {
-        checkExpiryDate();
         return SonyJsonRpc.setPlayContent(getBaseUrl(), uri, cookie);
     }
 

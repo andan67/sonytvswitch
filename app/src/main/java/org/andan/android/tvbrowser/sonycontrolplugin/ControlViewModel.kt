@@ -177,9 +177,12 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
 
 
     fun updateCurrentProgram(program: SonyProgram) {
-        lastProgram=currentProgram
-        currentProgram=program
-        Log.d(TAG, "updateCurrentProgram ${lastProgram?.title} ${currentProgram?.title} ${program.title}")
+        if(currentProgram?.uri!=program.uri) {
+            lastProgram = currentProgram
+            currentProgram = program
+            Log.d(TAG, "updateCurrentProgram ${lastProgram?.title} ${currentProgram?.title} ${program.title}"
+            )
+        }
     }
 
     fun onProgramLongClicked(program: SonyProgram): Boolean {

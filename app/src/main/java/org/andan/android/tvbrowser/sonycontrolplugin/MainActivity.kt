@@ -120,6 +120,10 @@ class MainActivity : AppCompatActivity() {
                 TAG,
                 "observed: controlViewModel.getSelectedControlIndex()=${controlViewModel.getSelectedControlIndex()}"
             )
+            // renew cookie if required
+            val extras = Bundle()
+            extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.RENEW_COOKIE_ACTION )
+            startControlService(extras)
             //selectActiveControlSpinner.setSelection(controlViewModel.getSelectedControlIndex())
             controlListAdapter.notifyDataSetChanged()
             //navController.navigate(R.id.nav_manage_control)
@@ -215,6 +219,13 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 navController.navigate(R.id.nav_manage_control)
+                            }
+                            SonyIPControlIntentService.RENEW_COOKIE_ACTION -> {
+                                if(!resultMessage.isNullOrEmpty())
+                                {
+                                    val control = SonyIPControl(ipControlJSON)
+                                    controlViewModel.setSelectedControl(control)
+                                }
                             }
                             SonyIPControlIntentService.ENABLE_WOL_ACTION -> {
                                 val control = SonyIPControl(ipControlJSON)

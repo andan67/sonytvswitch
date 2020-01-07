@@ -28,7 +28,6 @@ class ProgramListFragment : Fragment() {
     private lateinit var controlViewModel: ControlViewModel
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
-    private var isFirstActiveContentChange = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,12 +118,9 @@ class ProgramListFragment : Fragment() {
             controlViewModel.activeContentInfo.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change activeContentInfo")
                 binding.activeProgram.activeProgram = controlViewModel.activeContentInfo.value
-                if(isFirstActiveContentChange) {
-                    val activeProgramUri = controlViewModel.activeContentInfo.value!!.uri
-                    if (controlViewModel.uriProgramMap.containsKey(activeProgramUri)) {
-                        controlViewModel.updateCurrentProgram(controlViewModel.uriProgramMap[activeProgramUri]!!)
-                    }
-                    isFirstActiveContentChange=false
+                val activeProgramUri = controlViewModel.activeContentInfo.value!!.uri
+                if (controlViewModel.uriProgramMap.containsKey(activeProgramUri)) {
+                    controlViewModel.updateCurrentProgram(controlViewModel.uriProgramMap[activeProgramUri]!!)
                 }
             })
 

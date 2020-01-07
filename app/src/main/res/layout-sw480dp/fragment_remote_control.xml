@@ -84,6 +84,20 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_remote_dpadviewpowerbutton" />
 
+            <ImageButton
+                android:id="@+id/bdv_display"
+                android:layout_width="96dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Display&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@+id/input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_remote_bdv_display" />
+
             <Button
                 android:id="@+id/home"
                 android:layout_width="96dp"
@@ -855,6 +869,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Audio&quot;)}"
                 android:fontFamily="sans-serif-medium"
                 android:text="Audio"
                 android:textSize="14sp"
@@ -862,13 +877,13 @@
                 app:layout_constraintStart_toEndOf="@+id/view_cc" />
 
             <ImageButton
-                android:id="@+id/bdv_display"
+                android:id="@+id/teletext"
                 android:layout_width="110dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
-                android:onClick="@{() -> clickListener.onClick(&quot;Audio&quot;)}"
+                android:onClick="@{() -> clickListener.onClick(&quot;Teletext&quot;)}"
                 android:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/audio"
                 app:layout_constraintStart_toEndOf="@+id/audio"

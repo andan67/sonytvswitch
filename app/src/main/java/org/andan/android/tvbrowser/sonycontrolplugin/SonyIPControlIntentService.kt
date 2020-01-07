@@ -31,6 +31,9 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
                         val code = intent.getStringExtra(CODE)
                         registerControl(ipControl, action, code)
                     }
+                    RENEW_COOKIE_ACTION -> {
+                        renewCookie(ipControl, action)
+                    }
                     SET_PROGRAM_LIST_ACTION -> setProgramListAction(ipControl, action)
                     SET_PLAY_CONTENT_ACTION -> {
                         val uri = intent.getStringExtra(URI)
@@ -91,6 +94,23 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
             action,
             result,
             response.responseErrorOrStatusMessage,
+            SonyIPControl.getGson().toJson(ipControl.toJSON())
+        )
+    }
+
+    private fun renewCookie(ipControl: SonyIPControl, action: Int) {
+        Log.i(TAG, "check and renew cookie: ${ipControl.cookie}")
+        val cookieHasRenewed = ipControl.checkAndRenewCookie()
+        val resultMessage = if(cookieHasRenewed) {
+            Log.i(TAG, "cookie renewed: ${ipControl.cookie}")
+            ipControl.cookie
+        } else {
+            ""
+        }
+        broadcastEvent(
+            action,
+            RESULT_OK,
+            resultMessage,
             SonyIPControl.getGson().toJson(ipControl.toJSON())
         )
     }
@@ -191,14 +211,15 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         const val SEND_IRCC_BY_CODE_ACTION = 1
         const val SEND_CHANNEL_SWITCH_ACTION = 2
         const val REGISTER_CONTROL_ACTION = 3
-        const val SET_PROGRAM_LIST_ACTION = 4
-        const val SET_PLAY_CONTENT_ACTION = 5
-        const val GET_PLAYING_CONTENT_INFO_ACTION = 6
-        const val SET_AND_GET_PLAY_CONTENT_ACTION = 7
-        const val WOL_ACTION = 8
-        const val ENABLE_WOL_ACTION = 9
-        const val SCREEN_ON_ACTION = 10
-        const val SCREEN_OFF_ACTION = 11
+        const val RENEW_COOKIE_ACTION = 4
+        const val SET_PROGRAM_LIST_ACTION = 5
+        const val SET_PLAY_CONTENT_ACTION = 6
+        const val GET_PLAYING_CONTENT_INFO_ACTION = 7
+        const val SET_AND_GET_PLAY_CONTENT_ACTION = 8
+        const val WOL_ACTION = 9
+        const val ENABLE_WOL_ACTION = 10
+        const val SCREEN_ON_ACTION = 11
+        const val SCREEN_OFF_ACTION = 12
         const val RESULT_OK = 0
         const val RESULT_AUTH_REQUIRED = 1
         const val RESULT_IOERROR = 3
@@ -206,6 +227,4 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         // TODO: Rename parameters
         private val TAG = SonyIPControlIntentService::class.java.simpleName
     }
-
-
 }
