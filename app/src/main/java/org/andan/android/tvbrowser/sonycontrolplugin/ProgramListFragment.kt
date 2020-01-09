@@ -47,8 +47,7 @@ class ProgramListFragment : Fragment() {
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
         fab.setOnClickListener { view ->
             if(controlViewModel.lastProgram != null) {
-                Toast.makeText(context, "Switched to ${controlViewModel.lastProgram?.title}", Toast.LENGTH_LONG)
-                    .show()
+                // Toast.makeText(context, "Switched to ${controlViewModel.lastProgram?.title}", Toast.LENGTH_LONG).show()
                 setPlayContent(controlViewModel.lastProgram!!)
             }
 
@@ -98,8 +97,7 @@ class ProgramListFragment : Fragment() {
             val adapter = ProgramItemRecyclerViewAdapter(
                 ProgramListener(
                     { program: SonyProgram ->
-                        Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG)
-                            .show()
+                        //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
                         setPlayContent(program)
                     },
                     { program: SonyProgram ->

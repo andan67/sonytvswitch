@@ -884,10 +884,10 @@
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Teletext&quot;)}"
-                android:tint="@android:color/white"
+                android:tint="@android:color/holo_green_dark"
                 app:layout_constraintBottom_toBottomOf="@+id/audio"
                 app:layout_constraintStart_toEndOf="@+id/audio"
-                app:srcCompat="@drawable/ic_remote_bdv_display" />
+                app:srcCompat="@drawable/ic_remote_teletext" />
 
             <Button
                 android:id="@+id/iManual"

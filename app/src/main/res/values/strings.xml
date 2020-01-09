@@ -7,7 +7,7 @@
 
 
     <string name="pref_app_version_title">Version</string>
-    <string name="pref_app_version">2.1.1</string>
+    <string name="pref_app_version">2.1.2</string>
     <string name="service_sonycontrol_name">Switch for Sony TV</string>
     <string name="service_sonycontrol_description">Switch to Sony TV channel from program menu.</string>
     <string name="service_sonycontrol_context_menu">Switch to channel</string>
