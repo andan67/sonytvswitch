@@ -300,7 +300,7 @@
             "dispNumber": "0025",
             "index": 24,
             "mediaType": "tv",
-            "title": "Eurosport 1 Deutschland",
+            "title": "Eurosport 1 Deutschland Eurosport 1 Deutschland Eurosport 1 Deutschland",
             "uri": "tv:dvbs?trip\u003d1.1091.31200\u0026srvName\u003dEurosport%201%20Deutschland"
         },
         {
@@ -380,7 +380,7 @@
             "dispNumber": "0035",
             "index": 34,
             "mediaType": "tv",
-            "title": "WELT 1234567890 abcdefghijklmnopqrstuvwxyz",
+            "title": "WELT",
             "uri": "tv:dvbs?trip\u003d1.1107.17503\u0026srvName\u003dWELT"
         },
         {

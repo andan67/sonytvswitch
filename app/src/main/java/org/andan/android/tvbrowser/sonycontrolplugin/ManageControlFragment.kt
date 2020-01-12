@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_manage_control.*
+import java.text.DateFormat
 import java.text.DateFormat.getDateTimeInstance
 
 class ManageControlFragment : Fragment() {
@@ -41,7 +42,7 @@ class ManageControlFragment : Fragment() {
                 controlDetailUuidValueTextView.text = controlViewModel.getSelectedControl()?.uuid
                 controlDetailCookieValueTextView.text = controlViewModel.getSelectedControl()?.cookie
                 controlDetailCookieExpireValueTextView.text =
-                    getDateTimeInstance().format(controlViewModel.getSelectedControl()?.cookieExprireTime)
+                    getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT).format(controlViewModel.getSelectedControl()?.cookieExprireTime)
                 controlDetailNumberOfProgramsTextView.text = String.format(
                     "%d",
                     controlViewModel.getSelectedControl()?.programList?.size ?: -1

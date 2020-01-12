@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        controlViewModel.getControls().observe(this, Observer {
+        controlViewModel.getSelectedControlIndexLiveData().observe(this, Observer {
             Log.d(TAG, "observed change getControls")
             Log.d(
                 TAG,

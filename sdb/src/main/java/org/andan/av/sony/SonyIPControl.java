@@ -14,6 +14,7 @@ import org.andan.av.sony.network.WakeOnLan;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -243,10 +244,14 @@ public class SonyIPControl {
     }
 
     public boolean checkAndRenewCookie() {
-        if (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS) {
+        if (cookie != null &&
+                (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS)) {
             // reauthenticate
-            registerRemoteControl(null);
-            return true;
+            SonyJsonRpcResponse response = SonyJsonRpc.actRegister(getBaseUrl(),
+                    nickname + ":" + uuid,
+                    nickname + " (" + devicename + ")",
+                    cookie, null);
+            return (response.getResponseCode() == HttpURLConnection.HTTP_OK);
         }
         return false;
     }

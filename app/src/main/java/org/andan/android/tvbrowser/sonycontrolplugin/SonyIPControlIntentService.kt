@@ -100,19 +100,22 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
 
     private fun renewCookie(ipControl: SonyIPControl, action: Int) {
         Log.i(TAG, "check and renew cookie: ${ipControl.cookie}")
-        val cookieHasRenewed = ipControl.checkAndRenewCookie()
-        val resultMessage = if(cookieHasRenewed) {
-            Log.i(TAG, "cookie renewed: ${ipControl.cookie}")
-            ipControl.cookie
-        } else {
-            ""
+        if(!ipControl.codeList.isNullOrEmpty()) {
+            val cookieHasRenewed = ipControl.checkAndRenewCookie()
+            val resultMessage = if (cookieHasRenewed) {
+                Log.i(TAG, "cookie renewed: ${ipControl.cookie}")
+                if(!ipControl.cookie.isNullOrEmpty()) ipControl.cookie
+                else ""
+            } else {
+                ""
+            }
+            broadcastEvent(
+                action,
+                RESULT_OK,
+                resultMessage,
+                SonyIPControl.getGson().toJson(ipControl.toJSON())
+            )
         }
-        broadcastEvent(
-            action,
-            RESULT_OK,
-            resultMessage,
-            SonyIPControl.getGson().toJson(ipControl.toJSON())
-        )
     }
 
     private fun setProgramListAction(ipControl: SonyIPControl, action: Int) {

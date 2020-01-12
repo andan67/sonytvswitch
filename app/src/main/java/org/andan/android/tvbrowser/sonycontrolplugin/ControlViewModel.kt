@@ -68,9 +68,13 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
 
     fun getSelectedControlIndex(): Int {
         //Log.d(TAG,"getSelectedControlIndex()")
-        return controlRepository.getSelectedControlIndex()
+        return controlRepository.getSelectedControlIndexLiveData().value!!
     }
 
+    fun getSelectedControlIndexLiveData(): MutableLiveData<Int> {
+        //Log.d(TAG,"getSelectedControlIndex()")
+        return controlRepository.getSelectedControlIndexLiveData()
+    }
 
     fun getSelectedControl(): SonyIPControl? {
         //Log.d(TAG,"getSelectedControl()")

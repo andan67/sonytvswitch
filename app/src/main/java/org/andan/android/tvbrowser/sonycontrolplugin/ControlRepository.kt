@@ -20,7 +20,7 @@ class ControlRepository(application: Application) {
 
     private var controlList = ArrayList<SonyIPControl>()
     private var controlListLiveData = MutableLiveData<ArrayList<SonyIPControl>>()
-    private var selectedControlIndex: Int = -1
+    private var selectedControlIndexLiveData = MutableLiveData<Int>()
 
     init {
         Log.d(TAG, "init")
@@ -41,8 +41,8 @@ class ControlRepository(application: Application) {
         return controlListLiveData
     }
 
-    fun getSelectedControlIndex(): Int {
-        return selectedControlIndex
+    fun getSelectedControlIndexLiveData(): MutableLiveData<Int> {
+        return selectedControlIndexLiveData
     }
 
     fun setControl(index: Int, control: SonyIPControl): Boolean {
@@ -56,7 +56,7 @@ class ControlRepository(application: Application) {
 
     fun setSelectedControlIndex(index : Int): Boolean {
         if(index < controlList.size) {
-            selectedControlIndex = index
+            selectedControlIndexLiveData.value = index
             saveControls(true)
             return true
         }
@@ -65,7 +65,7 @@ class ControlRepository(application: Application) {
 
     fun addControl(control: SonyIPControl): Boolean {
         controlList.add(control)
-        selectedControlIndex=controlList.size-1
+        selectedControlIndexLiveData.value=controlList.size-1
         controlListLiveData.value= controlList
         saveControls(true)
         return true
@@ -74,14 +74,14 @@ class ControlRepository(application: Application) {
     fun removeControl(index: Int): Boolean {
         if(index >= 0 && index < controlList.size) {
 
-            var newSelectedControlIndex = selectedControlIndex -1
-            if  (selectedControlIndex == 0 && controlList.size > 1)
+            var newselectedControlIndexLiveData = selectedControlIndexLiveData.value!! -1
+            if  (selectedControlIndexLiveData.value == 0 && controlList.size > 1)
             {
-                newSelectedControlIndex = controlList.size-2
+                newselectedControlIndexLiveData = controlList.size-2
             }
             controlList.removeAt(index)
             //controlListLiveData.value=controlList
-            selectedControlIndex=newSelectedControlIndex
+            selectedControlIndexLiveData.value=newselectedControlIndexLiveData
             saveControls(true)
             return true
         }
@@ -99,12 +99,14 @@ class ControlRepository(application: Application) {
             }
             controlListLiveData.value = controlList
             if (controlsJSON.has("selected")) {
-                selectedControlIndex = controlsJSON.get("selected").asInt
-                if (selectedControlIndex >= controlConfig.length) selectedControlIndex = 0
+                selectedControlIndexLiveData.value = controlsJSON.get("selected").asInt
+                if (selectedControlIndexLiveData.value!! >= controlConfig.length) selectedControlIndexLiveData.value = 0
             }
             else {
-                selectedControlIndex = 0
+                selectedControlIndexLiveData.value = 0
             }
+        } else {
+            selectedControlIndexLiveData.value = -1
         }
     }
 
@@ -127,7 +129,7 @@ class ControlRepository(application: Application) {
 
             }
             controlsJSON.add("controls", controls)
-            controlsJSON.addProperty("selected", selectedControlIndex)
+            controlsJSON.addProperty("selected", selectedControlIndexLiveData.value)
             val editor = controlPreferences.edit()
             editor.putString("controlConfig", SonyIPControl.getGson().toJson(controlsJSON))
             editor.commit()
