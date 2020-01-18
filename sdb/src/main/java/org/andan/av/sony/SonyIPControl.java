@@ -30,7 +30,9 @@ import java.util.regex.Pattern;
 public class SonyIPControl {
 
     private static final int PAGE_SIZE = 25;
-    private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = 86400 * 1000; // 1 day
+    //private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = 86400 * 1000; // 1 day
+    //private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = (14*86400-120)*1000;
+    private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = (14*86400-5*60)*1000;
 
     private String ip;
     private String cookie;
@@ -222,6 +224,34 @@ public class SonyIPControl {
                 cookie,
                 challenge == null || challenge.isEmpty() ? null : ":" + challenge
                 );
+        setCookieFromResponse(response);
+        if(response.getResult() != null) {
+            getSystemInformation();
+            setWolMode(true);
+            getWolMode();
+        }
+        return response;
+    }
+
+
+    public boolean checkAndRenewCookie() {
+        if (cookie != null &&
+                (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS)) {
+            // reauthenticate
+            System.out.println("Cookie expired:" +cookie);
+            SonyJsonRpcResponse response = SonyJsonRpc.actRegister(getBaseUrl(),
+                    nickname + ":" + uuid,
+                    nickname + " (" + devicename + ")",
+                    cookie, null);
+            setCookieFromResponse(response);
+            System.out.println("New cookie:" +cookie + " " + response.getResponseCode() +
+                    " " + response.getSetCookie());
+            return (response.getResponseCode() == HttpURLConnection.HTTP_OK);
+        }
+        return false;
+    }
+
+    private void setCookieFromResponse(SonyJsonRpcResponse response) {
         // get auth cookie from repsonse
         if (response.getSetCookie() != null) {
             Pattern pattern = Pattern.compile("auth=([A-Za-z0-9]+)");
@@ -235,25 +265,6 @@ public class SonyIPControl {
                 }
             }
         }
-        if(response.getResult() != null) {
-            getSystemInformation();
-            setWolMode(true);
-            getWolMode();
-        }
-        return response;
-    }
-
-    public boolean checkAndRenewCookie() {
-        if (cookie != null &&
-                (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS)) {
-            // reauthenticate
-            SonyJsonRpcResponse response = SonyJsonRpc.actRegister(getBaseUrl(),
-                    nickname + ":" + uuid,
-                    nickname + " (" + devicename + ")",
-                    cookie, null);
-            return (response.getResponseCode() == HttpURLConnection.HTTP_OK);
-        }
-        return false;
     }
 
     public void setCodeMapFromRemoteControllerInfo() {

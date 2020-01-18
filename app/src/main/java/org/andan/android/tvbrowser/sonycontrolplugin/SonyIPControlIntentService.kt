@@ -100,7 +100,7 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
 
     private fun renewCookie(ipControl: SonyIPControl, action: Int) {
         Log.i(TAG, "check and renew cookie: ${ipControl.cookie}")
-        if(!ipControl.codeList.isNullOrEmpty()) {
+        if(!ipControl.cookie.isNullOrEmpty()) {
             val cookieHasRenewed = ipControl.checkAndRenewCookie()
             val resultMessage = if (cookieHasRenewed) {
                 Log.i(TAG, "cookie renewed: ${ipControl.cookie}")

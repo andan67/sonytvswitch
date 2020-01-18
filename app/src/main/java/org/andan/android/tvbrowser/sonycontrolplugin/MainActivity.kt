@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
             )
             // renew cookie if required
             val extras = Bundle()
+            Log.d(TAG, "Check cookie expiry and renew: ${controlViewModel.getSelectedControl()!!.cookie}")
             extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.RENEW_COOKIE_ACTION )
             startControlService(extras)
             //selectActiveControlSpinner.setSelection(controlViewModel.getSelectedControlIndex())
@@ -224,6 +225,7 @@ class MainActivity : AppCompatActivity() {
                                 if(!resultMessage.isNullOrEmpty())
                                 {
                                     val control = SonyIPControl(ipControlJSON)
+                                    Log.d(TAG, "Cookie renewed: ${control.cookie}")
                                     controlViewModel.setSelectedControl(control)
                                 }
                             }

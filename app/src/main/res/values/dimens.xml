@@ -10,9 +10,15 @@
     <dimen name="rc_button_large_width">80dp</dimen>
     <dimen name="rc_button_large_height">40dp</dimen>
     <dimen name="rc_button_mid_width">72dp</dimen>
+    <dimen name="rc_button_mid_height">40dp</dimen>
+    <dimen name="rc_button_small_width">48dp</dimen>
+    <dimen name="rc_button_small_height">40dp</dimen>
     <dimen name="rc_button_arrow_width">48dp</dimen>
-    <dimen name="rc_button_arrow_margin">48dp</dimen>
+    <dimen name="rc_button_arrow_height">48dp</dimen>
+    <dimen name="rc_button_arrow_margin">6dp</dimen>
     <dimen name="rc_button_cross_width">56dp</dimen>
+    <dimen name="rc_button_cross_height">56dp</dimen>
     <dimen name="rc_button_number_width">108dp</dimen>
+    <dimen name="rc_button_number_height">40dp</dimen>
     <dimen name="rc_button_play_width">164dp</dimen>
 </resources>

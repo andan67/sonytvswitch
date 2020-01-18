@@ -28,8 +28,8 @@
 
             <ImageButton
                 android:id="@+id/input"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -42,8 +42,8 @@
 
             <Button
                 android:id="@+id/guide"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="24dp"
@@ -57,8 +57,8 @@
 
             <Button
                 android:id="@+id/sen"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="24dp"
@@ -72,8 +72,8 @@
 
             <ImageButton
                 android:id="@+id/power"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="24dp"
@@ -86,8 +86,8 @@
 
             <ImageButton
                 android:id="@+id/bdv_display"
-                android:layout_width="72dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -100,8 +100,8 @@
 
             <Button
                 android:id="@+id/home"
-                android:layout_width="72dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/rc_btn_blue_selector"
                 android:fontFamily="sans-serif-medium"
@@ -113,8 +113,8 @@
 
             <ImageButton
                 android:id="@+id/arrow_up"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Up&quot;)}"
@@ -126,10 +126,10 @@
 
             <ImageButton
                 android:id="@+id/arrow_left"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginRight="6dp"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginEnd="@dimen/rc_button_arrow_margin"
+                android:layout_marginRight="@dimen/rc_button_arrow_margin"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Left&quot;)}"
                 android:tint="@android:color/white"
@@ -140,10 +140,10 @@
 
             <ImageButton
                 android:id="@+id/arrow_right"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="6dp"
-                android:layout_marginLeft="6dp"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginStart="@dimen/rc_button_arrow_margin"
+                android:layout_marginLeft="@dimen/rc_button_arrow_margin"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Right&quot;)}"
                 android:tint="@android:color/white"
@@ -154,9 +154,9 @@
 
             <ImageButton
                 android:id="@+id/arrow_down"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="6dp"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginTop="@dimen/rc_button_arrow_margin"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Down&quot;)}"
                 android:tint="@android:color/white"
@@ -167,9 +167,9 @@
 
             <Button
                 android:id="@+id/arrow_cross"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="6dp"
+                android:layout_width="@dimen/rc_button_cross_width"
+                android:layout_height="@dimen/rc_button_cross_height"
+                android:layout_marginTop="@dimen/rc_button_arrow_margin"
                 android:background="@drawable/rc_ok_button"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="@{() -> clickListener.onClick(&quot;Confirm&quot;)}"
@@ -181,8 +181,8 @@
 
             <Button
                 android:id="@+id/options"
-                android:layout_width="72dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="@{() -> clickListener.onClick(&quot;Options&quot;)}"
@@ -193,8 +193,8 @@
 
             <Button
                 android:id="@+id/back"
-                android:layout_width="72dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -207,8 +207,8 @@
 
             <ImageButton
                 android:id="@+id/mute"
-                android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;Mute&quot;)}"
@@ -220,8 +220,8 @@
 
             <ImageButton
                 android:id="@+id/vol_down"
-                android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -233,8 +233,8 @@
 
             <ImageButton
                 android:id="@+id/vol_up"
-                android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;VolumeUp&quot;)}"
                 android:tint="@android:color/white"
@@ -244,8 +244,8 @@
 
             <ImageButton
                 android:id="@+id/prg_down"
-                android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -257,8 +257,8 @@
 
             <ImageButton
                 android:id="@+id/prg_up"
-                android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:onClick="@{() -> clickListener.onClick(&quot;ChannelUp&quot;)}"
                 android:tint="@android:color/white"
@@ -292,8 +292,8 @@
 
             <Button
                 android:id="@+id/syncMenu"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="32dp"
@@ -307,8 +307,8 @@
 
             <Button
                 android:id="@+id/analogDigital"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -321,8 +321,8 @@
 
             <Button
                 android:id="@+id/exit"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -335,8 +335,8 @@
 
             <Button
                 android:id="@+id/radioTV"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -349,8 +349,8 @@
 
             <Button
                 android:id="@+id/one"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -376,8 +376,8 @@
 
             <Button
                 android:id="@+id/two"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -402,8 +402,8 @@
 
             <Button
                 android:id="@+id/three"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -428,8 +428,8 @@
 
             <Button
                 android:id="@+id/four"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -455,8 +455,8 @@
 
             <Button
                 android:id="@+id/five"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -481,8 +481,8 @@
 
             <Button
                 android:id="@+id/six"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -507,8 +507,8 @@
 
             <Button
                 android:id="@+id/seven"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -534,8 +534,8 @@
 
             <Button
                 android:id="@+id/eight"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -560,8 +560,8 @@
 
             <Button
                 android:id="@+id/nine"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -586,8 +586,8 @@
 
             <Button
                 android:id="@+id/zero"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -612,8 +612,8 @@
 
             <Button
                 android:id="@+id/enter"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -626,8 +626,8 @@
 
             <ImageButton
                 android:id="@+id/red"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -641,8 +641,8 @@
 
             <ImageButton
                 android:id="@+id/green"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -655,8 +655,8 @@
 
             <ImageButton
                 android:id="@+id/yellow"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -669,8 +669,8 @@
 
             <ImageButton
                 android:id="@+id/blue"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -683,8 +683,8 @@
 
             <ImageButton
                 android:id="@+id/skip_previous"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -697,8 +697,8 @@
 
             <ImageButton
                 android:id="@+id/pause"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -711,8 +711,8 @@
 
             <ImageButton
                 android:id="@+id/stop"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -725,8 +725,8 @@
 
             <ImageButton
                 android:id="@+id/skip_next"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -739,8 +739,8 @@
 
             <ImageButton
                 android:id="@+id/fast_rewind"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -753,8 +753,8 @@
 
             <ImageButton
                 android:id="@+id/play"
-                android:layout_width="164dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_play_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -766,8 +766,8 @@
 
             <ImageButton
                 android:id="@+id/fast_forward"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -779,8 +779,8 @@
 
             <Button
                 android:id="@+id/tv_pause"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -794,8 +794,8 @@
 
             <Button
                 android:id="@+id/title_list"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -808,8 +808,8 @@
 
             <ImageButton
                 android:id="@+id/record"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -821,8 +821,8 @@
 
             <Button
                 android:id="@+id/three_d"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -835,8 +835,8 @@
 
             <ImageButton
                 android:id="@+id/view_wide"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
@@ -851,8 +851,8 @@
 
             <ImageButton
                 android:id="@+id/view_cc"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -864,8 +864,8 @@
 
             <Button
                 android:id="@+id/audio"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -878,8 +878,8 @@
 
             <ImageButton
                 android:id="@+id/bdv_teletext"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/rc_btn_dark_selector"
@@ -891,8 +891,8 @@
 
             <Button
                 android:id="@+id/iManual"
-                android:layout_width="108dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="14dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
