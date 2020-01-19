@@ -54,7 +54,7 @@ class ProgramListFragment : Fragment() {
         }
 
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
-        getPlayingContentInfo()
+        //getPlayingContentInfo()
 
         if (controlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
@@ -111,6 +111,7 @@ class ProgramListFragment : Fragment() {
             controlViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change filtered program list with filter ${controlViewModel.getProgramSearchQuery()}")
                 adapter.notifyDataSetChanged()
+                getPlayingContentInfo()
             })
 
             controlViewModel.activeContentInfo.observe(viewLifecycleOwner, Observer {

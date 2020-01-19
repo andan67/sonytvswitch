@@ -24,6 +24,7 @@
             android:id="@+id/active_program_channelid"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:gravity="end"
@@ -148,17 +149,19 @@
             app:srcCompat="@drawable/ic_widget_simple" />
 
         <TextView
-            android:id="@+id/active_program_name"
+            android:id="@+id/active_program_mapped_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
             android:text="@{controlViewModel.getChannelForProgramUri(activeProgram.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/active_program_mapped_icon"
             app:layout_constraintTop_toTopOf="@+id/active_program_source"

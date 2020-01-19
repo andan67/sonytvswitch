@@ -30,9 +30,8 @@ import java.util.regex.Pattern;
 public class SonyIPControl {
 
     private static final int PAGE_SIZE = 25;
-    //private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = 86400 * 1000; // 1 day
-    //private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = (14*86400-120)*1000;
-    private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = (14*86400-5*60)*1000;
+    private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = 86400 * 1000; // 1 day
+    //private static final long MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS = (14*86400-5*60)*1000;
 
     private String ip;
     private String cookie;
@@ -238,14 +237,11 @@ public class SonyIPControl {
         if (cookie != null &&
                 (cookieExprireTime - System.currentTimeMillis() < MAX_TIME_UNTIL_COOKIE_EXPIRES_IN_MILLIS)) {
             // reauthenticate
-            System.out.println("Cookie expired:" +cookie);
             SonyJsonRpcResponse response = SonyJsonRpc.actRegister(getBaseUrl(),
                     nickname + ":" + uuid,
                     nickname + " (" + devicename + ")",
                     cookie, null);
             setCookieFromResponse(response);
-            System.out.println("New cookie:" +cookie + " " + response.getResponseCode() +
-                    " " + response.getSetCookie());
             return (response.getResponseCode() == HttpURLConnection.HTTP_OK);
         }
         return false;

@@ -10,20 +10,14 @@
             type="org.andan.android.tvbrowser.sonycontrolplugin.ControlViewModel" />
     </data>
 
-    <HorizontalScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listChannelMap"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="@color/grey_900"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".ChannelMapFragment"
+        tools:listitem="@layout/map_channnel_item" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listChannelMap"
-                android:name="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:context=".ChannelMapFragment"
-                tools:listitem="@layout/map_channnel_item"
-                android:background="@color/grey_900"/>
-
-    </HorizontalScrollView>
 </layout>

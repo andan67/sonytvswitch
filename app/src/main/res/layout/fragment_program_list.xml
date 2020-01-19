@@ -12,40 +12,34 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <include
             android:id="@+id/activeProgram"
+            layout="@layout/active_program_item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/active_program_item" />
+            android:layout_height="wrap_content" />
 
         <View
-        android:id="@+id/divider1"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="?android:attr/dividerVertical"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:layout_below="@+id/activeProgram"
-        tools:layout_editor_absoluteX="4dp" />
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/activeProgram"
+            android:background="@color/grey_500"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            tools:layout_editor_absoluteX="4dp" />
 
-        <HorizontalScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listProgram"
+            android:name="org.andan.android.tvbrowser.sonycontrolplugin.ProgramListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/divider1"
-            android:fillViewport="true">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listProgram"
-                android:name="org.andan.android.tvbrowser.sonycontrolplugin.ProgramListFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:listitem="@layout/program_item"
-                android:background="@color/grey_900"/>
-        </HorizontalScrollView>
+            android:background="@color/grey_900"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:listitem="@layout/program_item" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/listProgramFab"

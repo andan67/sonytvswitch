@@ -24,14 +24,14 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> clickListener.onClick(program)}"
-        android:background="@drawable/rc_btn_dark_selector">
+        android:background="@drawable/rc_btn_dark_selector"
+        android:onClick="@{() -> clickListener.onClick(program)}">
 
 
         <TextView
             android:id="@+id/program_item_channelid"
             android:layout_width="48dp"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:gravity="end"
@@ -44,14 +44,18 @@
 
         <TextView
             android:id="@+id/program_item_channel_name"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:text="@{program.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBaseline_toBaselineOf="@+id/program_item_channelid"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/program_item_channelid"
             tools:text="Eurosport Deutschland HD abcdefghijklmnopqrst" />
 
@@ -59,17 +63,18 @@
             android:id="@+id/program_item_program_source_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginTop="2dp"
             android:contentDescription="TODO"
             android:tint="@android:color/holo_blue_dark"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/program_item_program_source"
             app:layout_constraintStart_toStartOf="@+id/program_item_channel_name"
-            app:layout_constraintTop_toBottomOf="@id/program_item_channelid"
+            app:layout_constraintTop_toTopOf="@id/program_item_program_source"
             app:srcCompat="@drawable/ic_input" />
 
         <TextView
             android:id="@+id/program_item_program_source"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:text="@{program.sourceWithType}"
@@ -85,6 +90,7 @@
             android:layout_height="18dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
             android:tint="@android:color/holo_blue_dark"
             android:visibility="@{(controlViewModel.getChannelForProgramUri(program.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/program_item_program_source"
@@ -94,16 +100,20 @@
 
         <TextView
             android:id="@+id/program_item_program_name"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:text="@{controlViewModel.getChannelForProgramUri(program.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintBaseline_toBaselineOf="@+id/program_item_program_source"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/program_item_program_source"
             app:layout_constraintStart_toEndOf="@+id/program_item_mapped_icon"
-            tools:text="Eurosport" />
+            tools:text="Eurosport Deutschland Eurosport Deutschland" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
