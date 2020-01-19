@@ -30,7 +30,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         <TextView
             android:id="@+id/channel_map_program_pos"
             android:layout_width="48dp"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
@@ -48,15 +48,18 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginEnd="150dp"
+            android:layout_marginRight="150dp"
             android:layout_marginBottom="4dp"
             android:text="@{programTitle}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/channel_map_program_pos"
             app:layout_constraintTop_toTopOf="@+id/channel_map_program_pos"
-            app:layout_constraintWidth_max="200dp"
             tools:text="Eurosport Deutschland HD Eurosport Deutschland HD" />
 
 
@@ -66,7 +69,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:contentDescription="TODO"
             android:tint="@android:color/holo_blue_dark"
             android:visibility="@{(programSourceWithType.length >0) ? View.VISIBLE : View.INVISIBLE}"
@@ -77,7 +80,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         <TextView
             android:id="@+id/channel_map_program_source"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginEnd="4dp"

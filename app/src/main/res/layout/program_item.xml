@@ -63,10 +63,9 @@
             android:id="@+id/program_item_program_source_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:contentDescription="TODO"
             android:tint="@android:color/holo_blue_dark"
-            app:layout_constraintBottom_toBottomOf="@+id/program_item_program_source"
             app:layout_constraintStart_toStartOf="@+id/program_item_channel_name"
             app:layout_constraintTop_toTopOf="@id/program_item_program_source"
             app:srcCompat="@drawable/ic_input" />
@@ -90,10 +89,9 @@
             android:layout_height="18dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:tint="@android:color/holo_blue_dark"
             android:visibility="@{(controlViewModel.getChannelForProgramUri(program.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toBottomOf="@+id/program_item_program_source"
             app:layout_constraintStart_toEndOf="@+id/program_item_program_source"
             app:layout_constraintTop_toTopOf="@+id/program_item_program_source"
             app:srcCompat="@drawable/ic_widget_simple" />
