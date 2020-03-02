@@ -99,10 +99,9 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
                     String channelName = program.getChannel().getChannelName();
                     final String programUri = mSonyIpControl.getChannelProgramUriMap().get(channelName);
                     Log.i(TAG, " onProgramContextMenuSelected:control " + mSonyIpControl.toString());
-                    Intent intentService = new Intent(getApplicationContext(), SonyIPControlIntentService.class);
-                    String controlJSON = SonyIPControl.getGson().toJson(mSonyIpControl.toJSON());
-                    intentService.putExtra(SonyIPControlIntentService.CONTROL, controlJSON);
                     if (programUri!= null && !programUri.isEmpty()) {
+                        Intent intentService = new Intent(getApplicationContext(), SonyIPControlIntentService.class);
+                        String controlJSON = SonyIPControl.getGson().toJson(mSonyIpControl.toJSON());
                         intentService.putExtra(SonyIPControlIntentService.CONTROL, controlJSON);
                         intentService.putExtra(SonyIPControlIntentService.URI, programUri);
                         intentService.putExtra(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SET_PLAY_CONTENT_ACTION);
@@ -180,7 +179,12 @@ public class TVBrowserSonyIPControlPlugin extends Service implements SharedPrefe
             getSharedPreferences(getString(R.string.pref_control_file_key), MODE_PRIVATE).registerOnSharedPreferenceChangeListener(TVBrowserSonyIPControlPlugin.this);
             setControlAndChannelMapFromPreferences(true);
             writeChannelListIntoPreference(mPluginManager.getSubscribedChannels());
-
+            Intent intentService = new Intent(getApplicationContext(), SonyIPControlIntentService.class);
+            String controlJSON = SonyIPControl.getGson().toJson(mSonyIpControl.toJSON());
+            intentService.putExtra(SonyIPControlIntentService.CONTROL, controlJSON);
+            intentService.putExtra(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.RENEW_COOKIE_ACTION_PLUGIN);
+            Log.d(TAG, "check token");
+            getApplicationContext().startService(intentService);
             Log.d(TAG, "onActivation");
         }
 

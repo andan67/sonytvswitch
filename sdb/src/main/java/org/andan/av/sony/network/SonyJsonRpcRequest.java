@@ -22,8 +22,7 @@ public class SonyJsonRpcRequest {
     {"method":"getContentList","id":103,"version":"1.0","params":[{"source":"tv:dvbs","stIdx":0,"cnt":25,"type":"general"}]}
     {"method":"getContentList","id":103,"params":[{"stIdx":0,"cnt":25,"source":"tv:dvbs","type":"general"}],"version":"1.0"}
     {"method":"getContentList","id":103,"params":[{"source":"tv:dvbs","stIdx":0,"cnt":25,"type":"general"}],"version":"1.0"}
-
-    */
+    {"method":"actRegister","params":[{"clientid":"TVSideView:4e6b4a7a-aa52-416e-bfad-6aac6f560f9d","nickname":"Nexus 5 (TV SideView)","level":"private"},[{"value":"yes","function":"WOL"}]],"id":8,"version":"1.0"}'    */
     private String method;
     private int id;
     private List<Object> params;

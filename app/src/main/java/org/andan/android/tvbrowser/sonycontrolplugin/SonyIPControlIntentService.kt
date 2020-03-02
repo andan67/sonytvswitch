@@ -1,9 +1,12 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
 import android.app.IntentService
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import org.andan.av.sony.SonyIPControl
 import java.net.HttpURLConnection
 
@@ -31,7 +34,7 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
                         val code = intent.getStringExtra(CODE)
                         registerControl(ipControl, action, code)
                     }
-                    RENEW_COOKIE_ACTION -> {
+                    RENEW_COOKIE_ACTION, RENEW_COOKIE_ACTION_PLUGIN -> {
                         renewCookie(ipControl, action)
                     }
                     SET_PROGRAM_LIST_ACTION -> setProgramListAction(ipControl, action)
@@ -109,12 +112,48 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
             } else {
                 ""
             }
-            broadcastEvent(
-                action,
-                RESULT_OK,
-                resultMessage,
-                SonyIPControl.getGson().toJson(ipControl.toJSON())
-            )
+            when(action) {
+                RENEW_COOKIE_ACTION -> {
+                    broadcastEvent(
+                        action,
+                        RESULT_OK,
+                        resultMessage,
+                        SonyIPControl.getGson().toJson(ipControl.toJSON())
+                    )
+                }
+                RENEW_COOKIE_ACTION_PLUGIN -> {
+                    // change preferences
+                    // plugin gets control from preferences with refreshed token by change listener
+                    if(cookieHasRenewed) {
+                        Log.i(TAG, "cookie renewed, change preferences")
+                        val controlPreferences = application.getSharedPreferences(
+                            application.getString(R.string.pref_control_file_key),
+                            Context.MODE_PRIVATE
+                        )
+                        val controlConfig = controlPreferences.getString("controlConfig", "")
+                        if (controlConfig!!.isNotEmpty()) {
+                            val controlsJSON =
+                                SonyIPControl.getGson()
+                                    .fromJson(controlConfig, JsonObject::class.java)
+                            val controls = controlsJSON.get("controls") as JsonArray
+                            var selectedIndex = 0
+                            if (controlsJSON.has("selected")) {
+                                selectedIndex = controlsJSON.get("selected").asInt
+                                if (selectedIndex >= controlConfig.length) selectedIndex = 0
+                            }
+                            controls[selectedIndex] = ipControl.toJSON()
+                            controlsJSON.remove("controls")
+                            controlsJSON.add("controls", controls)
+                            val editor = controlPreferences.edit()
+                            editor.putString(
+                                "controlConfig",
+                                SonyIPControl.getGson().toJson(controlsJSON)
+                            )
+                            editor.commit()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -223,6 +262,7 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
         const val ENABLE_WOL_ACTION = 10
         const val SCREEN_ON_ACTION = 11
         const val SCREEN_OFF_ACTION = 12
+        const val RENEW_COOKIE_ACTION_PLUGIN = 13
         const val RESULT_OK = 0
         const val RESULT_AUTH_REQUIRED = 1
         const val RESULT_IOERROR = 3

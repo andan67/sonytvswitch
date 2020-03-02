@@ -20,8 +20,8 @@ android {
         applicationId "org.andan.android.tvbrowser.sonycontrolplugin"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 19
-        versionName "2.1.3"
+        versionCode 22
+        versionName "2.1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
