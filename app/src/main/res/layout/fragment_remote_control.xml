@@ -6,7 +6,7 @@
     <data>
         <variable
             name="clickListener"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.RemoteControlFragment.CommandListener" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ui.RemoteControlFragment.CommandListener" />
 
     </data>
 

@@ -1,19 +1,26 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 
+import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
+import android.widget.BaseAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelSingleBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyProgram
 import java.util.*
@@ -47,7 +54,8 @@ class ChannelMapSingleFragment : Fragment() {
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_channel_single, container, false)
+            inflater,
+            R.layout.fragment_channel_single, container, false)
 
         val view = binding.root
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
@@ -77,7 +85,12 @@ class ChannelMapSingleFragment : Fragment() {
         })
 
         createMatchIndicesListAndSetPositions(null)
-        arrayAdapter = ChannelMapProgramListAdapter(context, programUriMatchList, controlViewModel.getSelectedControl()!!.programUriMap)
+        arrayAdapter =
+            ChannelMapProgramListAdapter(
+                context,
+                programUriMatchList,
+                controlViewModel.getSelectedControl()!!.programUriMap
+            )
         binding.channelMapProgramListView.setSelector(R.drawable.list_selector)
         binding.channelMapProgramListView.adapter = arrayAdapter
         binding.channelMapProgramListView.setSelection(currentProgramPosition)
@@ -200,4 +213,74 @@ class ChannelMapSingleFragment : Fragment() {
         searchView?.setOnQueryTextListener(queryTextListener)
         return super.onOptionsItemSelected(item)
     }
+}
+
+class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram>) :
+    BaseAdapter() {
+
+
+    private var ctx: Context? = null
+    private var programUriMap: MutableMap<String, SonyProgram>? = null
+    private var programUriMatchList: ArrayList<String>? = null
+
+    private var mInflater: LayoutInflater? = null
+
+    init {
+        this.ctx = context
+        mInflater = (ctx as Activity).layoutInflater
+        this.programUriMap = programUriMap
+        this.programUriMatchList = programUriMatchList
+
+    }
+
+    override fun getCount(): Int {
+        return programUriMatchList!!.size
+    }
+
+    override fun getItem(arg0: Int): Any? {
+        return null
+    }
+
+
+    override fun getItemId(arg0: Int): Long {
+        return 0
+    }
+
+    override fun getView(position: Int, convertView: View?, arg2: ViewGroup): View {
+        var convertView = convertView
+
+        val program: SonyProgram? = programUriMap!![programUriMatchList!![position]]
+
+        val holder: ViewHolder
+
+        if (convertView == null) {
+            holder =
+                ViewHolder()
+            convertView = mInflater!!.inflate(R.layout.map_channnel_single_item, null)
+            holder.programPosView =
+                convertView!!.findViewById<View>(R.id.channel_map_program_pos) as TextView
+            holder.programNameView =
+                convertView.findViewById<View>(R.id.channel_map_program_name) as TextView
+            holder.programSourceView =
+                convertView.findViewById<View>(R.id.channel_map_program_source) as TextView
+            convertView.tag = holder
+
+        } else {
+            holder = convertView.tag as ViewHolder
+        }
+
+        holder.programPosView!!.text = (position + 1).toString() + "."
+        holder.programNameView!!.text = program?.title
+        holder.programSourceView!!.text = program?.sourceWithType
+
+        return convertView
+
+    }
+
+    private class ViewHolder {
+        internal var programPosView: TextView? = null
+        internal var programNameView: TextView? = null
+        internal var programSourceView: TextView? = null
+    }
+
 }

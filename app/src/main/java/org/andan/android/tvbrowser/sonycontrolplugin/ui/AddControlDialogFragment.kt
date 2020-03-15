@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
 import android.os.Bundle
@@ -9,6 +9,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.av.sony.SonyIPControl
 
 /**

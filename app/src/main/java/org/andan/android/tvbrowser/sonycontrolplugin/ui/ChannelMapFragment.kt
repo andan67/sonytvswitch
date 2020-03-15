@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 
 import android.app.AlertDialog
@@ -16,7 +16,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.andan.android.tvbrowser.sonycontrolplugin.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
+import org.andan.av.sony.model.SonyProgram
 
 /**
  * A simple [Fragment] subclass.
@@ -39,7 +44,8 @@ class ChannelMapFragment : Fragment() {
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentChannelListBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_channel_list, container, false
+            inflater,
+            R.layout.fragment_channel_list, container, false
         )
 
         val view = binding.root
@@ -61,38 +67,44 @@ class ChannelMapFragment : Fragment() {
             ) { dialog, arg1 -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
-            val adapter = ChannelMapItemRecyclerViewAdapter(
-                ChannelMapListener(
-                    { view: View, channelName: String ->
-                        if(controlViewModel.programTitleList.isNullOrEmpty()) {
-                            alertNoPrograms()
-                        } else
-                        {
-                            controlViewModel.selectedChannelName = channelName
-                            view.findNavController()
-                                .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
-                        }
-                    },
-                    { channelName: String ->
-                        val uri: String?  = (controlViewModel.getSelectedControl())!!.channelProgramUriMap[channelName]
-                        if (!uri.isNullOrEmpty()) {
-                            val program = controlViewModel.uriProgramMap[uri]
-                            val extras = Bundle()
-                            extras.putInt(
-                                SonyIPControlIntentService.ACTION,
-                                SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
-                            )
-                            extras.putString(SonyIPControlIntentService.URI, program?.uri)
-                            (activity as MainActivity).startControlService(extras)
-                            Toast.makeText(
-                                context,
-                                "Switched to ${program?.title}",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        true
-                    }), controlViewModel
-            )
+            val adapter =
+                ChannelMapItemRecyclerViewAdapter(
+                    ChannelMapListener(
+                        { view: View, channelName: String ->
+                            if (controlViewModel.programTitleList.isNullOrEmpty()) {
+                                alertNoPrograms()
+                            } else {
+                                controlViewModel.selectedChannelName = channelName
+                                view.findNavController()
+                                    .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
+                            }
+                        },
+                        { channelName: String ->
+                            val uri: String? =
+                                (controlViewModel.getSelectedControl())!!.channelProgramUriMap[channelName]
+                            if (!uri.isNullOrEmpty()) {
+                                val program = controlViewModel.uriProgramMap[uri]
+                                val extras = Bundle()
+                                extras.putInt(
+                                    SonyIPControlIntentService.ACTION,
+                                    SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
+                                )
+                                extras.putString(
+                                    SonyIPControlIntentService.URI,
+                                    program?.uri
+                                )
+                                (activity as MainActivity).startControlService(
+                                    extras
+                                )
+                                Toast.makeText(
+                                    context,
+                                    "Switched to ${program?.title}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            true
+                        }), controlViewModel
+                )
 
             binding.listChannelMap.adapter = adapter
             Log.d(
@@ -212,4 +224,65 @@ class ChannelMapFragment : Fragment() {
         searchView?.setOnQueryTextListener(queryTextListener)
         return super.onOptionsItemSelected(item)
     }
+}
+
+class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val controlViewModel: ControlViewModel) :
+    RecyclerView.Adapter<ChannelMapItemRecyclerViewAdapter.ViewHolder>() {
+
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val channelName = controlViewModel.getFilteredChannelNameList().value?.get(position)!!
+        holder.bind(channelName, clickListener,controlViewModel)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(
+            parent
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return controlViewModel.getFilteredChannelNameList().value!!.size
+    }
+
+    class ViewHolder private constructor(val binding: MapChannnelItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: String, clickListener: ChannelMapListener, controlViewModel: ControlViewModel) {
+            binding.channelName = item
+            binding.channelPosition = adapterPosition+1
+            val programUri: String? = controlViewModel.getSelectedControl()!!.channelProgramUriMap[item]
+            if (!programUri.isNullOrEmpty()) {
+                val program: SonyProgram? = controlViewModel.getSelectedControl()!!.programUriMap[programUri]
+                binding.programTitle = program?.title
+                binding.programSourceWithType = program?.sourceWithType
+            } else
+            {
+                binding.programTitle="--unmapped--"
+                binding.programSourceWithType = ""
+            }
+
+            binding.clickListener = clickListener
+            binding.controlViewModel = controlViewModel
+            binding.executePendingBindings()
+            //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
+            binding.root.setOnLongClickListener { clickListener.longClickListener(item)}
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = MapChannnelItemBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(
+                    binding
+                )
+            }
+        }
+    }
+}
+
+class ChannelMapListener(val clickListener: (view: View, channelName: String) -> Unit,
+                         val longClickListener: (channelName: String) -> Boolean) {
+    fun onClick(view: View, channelName: String) = clickListener(view, channelName)
+    fun onLongClick(channelName: String) = longClickListener(channelName)
 }

@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
 import android.app.Application
 import android.content.Context
@@ -8,7 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import org.andan.android.tvbrowser.sonycontrolplugin.TVBrowserSonyIPControlPlugin.CHANNELS_LIST_CONFIG
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.plugin.TVBrowserSonyIPControlPlugin.Companion.CHANNELS_LIST_CONFIG
 import org.andan.av.sony.SonyIPControl
 
 class ControlRepository(application: Application) {
@@ -24,9 +25,13 @@ class ControlRepository(application: Application) {
 
     init {
         Log.d(TAG, "init")
-        controlPreferences = application.getSharedPreferences(application.getString(R.string.pref_control_file_key),
+        controlPreferences = application.getSharedPreferences(application.getString(
+            R.string.pref_control_file_key
+        ),
             Context.MODE_PRIVATE)
-        channelPreferences = application.getSharedPreferences(application.getString(R.string.pref_channel_switch_file_key),
+        channelPreferences = application.getSharedPreferences(application.getString(
+            R.string.pref_channel_switch_file_key
+        ),
             Context.MODE_PRIVATE)
         controlListLiveData.value = controlList
         loadControls()

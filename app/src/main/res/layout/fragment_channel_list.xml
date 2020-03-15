@@ -7,7 +7,7 @@
 
         <variable
             name="controlViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.ControlViewModel" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel" />
     </data>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:background="@color/grey_900"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".ChannelMapFragment"
+        tools:context=".ui.ChannelMapFragment"
         tools:listitem="@layout/map_channnel_item" />
 
 </layout>

@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".TVBrowserSonyIPControlPlugin"
+            android:name=".plugin.TVBrowserSonyIPControlPlugin"
             android:exported="true"
             android:label="3"
             android:permission="org.tvbrowser.permission.BIND_PLUGIN">
@@ -31,7 +31,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".SonyIPControlIntentService"
+            android:name=".network.SonyIPControlIntentService"
             android:exported="false" />
     </application>
 

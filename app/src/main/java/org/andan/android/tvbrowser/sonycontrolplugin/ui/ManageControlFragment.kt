@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -8,6 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_manage_control.*
+import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import java.text.DateFormat
 import java.text.DateFormat.getDateTimeInstance
 
@@ -88,17 +92,26 @@ class ManageControlFragment : Fragment() {
             }
             R.id.register_control -> {
                 val extras = Bundle()
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.REGISTER_CONTROL_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.REGISTER_CONTROL_ACTION
+                )
                 (activity as MainActivity).startControlService(extras)
             }
             R.id.get_program_list -> {
                 val extras = Bundle()
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SET_PROGRAM_LIST_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.SET_PROGRAM_LIST_ACTION
+                )
                 (activity as MainActivity).startControlService(extras)
             }
             R.id.enable_wol -> {
                 val extras = Bundle()
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.ENABLE_WOL_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.ENABLE_WOL_ACTION
+                )
                 (activity as MainActivity).startControlService(extras)
             }
         }

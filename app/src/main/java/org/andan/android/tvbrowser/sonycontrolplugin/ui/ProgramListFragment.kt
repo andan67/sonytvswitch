@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.AlertDialog
 import android.app.SearchManager
@@ -16,8 +16,12 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
-import org.andan.av.sony.SonyIPControl
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.av.sony.model.SonyProgram
 
 /**
@@ -41,7 +45,8 @@ class ProgramListFragment : Fragment() {
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentProgramListBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_program_list, container, false
+            inflater,
+            R.layout.fragment_program_list, container, false
         )
         val view = binding.root
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
@@ -94,17 +99,18 @@ class ProgramListFragment : Fragment() {
                     Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()
                     true }
 
-            val adapter = ProgramItemRecyclerViewAdapter(
-                ProgramListener(
-                    { program: SonyProgram ->
-                        //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
-                        setPlayContent(program)
-                    },
-                    { program: SonyProgram ->
-                        // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
-                        controlViewModel.onProgramLongClicked(program)
-                    }), controlViewModel
-            )
+            val adapter =
+                ProgramItemRecyclerViewAdapter(
+                    ProgramListener(
+                        { program: SonyProgram ->
+                            //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
+                            setPlayContent(program)
+                        },
+                        { program: SonyProgram ->
+                            // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
+                            controlViewModel.onProgramLongClicked(program)
+                        }), controlViewModel
+                )
 
             binding.listProgram.adapter = adapter
 
@@ -190,11 +196,20 @@ class ProgramListFragment : Fragment() {
         when (item.itemId) {
             R.id.action_search -> return super.onOptionsItemSelected(item)
             R.id.wake_on_lan ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.WOL_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.WOL_ACTION
+                )
             R.id.screen_off ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SCREEN_ON_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.SCREEN_ON_ACTION
+                )
             R.id.screen_on ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SCREEN_OFF_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.SCREEN_OFF_ACTION
+                )
         }
         (activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
@@ -221,4 +236,53 @@ class ProgramListFragment : Fragment() {
         controlViewModel.updateCurrentProgram(program)
     }
 
+}
+
+class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val controlViewModel: ControlViewModel) :
+    RecyclerView.Adapter<ProgramItemRecyclerViewAdapter.ViewHolder>() {
+
+    override fun getItemCount(): Int {
+        return controlViewModel.getFilteredProgramList().value!!.size
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val program = controlViewModel.getFilteredProgramList().value!![position]
+        holder.bind(program, clickListener,controlViewModel)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.from(
+            parent
+        )
+    }
+
+    class ViewHolder private constructor(val binding: ProgramItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: SonyProgram, clickListener: ProgramListener, controlViewModel: ControlViewModel) {
+            binding.program = item
+            binding.clickListener = clickListener
+            binding.controlViewModel = controlViewModel
+            binding.executePendingBindings()
+            //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
+            binding.root.setOnLongClickListener { clickListener.longClickListener(item)}
+            binding.controlViewModel
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ProgramItemBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(
+                    binding
+                )
+            }
+        }
+    }
+
+}
+
+class ProgramListener(val clickListener: (program: SonyProgram) -> Unit,
+                      val longClickListener: (program: SonyProgram) -> Boolean) {
+    fun onClick(program: SonyProgram) = clickListener(program)
 }

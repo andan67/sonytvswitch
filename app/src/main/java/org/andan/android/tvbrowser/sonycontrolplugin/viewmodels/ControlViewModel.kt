@@ -1,9 +1,10 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.ControlRepository
 import org.andan.av.sony.ProgramFuzzyMatch
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyPlayingContentInfo
@@ -19,7 +20,10 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     private val TAG = ControlViewModel::class.java.name
 
     // repository for control data
-    private var controlRepository: ControlRepository = ControlRepository(application)
+    private var controlRepository: ControlRepository =
+        ControlRepository(
+            application
+        )
 
     //private var controlList: MutableLiveData<ArrayList<SonyIPControl>> = controlRepository.getControls()
 

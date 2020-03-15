@@ -11,12 +11,12 @@
 
         <variable
             name="controlViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.ControlViewModel" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel" />
 
 
         <variable
             name="clickListener"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.ProgramListener" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ui.ProgramListener" />
 
     </data>
 

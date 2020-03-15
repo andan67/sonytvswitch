@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_manage_control"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ManageControlFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ManageControlFragment"
         android:label="@string/menu_manage_control"
         tools:layout="@layout/fragment_manage_control" />
 
     <dialog
         android:id="@+id/nav_add_control"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.AddControlDialogFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.AddControlDialogFragment"
         android:label="@string/menu_add_control"
         tools:layout="@layout/fragment_add_control_dialog" />
 
     <fragment
         android:id="@+id/nav_program_list"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ProgramListFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ProgramListFragment"
         android:label="@string/menu_show_programs"
         tools:layout="@layout/fragment_program_list" >
         <action
@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/nav_channel_list"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapFragment"
         android:label="@string/menu_channel_map_fragment_label"
         tools:layout="@layout/fragment_channel_list" >
         <action
@@ -39,36 +39,42 @@
 
     <fragment
         android:id="@+id/channelMapSingleFragment"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapSingleFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapSingleFragment"
         android:label="@string/channel_map_label"
         tools:layout="@layout/fragment_channel_single"/>
 
     <dialog
         android:id="@+id/nav_enter_challenge"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.EnterChallengeDialogFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.EnterChallengeDialogFragment"
         android:label="EnterChallengeDialogFragment"
         tools:layout="@layout/fragment_enter_challenge_code_dialog"/>
 
     <fragment
         android:id="@+id/nav_remote_control"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.RemoteControlFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.RemoteControlFragment"
         android:label="@string/menu_remote_control"
         tools:layout="@layout/fragment_remote_control"/>
 
     <fragment
         android:id="@+id/nav_help"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.HelpFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.HelpFragment"
         android:label="@string/menu_help"
         tools:layout="@layout/fragment_help"/>
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.SettingsFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.SettingsFragment"
         android:label="@string/menu_settings"/>
 
     <fragment
+        android:id="@+id/nav_test"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.TestFragment"
+        android:label="@string/menu_test"
+        tools:layout="@layout/test_fragment"/>
+
+    <fragment
         android:id="@+id/activeProgramDetailsFragment"
-        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ActiveProgramDetailsFragment"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ActiveProgramDetailsFragment"
         android:label="@string/active_program_fragment_label"
         tools:layout="@layout/fragment_active_program_details"/>
 

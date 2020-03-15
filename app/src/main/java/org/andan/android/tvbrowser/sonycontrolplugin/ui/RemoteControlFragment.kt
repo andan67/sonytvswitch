@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -6,7 +6,11 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
+import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentRemoteControlBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -27,7 +31,8 @@ class RemoteControlFragment : Fragment() {
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentRemoteControlBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_remote_control, container, false)
+            inflater,
+            R.layout.fragment_remote_control, container, false)
 
         val view = binding.root
 
@@ -49,7 +54,10 @@ class RemoteControlFragment : Fragment() {
             alertDialogBuilder.create().show()
         } else
         {
-            binding.clickListener = CommandListener { name: String -> sendCode(name)}
+            binding.clickListener =
+                CommandListener { name: String ->
+                    sendCode(name)
+                }
 
         }
         return binding.root
@@ -65,11 +73,20 @@ class RemoteControlFragment : Fragment() {
         val extras = Bundle()
         when (item.itemId) {
             R.id.wake_on_lan ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.WOL_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.WOL_ACTION
+                )
             R.id.screen_off ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SCREEN_ON_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.SCREEN_ON_ACTION
+                )
             R.id.screen_on ->
-                extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SCREEN_OFF_ACTION )
+                extras.putInt(
+                    SonyIPControlIntentService.ACTION,
+                    SonyIPControlIntentService.SCREEN_OFF_ACTION
+                )
         }
         (activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
@@ -77,7 +94,10 @@ class RemoteControlFragment : Fragment() {
 
     private fun sendCode(name:String) {
         val extras = Bundle()
-        extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.SEND_IRCC_BY_NAME_ACTION )
+        extras.putInt(
+            SonyIPControlIntentService.ACTION,
+            SonyIPControlIntentService.SEND_IRCC_BY_NAME_ACTION
+        )
         extras.putString(SonyIPControlIntentService.CODE, name)
         (activity as MainActivity).startControlService(extras)
     }

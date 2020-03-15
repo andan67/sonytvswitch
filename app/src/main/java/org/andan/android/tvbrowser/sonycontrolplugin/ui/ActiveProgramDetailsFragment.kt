@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +9,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentActiveProgramDetailsBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -29,7 +31,8 @@ class ActiveProgramDetailsFragment : Fragment() {
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentActiveProgramDetailsBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_active_program_details, container, false
+            inflater,
+            R.layout.fragment_active_program_details, container, false
         )
 
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)

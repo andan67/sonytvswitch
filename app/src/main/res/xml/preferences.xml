@@ -29,7 +29,7 @@
             android:key="pref_app_version"
             android:selectable="false"
             android:title="@string/pref_app_version_title"
-            android:summary="@string/version"/>
+            android:summary="@string/app_version"/>
 
         <Preference
             android:key="copyright"

@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin
+package org.andan.android.tvbrowser.sonycontrolplugin.network
 
 import android.app.IntentService
 import android.content.Context
@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.av.sony.SonyIPControl
 import java.net.HttpURLConnection
 
@@ -15,7 +16,10 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     override fun onHandleIntent(intent: Intent?) {
         Log.i(TAG, "onHandleIntent")
         if (intent != null) {
-            val action = intent.getIntExtra(ACTION, NO_ACTION)
+            val action = intent.getIntExtra(
+                ACTION,
+                NO_ACTION
+            )
             var ipControl: SonyIPControl? = null
             try {
                 val control = intent.getStringExtra(CONTROL)
@@ -84,7 +88,8 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     private fun registerControl(ipControl: SonyIPControl, action: Int, code: String?) {
         Log.i(TAG, "registerControl:$code")
         val response = ipControl.registerRemoteControl(code)
-        var result = RESULT_OK
+        var result =
+            RESULT_OK
         if (response.hasError()) {
             result = if (response.responseErrorOrStatusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                 RESULT_AUTH_REQUIRED
@@ -160,8 +165,10 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     private fun setProgramListAction(ipControl: SonyIPControl, action: Int) {
         Log.i(TAG, "setProgramListAction:")
         ipControl.setProgramListFromTV()
-        var result = RESULT_UNKNOWN
-        if (ipControl.programList != null) result = RESULT_OK
+        var result =
+            RESULT_UNKNOWN
+        if (ipControl.programList != null) result =
+            RESULT_OK
         Log.i(TAG, "setProgramListAction:" + SonyIPControl.getGson().toJson(ipControl.toJSON()))
         broadcastEvent(action, result, "", SonyIPControl.getGson().toJson(ipControl.toJSON()))
     }
@@ -174,14 +181,17 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     ) {
         Log.i(TAG, "setPlayContent:$uri")
         val response = ipControl.setPlayContent(uri)
-        var result = RESULT_OK
+        var result =
+            RESULT_OK
         if (response.hasError()) result = response.responseErrorOrStatusCode
         broadcastEvent(
             action, result, response.responseErrorOrStatusMessage,
             SonyIPControl.getGson().toJson(ipControl.toJSON())
         )
         if (callPlayingContent) {
-            getPlayingContentInfo(ipControl, GET_PLAYING_CONTENT_INFO_ACTION)
+            getPlayingContentInfo(ipControl,
+                GET_PLAYING_CONTENT_INFO_ACTION
+            )
         }
     }
 
@@ -207,7 +217,8 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     private fun enableWakeOnLan(ipControl: SonyIPControl, action: Int) {
         Log.i(TAG, "enableWakeOnLan")
         val response = ipControl.setWolMode(true)
-        var result = RESULT_OK
+        var result =
+            RESULT_OK
         if (response.hasError()) result = response.responseErrorOrStatusCode
         broadcastEvent(
             action, result, response.responseErrorOrStatusMessage,
@@ -218,7 +229,8 @@ class SonyIPControlIntentService : IntentService("SonyIPControlIntentService") {
     private fun setPowerSavingMode(ipControl: SonyIPControl, action: Int, mode: String) {
         Log.i(TAG, "setPowerSavingMode")
         val response = ipControl.setPowerSavingMode(mode)
-        var result = RESULT_OK
+        var result =
+            RESULT_OK
         if (response.hasError()) result = response.responseErrorOrStatusCode
         broadcastEvent(
             action, result, response.responseErrorOrStatusMessage,

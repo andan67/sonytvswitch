@@ -24,6 +24,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyPlayingContentInfo
 import org.tvbrowser.devplugin.Channel
@@ -77,7 +79,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_program_list,
                 R.id.nav_channel_list,
                 R.id.nav_help,
-                R.id.nav_settings
+                R.id.nav_settings,
+                R.id.nav_test
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

@@ -1,8 +1,8 @@
-package org.andan.android.tvbrowser.sonycontrolplugin.model
+package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
-import org.andan.av.sony.model.SonyProgram
 import java.util.*
-import kotlin.collections.ArrayList
+
+data class SonyControls(val controls: List<SonyControl>, val selected: Int)
 
 data class SonyControl(val ip: String, val nickname: String, val devicename: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
 
@@ -13,6 +13,13 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
         _programUriMap=null
         field = value
     }
+
+    val sourceList: List<String> = emptyList()
+    private val systemModel = ""
+    private val systemName = ""
+    private val systemProduct = ""
+    private val systemMacAddr = ""
+    private val systemWolMode = true
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null

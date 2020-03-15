@@ -3,8 +3,9 @@ package org.andan.android.tvbrowser.sonycontrolplugin.test
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import junit.framework.Assert.assertEquals
-import org.andan.android.tvbrowser.sonycontrolplugin.model.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.model.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.junit.Before
 import org.junit.Test
 import java.io.BufferedReader
@@ -16,12 +17,14 @@ class JsonSerDeTests {
     lateinit var sonyControl: SonyControl
     lateinit var sonyControl2: SonyControl
     lateinit var sonyControl3: SonyControl
+    lateinit var sonyControls: SonyControls
 
     lateinit var sonyControlAsJsonString: String
     val sonyControlAsJsonStringExpected =
         "{\"programList\":[" +
                 "{\"source\":\"dvbs\",\"dispNumber\":\"0001\",\"index\":0,\"mediaType\":\"TV\",\"title\":\"Das Erste\",\"uri\":\"uri1\"}," +
                 "{\"source\":\"dvbs\",\"dispNumber\":\"0002\",\"index\":0,\"mediaType\":\"TV\",\"title\":\"ZDF\",\"uri\":\"uri2\"}]," +
+                "\"sourceList\":[],\"systemModel\":\"\",\"systemName\":\"\",\"systemProduct\":\"\",\"systemMacAddr\":\"\",\"systemWolMode\":true," +
                 "\"channelProgramMap\":{\"Das Erste (ARD)\":\"tv:dvbs?trip\\u003d1.1019.10301\\u0026srvName\\u003dDas%20Erste%20HD\"," +
                 "\"ZDF\":\"tv:dvbs?trip\\u003d1.1011.11110\\u0026srvName\\u003dZDF%20HD\"}," +
                 "\"ip\":\"192.168.178.27\",\"nickname\":\"android\",\"devicename\":\"Sony TV\",\"uuid\":\"6c034f06-fa84-4032-9b31-b714f2c20b9c\"}"
@@ -42,14 +45,19 @@ class JsonSerDeTests {
         println(gson.toJson(sonyControl))
         //sonyControl.programList.add(sonyProgram2)
         sonyControl2 = gson.fromJson(sonyControlAsJsonStringExpected, SonyControl::class.java)
-        val bufferedReader: BufferedReader = File("data/control.json").bufferedReader()
+        var bufferedReader: BufferedReader = File("data/control.json").bufferedReader()
         // Read the text from bufferedReader and store in String variable
-        val inputString = bufferedReader.use { it.readText() }
         //println(inputString)
-        sonyControl3 = gson.fromJson(inputString, SonyControl::class.java)
+        sonyControl3 = gson.fromJson(bufferedReader.use { it.readText() }, SonyControl::class.java)
         println("get 1 ${sonyControl3.programUriMap}")
         println("get 2 ${sonyControl3.programUriMap}")
         println("get 3 ${sonyControl3.programUriMap?.get("tv:dvbs?trip=1.1022.6912&srvName=CGTN%20Documentary")!!.title}")
+        bufferedReader = File("data/controls.json").bufferedReader()
+        // Read the text from bufferedReader and store in String variable
+        //val sonyControls = SonyControls(listOf(sonyControl, sonyControl2),0)
+        sonyControls = gson.fromJson(bufferedReader.use { it.readText() }, SonyControls::class.java)
+        sonyControls
+        //println(gson.toJson(sonyControls))
         /*sonyControl3.programList = plist
         println("get 4 ${sonyControl3.programUriMap}")
         println("get 5 ${sonyControl3.programUriMap}")
@@ -61,6 +69,8 @@ class JsonSerDeTests {
         assertEquals(sonyControlAsJsonStringExpected, gson.toJson(sonyControl))
         assertEquals(sonyControlAsJsonStringExpected, gson.toJson(sonyControl2))
         assertEquals("CGTN Documentary", sonyControl3.programUriMap?.get("tv:dvbs?trip=1.1022.6912&srvName=CGTN%20Documentary")!!.title)
+        assertEquals("ZDF HD", sonyControls.controls[sonyControls.selected].programList[1].title)
+        assertEquals("tv:dvbs?trip=1.1039.10377&srvName=ARD-alpha%20HD", sonyControls.controls[sonyControls.selected].channelProgramMap["ARD-alpha"])
     }
 
 }
