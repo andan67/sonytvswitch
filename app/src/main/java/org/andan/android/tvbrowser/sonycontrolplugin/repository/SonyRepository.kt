@@ -82,7 +82,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
             try {
                 val response =
-                    api.avContent(BASE_URL+ AV_CONTENT_ENDPOINT,JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
+                    api.avContent(BASE_URL+ SONY_AV_CONTENT_ENDPOINT,JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
                 val jsonRpcResponse = response.body()
                 if (response.isSuccessful) {
                     when {
@@ -116,7 +116,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.avContent(BASE_URL+ AV_CONTENT_ENDPOINT, jsonRpcRequest) })
+        return apiCall(call = { api.avContent(BASE_URL+ SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
     suspend fun getPlayingContentInfo() {

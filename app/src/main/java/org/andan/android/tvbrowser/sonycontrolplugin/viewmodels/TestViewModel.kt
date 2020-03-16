@@ -38,6 +38,8 @@ class TestViewModel : ViewModel() {
         repository.getPlayingContentInfo()
     }
 
+    //fun registerControl()
+
 //    fun getCurrentTime() = repository.getCurrentTime()
 
 //val currentTime = repository.currentTimeString

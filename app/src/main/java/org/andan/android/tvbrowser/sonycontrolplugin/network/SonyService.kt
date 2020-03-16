@@ -23,7 +23,8 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 const val BASE_URL = "http://192.168.178.27"
-const val AV_CONTENT_ENDPOINT = "/sony/avContent"
+const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
+const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
 
 interface SonyService {
     @POST("/sony/system")
@@ -32,14 +33,18 @@ interface SonyService {
     /*@POST("/sony/avContent")
     suspend fun avContent(@Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>*/
 
+
+    //POST("/sony/avContent")
     @POST
     suspend fun avContent(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
 
-    @POST("/sony/accessControl")
-    suspend fun accessControl(@Body rpcRequest: JsonRpcRequest): JsonRpcResponse
+    //@POST("/sony/accessControl")
+    @POST
+    suspend fun accessControl(@Url url: String, @Body rpcRequest: JsonRpcRequest): JsonRpcResponse
 
-    @POST("/sony/accessControl")
-    fun refreshToken(@Body rpcRequest: JsonRpcRequest): Call<JsonRpcResponse>
+    //@POST("/sony/accessControl")
+    @POST
+    fun refreshToken(@Url url: String, @Body rpcRequest: JsonRpcRequest): Call<JsonRpcResponse>
 }
 
 data class JsonRpcRequest(
@@ -126,7 +131,7 @@ class TokenAuthenticator @Inject constructor(
 
         if (serviceHolder != null) {
             val response =
-                serviceHolder.sonyService!!.refreshToken(JsonRpcRequest(8, "actRegister", params)).execute()
+                serviceHolder.sonyService!!.refreshToken(BASE_URL+ SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
             if (response.code() == HTTP_OK) {
                 if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                     val cookieString: String? = response.headers()["Set-Cookie"]
