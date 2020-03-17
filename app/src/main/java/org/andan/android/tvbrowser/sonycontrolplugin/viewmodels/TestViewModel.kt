@@ -3,6 +3,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.di.DaggerApplicationComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
 
@@ -10,7 +11,7 @@ class TestViewModel : ViewModel() {
     // TODO: Implement the ViewModel
     private val TAG = TestViewModel::class.java.name
     // repository for control data
-    private var repository: SonyRepository = DaggerApplicationComponent.create().sonyRepository()
+    private var repository: SonyRepository = SonyControlApplication.get().appComponent.sonyRepository()
     // val sampleText = "This is a sample text"
 
     /*val powerStatus : LiveData<String> = liveData(Dispatchers.IO) {

@@ -1,10 +1,7 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.di
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import okhttp3.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
@@ -22,36 +19,39 @@ class NetworkModule {
         return SonyServiceHolder()
     }
 
-    @Singleton
-    @Provides
-    fun provideTokenRepository(): TokenRepository {
-        return TokenRepository("auth=16f2695f210e5c7ce96f9b023d15812caf3920fe7e89be2e726b8339a564c83f")
-    }
 
+    /*@Singleton
+    @Provides
+    fun provideTokenStore(): TokenStore{
+        return TokenStore("auth=16f2695f210e5c7ce96f9b023d15812caf3920fe7e89be2e726b8339a564c83f")
+    }*/
+
+    /*
     @Singleton
     @Provides
     fun provideAddTokenInterceptor(tokenRepository: TokenRepository): AddTokenInterceptor {
         return AddTokenInterceptor(tokenRepository)
-    }
+    }*/
 
     @Singleton
     @Provides
-    fun provideHttpLoggingInterceptor(tokenRepository: TokenRepository): HttpLoggingInterceptor {
+    fun provideHttpLoggingInterceptor(tokenStore: TokenStore): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-    @Singleton
+   /* @Singleton
     @Provides
     fun provideTokenAuthenticator(serviceHolder: SonyServiceHolder, tokenRepository: TokenRepository): Authenticator {
         return TokenAuthenticator(serviceHolder, tokenRepository)
-    }
+    }*/
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, tokenRepository:
-        TokenRepository, authenticator: TokenAuthenticator): OkHttpClient {
+    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, tokenStore: TokenStore,
+                            authenticator: TokenAuthenticator
+    ): OkHttpClient {
         val client = OkHttpClient.Builder()
-            .addInterceptor(AddTokenInterceptor(tokenRepository))
+            .addInterceptor(AddTokenInterceptor(tokenStore))
         if (BuildConfig.DEBUG) {
             client.addInterceptor(loggingInterceptor)
         }

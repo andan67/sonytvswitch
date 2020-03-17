@@ -1,6 +1,8 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
+import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.Nullable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
@@ -21,6 +23,7 @@ import java.net.HttpURLConnection.HTTP_OK
 import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
+import javax.inject.Named
 
 const val BASE_URL = "http://192.168.178.27"
 const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
@@ -76,29 +79,48 @@ data class PlayingContentInfo(
     val durationSec: Long = 0
 )
 
-data class TokenRepository(
-    var tokenValue: String = "",
-    var expiryTime: Long = 0
-)
 
-class AddTokenInterceptor @Inject constructor(val tokenRepository: TokenRepository) : Interceptor {
+/*class TokenStore @Inject constructor (val initToken: String) {
+    var _token: String= initToken
+
+    fun getToken(): String {
+        return _token
+    }
+
+    fun storeToken(newToken: String) {
+        _token = newToken
+    }
+}*/
+
+class TokenStore @Inject constructor(@Nullable @Named("TokenStore") val preference: SharedPreferences) {
+
+    fun getToken(): String {
+        return preference.getString("TokenStore", "")!!
+    }
+
+    fun storeToken(token: String) {
+        preference.edit().putString("TokenStore", token).apply();
+    }
+}
+
+class AddTokenInterceptor @Inject constructor(val tokenStore: TokenStore) : Interceptor {
 
     /**
      * Interceptor class for setting of the headers for every request
      */
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         var request = chain.request()
-        request = request.newBuilder().addHeader("Cookie", tokenRepository.tokenValue).build()
+        request = request.newBuilder().addHeader("Cookie", tokenStore.getToken()).build()
         return chain.proceed(request)
     }
 }
 
 class TokenAuthenticator @Inject constructor(
     private val _serviceHolder: SonyServiceHolder?,
-    private val _tokenRepository: TokenRepository
+    private val _tokenStore: TokenStore
 ) : Authenticator {
 
-    val tokenRepository = _tokenRepository
+    val tokenStore = _tokenStore
 
     val serviceHolder = _serviceHolder
 
@@ -131,7 +153,7 @@ class TokenAuthenticator @Inject constructor(
 
         if (serviceHolder != null) {
             val response =
-                serviceHolder.sonyService!!.refreshToken(BASE_URL+ SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
+                serviceHolder.sonyService!!.refreshToken(BASE_URL + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
             if (response.code() == HTTP_OK) {
                 if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                     val cookieString: String? = response.headers()["Set-Cookie"]
@@ -139,19 +161,22 @@ class TokenAuthenticator @Inject constructor(
                         Pattern.compile("auth=([A-Za-z0-9]+)")
                     var matcher = pattern.matcher(cookieString)
                     if (matcher.find()) {
-                        tokenRepository.tokenValue = "auth=" + matcher.group(1)
+                        tokenStore.storeToken("auth=" + matcher.group(1))
+                        /*
                         pattern = Pattern.compile("max-age=([0-9]+)")
                         matcher = pattern.matcher(cookieString)
                         if (matcher.find()) {
                             tokenRepository.expiryTime =
                                 System.currentTimeMillis() + 1000 * matcher.group(1).toLong()
                         }
+                        */
+
                     }
 
                 }
             }
         }
-        return tokenRepository.tokenValue
+        return tokenStore.getToken()
     }
 }
 

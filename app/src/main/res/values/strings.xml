@@ -21,6 +21,7 @@
 
 
     <string name="pref_control_file_key">SONYIPCONTROL_PREFERENCES</string>
+    <string name="pref_new_control_file_key">NEW_SONYIPCONTROL_PREFERENCES</string>
     <string name="pref_channel_switch_file_key">CHANNEL_SWITCH_PREFERENCES</string>
 
     <string name="pref_remote_cat">Control Device Settings</string>
