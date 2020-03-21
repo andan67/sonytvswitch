@@ -9,9 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.TestFragmentBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfo
+import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
@@ -26,8 +27,10 @@ class TestFragment : Fragment() {
 
     private lateinit var viewModel: TestViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         val binding: TestFragmentBinding = DataBindingUtil.inflate(
             inflater, R.layout.test_fragment, container, false
@@ -36,21 +39,32 @@ class TestFragment : Fragment() {
         // Set the LifecycleOwner to be able to observe LiveData objects
         binding.lifecycleOwner = this
 
-        viewModel = ViewModelProviders.of(activity!!).get(TestViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(TestViewModel::class.java)
         binding.viewmodel = viewModel
 
-       /* viewModel.currentTime.observe(viewLifecycleOwner, Observer<String> {
-            Log.d(TAG, "observed change currenttime")
-        })*/
+        /* viewModel.currentTime.observe(viewLifecycleOwner, Observer<String> {
+             Log.d(TAG, "observed change currenttime")
+         })*/
 
-       viewModel.playingContentInfo.observe(viewLifecycleOwner, Observer<Resource<PlayingContentInfo>> {
-           Log.d(TAG, "observed change playingcontentinfo")
-           when (it.status) {
-               Status.SUCCESS -> binding.playingContentInfo = it.data
-               Status.ERROR -> Log.e(TAG,it.message)
-               //Status.LOADING -> showLoading()
-           }
-       })
+        viewModel.playingContentInfo.observe(
+            viewLifecycleOwner,
+            Observer<Resource<PlayingContentInfoResponse>> {
+                Log.d(TAG, "observed change playingcontentinfo")
+                when (it.status) {
+                    Status.SUCCESS -> binding.playingContentInfo = it.data
+                    Status.ERROR -> Log.e(TAG, it.message)
+                    //Status.LOADING -> showLoading()
+                }
+            })
+
+        viewModel.selectedSonyControl.observe(
+            viewLifecycleOwner,
+            Observer {
+                binding.sonyControl = it
+                Log.d(TAG, "observed change selectedSonyControl")
+            }
+        )
+
 
         return binding.root
 

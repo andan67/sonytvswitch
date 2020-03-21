@@ -24,7 +24,7 @@ class JsonSerDeTests {
         "{\"programList\":[" +
                 "{\"source\":\"dvbs\",\"dispNumber\":\"0001\",\"index\":0,\"mediaType\":\"TV\",\"title\":\"Das Erste\",\"uri\":\"uri1\"}," +
                 "{\"source\":\"dvbs\",\"dispNumber\":\"0002\",\"index\":0,\"mediaType\":\"TV\",\"title\":\"ZDF\",\"uri\":\"uri2\"}]," +
-                "\"sourceList\":[],\"systemModel\":\"\",\"systemName\":\"\",\"systemProduct\":\"\",\"systemMacAddr\":\"\",\"systemWolMode\":true," +
+                "\"cookie\":\"\",\"sourceList\":[],\"systemModel\":\"\",\"systemName\":\"\",\"systemProduct\":\"\",\"systemMacAddr\":\"\",\"systemWolMode\":true," +
                 "\"channelProgramMap\":{\"Das Erste (ARD)\":\"tv:dvbs?trip\\u003d1.1019.10301\\u0026srvName\\u003dDas%20Erste%20HD\"," +
                 "\"ZDF\":\"tv:dvbs?trip\\u003d1.1011.11110\\u0026srvName\\u003dZDF%20HD\"}," +
                 "\"ip\":\"192.168.178.27\",\"nickname\":\"android\",\"devicename\":\"Sony TV\",\"uuid\":\"6c034f06-fa84-4032-9b31-b714f2c20b9c\"}"
@@ -55,9 +55,8 @@ class JsonSerDeTests {
         bufferedReader = File("data/controls.json").bufferedReader()
         // Read the text from bufferedReader and store in String variable
         //val sonyControls = SonyControls(listOf(sonyControl, sonyControl2),0)
-        sonyControls = gson.fromJson(bufferedReader.use { it.readText() }, SonyControls::class.java)
-        sonyControls
-        //println(gson.toJson(sonyControls))
+        sonyControls = SonyControls.fromJson(bufferedReader.use { it.readText() })
+        println(sonyControls.toJson())
         /*sonyControl3.programList = plist
         println("get 4 ${sonyControl3.programUriMap}")
         println("get 5 ${sonyControl3.programUriMap}")

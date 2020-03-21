@@ -117,6 +117,7 @@ class ControlRepository(application: Application) {
 
     fun saveControls(hasChanged: Boolean) {
         if(hasChanged) controlListLiveData.notifyObserver()
+        // uncomment/implement saveControls with refactored repository
         saveControls()
     }
 

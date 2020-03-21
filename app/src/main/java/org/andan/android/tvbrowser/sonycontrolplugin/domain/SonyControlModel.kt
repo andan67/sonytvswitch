@@ -1,8 +1,18 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
+import com.google.gson.Gson
 import java.util.*
+import kotlin.collections.ArrayList
 
-data class SonyControls(val controls: List<SonyControl>, val selected: Int)
+data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), val selected: Int = -1) {
+
+    fun toJson() : String = gson.toJson(this)
+
+    companion object {
+        private val gson = Gson()
+        fun fromJson(json: String) = gson.fromJson(json, SonyControls::class.java)
+    }
+}
 
 data class SonyControl(val ip: String, val nickname: String, val devicename: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
 
@@ -14,12 +24,13 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
         field = value
     }
 
+    var cookie = ""
     val sourceList: List<String> = emptyList()
-    private val systemModel = ""
-    private val systemName = ""
-    private val systemProduct = ""
-    private val systemMacAddr = ""
-    private val systemWolMode = true
+    val systemModel = ""
+    val systemName = ""
+    var systemProduct = ""
+    val systemMacAddr = ""
+    val systemWolMode = true
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null
@@ -61,3 +72,14 @@ data class SonyProgram2(val source: String, val dispNumber: String, val index : 
             return "$shortSource $type"
         }
 }
+
+data class PlayingContentInfo(
+    val source: String = "",
+    val dispNumber: String = "",
+    val programMediaType: String = "",
+    val title: String = "N/A",
+    val uri: String = "",
+    val programTitle: String = "N/A",
+    val startDateTime: String = "",
+    val durationSec: Long = 0
+)

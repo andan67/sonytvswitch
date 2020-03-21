@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="controlViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel" />
+            name="testViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
     </data>
 
     <RelativeLayout

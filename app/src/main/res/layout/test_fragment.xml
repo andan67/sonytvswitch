@@ -11,7 +11,11 @@
 
         <variable
             name="playingContentInfo"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfo" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse" />
+
+        <variable
+            name="sonyControl"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl" />
 
     </data>
 
@@ -21,26 +25,38 @@
         android:layout_height="match_parent"
         tools:context=".ui.main.MainFragment">
 
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{playingContentInfo.title}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="sample text" />
-
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="59dp"
+            android:layout_marginTop="16dp"
             android:onClick="@{() -> viewmodel.fetchPlayingContentInfo()}"
             android:text="Refresh"
-            app:layout_constraintStart_toStartOf="@+id/message"
-            app:layout_constraintTop_toBottomOf="@+id/message" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@{playingContentInfo.title}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button"
+            tools:text="sample text" />
+
+        <TextView
+            android:id="@+id/message2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:text="@{sonyControl.systemProduct}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button"
+            tools:text="sample text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

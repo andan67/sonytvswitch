@@ -1,6 +1,8 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
+import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.Nullable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
@@ -8,59 +10,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.ArrayList
 import javax.inject.Inject
+import javax.inject.Named
 
-class SonyRepository @Inject constructor(val client: OkHttpClient, val api: SonyService) {
+class SonyRepository @Inject constructor(val client: OkHttpClient, val api: SonyService, val preferenceStore: ControlPreferenceStore) {
     private val TAG = SonyRepository::class.java.name
 
-    /*
-    var tokenRepository =
-        TokenRepository("auth=16f2695f210e5c7ce96f9b023d15812caf3920fe7e89be2e726b8339a564c83f")
+    //var sonyControls = SonyControls()
+    //var selectedSonyControl : SonyControl? = null
+    //var selectedIndex = -1
 
-    val httpLoggingInterceptor =
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    val builder = OkHttpClient.Builder()
-
-    val serviceHolder = SonyServiceHolder()
-
-    val client = builder
-        .addInterceptor(AddTokenInterceptor(tokenRepository))
-        .addInterceptor(httpLoggingInterceptor)
-        .authenticator(TokenAuthenticator(serviceHolder, tokenRepository))
-        .build()
-    */
+    val sonyControls = preferenceStore.sonyControls
+    val selectedSonyControl = preferenceStore.selectedSonyControl
 
     val gson = GsonBuilder().create()
-
-    /*
-    val gsonConverter = GsonConverterFactory.create(gson)
-
-    val api: SonyService = Retrofit.Builder() // Create retrofit builder.
-        .baseUrl("http://192.168.178.27/") // Base url for the api has to end with a slash.
-        //.baseUrl(server.url("/"))
-        //.addConverterFactory(JsonRPCConverterFactory.create())
-        .addConverterFactory(gsonConverter) // Use GSON converter for JSON to POJO object mapping.
-        .client(client) // Here we set the custom OkHttp client we just created.
-        .build().create(SonyService::class.java)
-    */
-
     init {
         (client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
     }
-
-    //simplified version of the retrofit call that comes from support with coroutines
-    //Note that this does NOT handle errors, to be added
-    /* suspend fun getPowerStatus(): LiveData<String> = liveData {
-         val response: JsonRpcResponse =
-             api.system(JsonRpcRequest(50, "getPowerStatus", emptyList()))
-         //return response.result.asJsonArray.get(0).asJsonObject.get("status").asString
-         emit(response.result.asJsonArray.get(0).asJsonObject.get("status").asString)
-     }
- */
 
     private val _currentTime = MutableLiveData("N/A")
     val currentTime: LiveData<String> = _currentTime
@@ -74,54 +48,16 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         }
     }
 
-    private val _playingContentInfo = MutableLiveData<Resource<PlayingContentInfo>>()
-    val playingContentInfo: LiveData<Resource<PlayingContentInfo>> = _playingContentInfo
-
-    suspend fun getPlayingContentInfo2() {
-        withContext(Dispatchers.Main) {
-
-            try {
-                val response =
-                    api.avContent(BASE_URL+ SONY_AV_CONTENT_ENDPOINT,JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
-                val jsonRpcResponse = response.body()
-                if (response.isSuccessful) {
-                    when {
-                        jsonRpcResponse?.error != null -> {
-                            Log.d(TAG, "evaluate error")
-                            _playingContentInfo.value =
-                                Resource.Error(jsonRpcResponse.error.asJsonArray.get(1).asString)
-                        }
-                        jsonRpcResponse?.result != null -> {
-                            Log.d(TAG, "evaluate result")
-                            _playingContentInfo.value = Resource.Success(
-                                gson.fromJson(
-                                    jsonRpcResponse.result.asJsonArray.get(0).getAsJsonObject(),
-                                    PlayingContentInfo::class.java
-                                )
-                            )
-                        }
-                    }
-                } else {
-                    Log.d(TAG, "evaluate response unsuccessful")
-                    _playingContentInfo.value = Resource.Error(response.message())
-                }
-
-            } catch (e: Exception) {
-                Log.d(TAG, "evaluate exception ${e.message}")
-                _playingContentInfo.value = Resource.Error(e.message!!)
-            }
-            // _playingContentInfo.value = gson.fromJson(response.result.asJsonArray.get(0).getAsJsonObject(),PlayingContentInfo::class.java)
-
-        }
-    }
+    private val _playingContentInfo = MutableLiveData<Resource<PlayingContentInfoResponse>>()
+    val playingContentInfo: LiveData<Resource<PlayingContentInfoResponse>> = _playingContentInfo
 
     suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.avContent(BASE_URL+ SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
+        return apiCall(call = { api.avContent("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
     suspend fun getPlayingContentInfo() {
         withContext(Dispatchers.Main) {
-            val resource = avContentService<PlayingContentInfo>(
+            val resource = avContentService<PlayingContentInfoResponse>(
                 JsonRpcRequest(
                     103,
                     "getPlayingContentInfo",
@@ -133,6 +69,42 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             Log.d(TAG, resource.data.toString())
             //Log.d(TAG, resource.data!!.title)
         }
+    }
+
+    suspend fun setPlayContent(uri: String) {
+        withContext(Dispatchers.Main) {
+            val params = ArrayList<Any>()
+            params.add(
+                hashMapOf(
+                    "uri" to uri
+                )
+            )
+            val resource = avContentService<Unit>(
+                JsonRpcRequest(
+                    101,
+                    "setPlayContent",
+                    params
+                )
+            )
+        }
+    }
+
+    fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
+        var isUpdated = false
+        for (control in sonyControls.value!!.controls) {
+            Log.d(TAG, "updateChannelMapsFromChannelNameList: ${channelNameList.size} ${control.channelProgramMap.size}")
+            for (channelName in channelNameList) {
+                // create mapping entry for unmapped channels
+                if (!control.channelProgramMap.containsKey(channelName)) {
+                    Log.d(TAG, "updateChannelMapsFromChannelNameList: $channelName")
+                    control.channelProgramMap[channelName] = ""
+                    isUpdated = true
+                }
+                //ToDo: Handle deletion of channels
+            }
+        }
+        if(isUpdated) preferenceStore.onControlsChanged()
+        Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
     }
 
     suspend inline fun <reified T> apiCall(call: suspend () -> Response<JsonRpcResponse>): Resource<T> {
@@ -148,14 +120,12 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     }
                     else -> {
                         Log.d("apiCall", "evaluate result")
-                        //return Resource.Success(gson.fromJson(jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject,object : TypeToken<T>() {}.type))
                         Resource.Success(
                             gson.fromJson(
                                 jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject,
                                 T::class.java
                             )
                         )
-                        //return Resource.Success(gson.fromJson(jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject, playingContentInfo::class.java))
                     }
                 }
             } else {
@@ -167,5 +137,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             Log.d("apiCall", "evaluate exception ${e.message}")
             return Resource.Error(e.message!!)
         }
+    }
+
+    fun addControl(control: SonyControl) {
+
     }
 }

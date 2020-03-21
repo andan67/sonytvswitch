@@ -1,31 +1,26 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
-import android.content.SharedPreferences
-import android.util.Log
-import androidx.annotation.Nullable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.Authenticator
+import okhttp3.Interceptor
+import okhttp3.Request
+import okhttp3.Route
+import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
+import org.andan.av.sony.model.SonyPlayingContentInfo
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Url
 import java.net.HttpURLConnection.HTTP_OK
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
-import javax.inject.Named
 
-const val BASE_URL = "http://192.168.178.27"
 const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
 const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
 
@@ -43,7 +38,7 @@ interface SonyService {
 
     //@POST("/sony/accessControl")
     @POST
-    suspend fun accessControl(@Url url: String, @Body rpcRequest: JsonRpcRequest): JsonRpcResponse
+    suspend fun accessControl(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
 
     //@POST("/sony/accessControl")
     @POST
@@ -68,30 +63,66 @@ data class JsonRpcError(
     val message: String
 )
 
-data class PlayingContentInfo(
-    val source: String = "",
-    val dispNumber: String = "",
-    val programMediaType: String = "",
-    val title: String = "N/A",
-    val uri: String = "",
-    val programTitle: String = "N/A",
-    val startDateTime: String = "",
-    val durationSec: Long = 0
-)
-
-
-/*class TokenStore @Inject constructor (val initToken: String) {
-    var _token: String= initToken
-
-    fun getToken(): String {
-        return _token
+data class PlayingContentInfoResponse(
+    val source: String,
+    val dispNumber: String,
+    val programMediaType: String,
+    val title: String,
+    val uri: String,
+    val programTitle: String,
+    val startDateTime: String,
+    val durationSec: Long
+) {
+    companion object {
+        private val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ")
+        private val DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
+        private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
+        private val cal = Calendar.getInstance()
     }
 
-    fun storeToken(newToken: String) {
-        _token = newToken
+    fun getStartDateTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            DateTimeFormat.format(date)
+        } catch (e: ParseException) {
+            startDateTime
+        }
     }
-}*/
 
+    fun getEndDateTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            cal.time = date
+            cal.add(Calendar.SECOND, durationSec.toInt())
+            DateTimeFormat.format(cal.time)
+        } catch (e: ParseException) {
+            ""
+        }
+    }
+
+    fun getStartEndTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            val startTime = TimeFormat.format(date)
+            cal.time = date
+            cal.add(Calendar.SECOND, durationSec.toInt())
+            val endTime =
+                TimeFormat.format(cal.time)
+            "$startTime - $endTime"
+        } catch (e: ParseException) {
+            ""
+        }
+    }
+
+}
+
+fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
+    return PlayingContentInfo(
+        source, dispNumber, programMediaType, title, uri, programTitle, startDateTime, durationSec
+    )
+}
+
+/*
 class TokenStore @Inject constructor(@Nullable @Named("TokenStore") val preference: SharedPreferences) {
 
     fun getToken(): String {
@@ -102,8 +133,9 @@ class TokenStore @Inject constructor(@Nullable @Named("TokenStore") val preferen
         preference.edit().putString("TokenStore", token).apply();
     }
 }
+*/
 
-class AddTokenInterceptor @Inject constructor(val tokenStore: TokenStore) : Interceptor {
+class AddTokenInterceptor @Inject constructor(val tokenStore: ControlPreferenceStore) : Interceptor {
 
     /**
      * Interceptor class for setting of the headers for every request
@@ -117,10 +149,10 @@ class AddTokenInterceptor @Inject constructor(val tokenStore: TokenStore) : Inte
 
 class TokenAuthenticator @Inject constructor(
     private val _serviceHolder: SonyServiceHolder?,
-    private val _tokenStore: TokenStore
+    private val _controlPreferenceStore: ControlPreferenceStore
 ) : Authenticator {
 
-    val tokenStore = _tokenStore
+    val tokenStore = _controlPreferenceStore
 
     val serviceHolder = _serviceHolder
 
@@ -153,7 +185,7 @@ class TokenAuthenticator @Inject constructor(
 
         if (serviceHolder != null) {
             val response =
-                serviceHolder.sonyService!!.refreshToken(BASE_URL + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
+                serviceHolder.sonyService!!.refreshToken("http://" + _controlPreferenceStore.selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
             if (response.code() == HTTP_OK) {
                 if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                     val cookieString: String? = response.headers()["Set-Cookie"]

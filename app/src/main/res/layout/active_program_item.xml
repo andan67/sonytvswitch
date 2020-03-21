@@ -7,11 +7,11 @@
         <import type="android.view.View"/>
         <variable
             name="activeProgram"
-            type="org.andan.av.sony.model.SonyPlayingContentInfo" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse" />
 
         <variable
-            name="controlViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel" />
+            name="testViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -140,7 +140,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:tint="@android:color/holo_blue_dark"
-            android:visibility="@{(controlViewModel.getChannelForProgramUri(activeProgram.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
+            android:visibility="@{(testViewModel.getChannelForProgramUri(activeProgram.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toEndOf="@+id/active_program_source"
             app:layout_constraintTop_toTopOf="@+id/active_program_mapped_name"
             app:srcCompat="@drawable/ic_widget_simple" />
@@ -154,7 +154,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:text="@{controlViewModel.getChannelForProgramUri(activeProgram.uri)}"
+            android:text="@{testViewModel.getChannelForProgramUri(activeProgram.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"

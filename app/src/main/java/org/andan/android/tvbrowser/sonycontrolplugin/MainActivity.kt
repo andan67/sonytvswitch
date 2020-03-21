@@ -132,12 +132,11 @@ class MainActivity : AppCompatActivity() {
             //navController.navigate(R.id.nav_manage_control)
         })
 
-        Log.i(TAG, "onCreate:channel list size=" + controlViewModel.getChannelNameList()?.size)
         // get channel list from preferences
-        val channelList: ArrayList<Channel>? = intent.getParcelableArrayListExtra("channelList")
-        if (channelList != null) run {
-            Log.i(TAG, "onCreate:channelList from intent!=null")
-            controlViewModel.setChannelNameListFromPreference()
+        val startedFromTVBrowser = intent.getBooleanExtra("startedFromTVBrowser", false)
+        if (startedFromTVBrowser) run {
+            Log.i(TAG, "onCreate: startedFromTVBrowser=$startedFromTVBrowser")
+            //controlViewModel.setChannelNameListFromPreference()
             navController.navigate(R.id.nav_channel_list)
         }
         controlViewModel.isCreated = true
@@ -163,7 +162,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent()")
-        controlViewModel.setChannelNameListFromPreference()
+        //controlViewModel.setChannelNameListFromPreference()
     }
 
     override fun onSupportNavigateUp(): Boolean {

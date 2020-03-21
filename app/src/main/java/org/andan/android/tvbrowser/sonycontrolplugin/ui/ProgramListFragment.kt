@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,7 +22,11 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 import org.andan.av.sony.model.SonyProgram
 
 /**
@@ -29,14 +34,15 @@ import org.andan.av.sony.model.SonyProgram
  */
 class ProgramListFragment : Fragment() {
     private val TAG = ProgramListFragment::class.java.name
-    private lateinit var controlViewModel: ControlViewModel
+    //private lateinit var controlViewModel: ControlViewModel
+    private lateinit var testViewModel: TestViewModel
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
-
+    private lateinit var playingContentInfo: PlayingContentInfoResponse
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //getPlayingContentInfo()
+
     }
 
     override fun onCreateView(
@@ -51,20 +57,19 @@ class ProgramListFragment : Fragment() {
         val view = binding.root
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
         fab.setOnClickListener { view ->
-            if(controlViewModel.lastProgram != null) {
+            if(testViewModel.lastProgram != null) {
                 // Toast.makeText(context, "Switched to ${controlViewModel.lastProgram?.title}", Toast.LENGTH_LONG).show()
-                setPlayContent(controlViewModel.lastProgram!!)
+                setPlayContent(testViewModel.lastProgram!!)
             }
 
         }
+        testViewModel = ViewModelProvider(this).get(TestViewModel::class.java)
+        testViewModel.onSelectedIndexChange()
 
-        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
-        //getPlayingContentInfo()
-
-        if (controlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
+        if (testViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
-            if (controlViewModel.getSelectedControl() == null) {
+            if (testViewModel.getSelectedControl() == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
             } else {
@@ -76,18 +81,19 @@ class ProgramListFragment : Fragment() {
             ) { dialog, arg1 -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
+            playingContentInfo = testViewModel.noPlayingContentInfo
+            if(testViewModel.playingContentInfo.value != null && testViewModel.playingContentInfo.value!!.status == Status.SUCCESS ) {
+                testViewModel.playingContentInfo.value!!.data!!
+            }
 
-            binding.controlViewModel = controlViewModel
-
-            binding.activeProgram.activeProgram=controlViewModel.noActiveProgram
-            binding.activeProgram.controlViewModel = controlViewModel
+            binding.testViewModel = testViewModel
+            binding.activeProgram.activeProgram = playingContentInfo
+            binding.activeProgram.testViewModel = testViewModel
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
-                if (controlViewModel.activeContentInfo.value?.title.isNullOrEmpty() || controlViewModel.activeContentInfo.value?.title!!.contentEquals(
-                        controlViewModel.noActiveProgram.title
-                    )
-                ) {
+                if (playingContentInfo == testViewModel.noPlayingContentInfo)
+                {
                     Toast.makeText(context, "No current program", Toast.LENGTH_LONG).show()
                 } else {
                     view.findNavController()
@@ -95,43 +101,47 @@ class ProgramListFragment : Fragment() {
                 }
             }
             binding.activeProgram.activeProgramView.setOnLongClickListener {
-                    getPlayingContentInfo()
+                    fetchPlayingContentInfo()
                     Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()
                     true }
 
             val adapter =
                 ProgramItemRecyclerViewAdapter(
                     ProgramListener(
-                        { program: SonyProgram ->
+                        { program: SonyProgram2 ->
                             //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
                             setPlayContent(program)
                         },
-                        { program: SonyProgram ->
+                        { program: SonyProgram2 -> true
                             // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
-                            controlViewModel.onProgramLongClicked(program)
-                        }), controlViewModel
+                            //testViewModel.onProgramLongClicked(program)
+                        }), testViewModel
                 )
 
             binding.listProgram.adapter = adapter
 
-            controlViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change filtered program list with filter ${controlViewModel.getProgramSearchQuery()}")
+            testViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
+                Log.d(TAG, "observed change filtered program list with filter ${testViewModel.getProgramSearchQuery()}")
                 adapter.notifyDataSetChanged()
-                getPlayingContentInfo()
+                fetchPlayingContentInfo()
             })
 
-            controlViewModel.activeContentInfo.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change activeContentInfo")
-                binding.activeProgram.activeProgram = controlViewModel.activeContentInfo.value
-                val activeProgramUri = controlViewModel.activeContentInfo.value!!.uri
-                if (controlViewModel.uriProgramMap.containsKey(activeProgramUri)) {
-                    controlViewModel.updateCurrentProgram(controlViewModel.uriProgramMap[activeProgramUri]!!)
+            testViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
+                Log.d(TAG, "observed change playingContentInfo")
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        binding.activeProgram.activeProgram = it.data
+                        if (testViewModel.uriProgramMap.containsKey(it.data!!.uri)) {
+                            testViewModel.updateCurrentProgram(testViewModel.uriProgramMap[it.data!!.uri]!!)
+                        }
+                    }
+                    Status.ERROR -> {
+                        Log.e(TAG, it.message)
+                        binding.activeProgram.activeProgram = testViewModel.noPlayingContentInfo
+                    }
+                    //Status.LOADING -> showLoading()
                 }
             })
-
-            if (view is RecyclerView) {
-                view.isNestedScrollingEnabled = true
-            }
 
             //val manager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)
             val manager = GridLayoutManager(activity,1)
@@ -157,8 +167,8 @@ class ProgramListFragment : Fragment() {
         }
 
         if (searchView != null) {
-            if (controlViewModel.getProgramSearchQuery() != null) {
-                searchView?.setQuery(controlViewModel.getProgramSearchQuery(), true)
+            if (testViewModel.getProgramSearchQuery() != null) {
+                searchView?.setQuery(testViewModel.getProgramSearchQuery(), true)
                 searchView?.isIconified = false
                 searchView?.clearFocus()
                 //searchView.setIconified(false);
@@ -172,7 +182,7 @@ class ProgramListFragment : Fragment() {
                         Log.i(TAG, "onQueryTextChange: $query")
                         //searchQuery = query
                         //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
-                        controlViewModel.filterProgramList(query)
+                        testViewModel.filterProgramList(query)
                     }
                     return false
                 }
@@ -181,7 +191,7 @@ class ProgramListFragment : Fragment() {
                     Log.i(TAG, "onQueryTextSubmit: $query")
                     //searchQuery = query
                     //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
-                    controlViewModel.filterProgramList(query)
+                    testViewModel.filterProgramList(query)
                     searchView?.clearFocus()
                     return false
                 }
@@ -215,39 +225,40 @@ class ProgramListFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getPlayingContentInfo() {
+    private fun fetchPlayingContentInfo() {
         Log.d(TAG,"getPlayingInfo")
-        val extras = Bundle()
+        /*val extras = Bundle()
         extras.putInt(
             SonyIPControlIntentService.ACTION,
             SonyIPControlIntentService.GET_PLAYING_CONTENT_INFO_ACTION
         )
-        (activity as MainActivity).startControlService(extras)
+        (activity as MainActivity).startControlService(extras)*/
+        testViewModel.fetchPlayingContentInfo()
     }
 
-    private fun setPlayContent(program: SonyProgram) {
-        val extras = Bundle()
+    private fun setPlayContent(program: SonyProgram2) {
+        /*val extras = Bundle()
         extras.putInt(
             SonyIPControlIntentService.ACTION,
             SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
         )
         extras.putString(SonyIPControlIntentService.URI, program.uri)
-        (activity as MainActivity).startControlService(extras)
-        controlViewModel.updateCurrentProgram(program)
+        (activity as MainActivity).startControlService(extras)*/
+        testViewModel.setPlayContent(program.uri)
+        testViewModel.updateCurrentProgram(program)
     }
-
 }
 
-class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val controlViewModel: ControlViewModel) :
+class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val testViewModel: TestViewModel) :
     RecyclerView.Adapter<ProgramItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int {
-        return controlViewModel.getFilteredProgramList().value!!.size
+        return testViewModel.getFilteredProgramList().value!!.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val program = controlViewModel.getFilteredProgramList().value!![position]
-        holder.bind(program, clickListener,controlViewModel)
+        val program = testViewModel.getFilteredProgramList().value!![position]
+        holder.bind(program, clickListener,testViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -259,14 +270,13 @@ class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val con
     class ViewHolder private constructor(val binding: ProgramItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: SonyProgram, clickListener: ProgramListener, controlViewModel: ControlViewModel) {
+        fun bind(item: SonyProgram2, clickListener: ProgramListener, testViewModel: TestViewModel) {
             binding.program = item
             binding.clickListener = clickListener
-            binding.controlViewModel = controlViewModel
+            binding.testViewModel = testViewModel
             binding.executePendingBindings()
             //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
             binding.root.setOnLongClickListener { clickListener.longClickListener(item)}
-            binding.controlViewModel
         }
 
         companion object {
@@ -282,7 +292,7 @@ class ProgramItemRecyclerViewAdapter(val clickListener: ProgramListener, val con
 
 }
 
-class ProgramListener(val clickListener: (program: SonyProgram) -> Unit,
-                      val longClickListener: (program: SonyProgram) -> Boolean) {
-    fun onClick(program: SonyProgram) = clickListener(program)
+class ProgramListener(val clickListener: (program: SonyProgram2) -> Unit,
+                      val longClickListener: (program: SonyProgram2) -> Boolean) {
+    fun onClick(program: SonyProgram2) = clickListener(program)
 }

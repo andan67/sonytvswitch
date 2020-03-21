@@ -13,27 +13,35 @@ import android.preference.PreferenceManager
 import android.util.Log
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
 import org.andan.av.sony.SonyIPControl
 import org.tvbrowser.devplugin.*
 import java.io.ByteArrayOutputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A service class that provides a channel switch functionality for Sony TVs within TV-Browser for Android.
  *
  * @author andan
  */
-class TVBrowserSonyIPControlPlugin : Service(),
-    OnSharedPreferenceChangeListener {
+class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
     private var mPluginManager: PluginManager? = null
 
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
-    private var mSonyIpControl: SonyIPControl? = null
+    private val repository: SonyRepository =
+        SonyControlApplication.get().appComponent.sonyRepository()
+
     private val getBinder: Plugin.Stub =
         object : Plugin.Stub() {
             private val mRemovingProgramId: Long = -1
@@ -59,7 +67,8 @@ class TVBrowserSonyIPControlPlugin : Service(),
 
             override fun getMarkIcon(): ByteArray {
                 val icon =
-                    BitmapFactory.decodeResource(resources,
+                    BitmapFactory.decodeResource(
+                        resources,
                         R.drawable.ic_action_share
                     )
                 val stream = ByteArrayOutputStream()
@@ -82,34 +91,15 @@ class TVBrowserSonyIPControlPlugin : Service(),
                         " onProgramContextMenuSelected:switch to channel " + program.channel
                             .channelName
                     )
-                    //setControlAndChannelMapFromPreferences();
-                    if (mSonyIpControl != null && mSonyIpControl!!.channelProgramUriMap != null) {
-                        val channelName = program.channel.channelName
+                    try {
                         val programUri =
-                            mSonyIpControl!!.channelProgramUriMap[channelName]
-                        Log.i(
-                            TAG,
-                            " onProgramContextMenuSelected:control " + mSonyIpControl.toString()
-                        )
-                        if (programUri != null && !programUri.isEmpty()) {
-                            val intentService = Intent(
-                                applicationContext,
-                                SonyIPControlIntentService::class.java
-                            )
-                            val controlJSON =
-                                SonyIPControl.getGson().toJson(mSonyIpControl!!.toJSON())
-                            intentService.putExtra(SonyIPControlIntentService.CONTROL, controlJSON)
-                            intentService.putExtra(SonyIPControlIntentService.URI, programUri)
-                            intentService.putExtra(
-                                SonyIPControlIntentService.ACTION,
-                                SonyIPControlIntentService.SET_PLAY_CONTENT_ACTION
-                            )
-                            applicationContext.startService(intentService)
-                            Log.i(
-                                TAG,
-                                "Switch to program uri:$programUri"
-                            )
+                            repository.selectedSonyControl.value!!.channelProgramMap[program.channel.channelName]
+                        GlobalScope.launch(Dispatchers.IO) {
+                            repository.setPlayContent(programUri!!)
+                            Log.i(TAG, "Switched to program uri:$programUri")
                         }
+                    } catch (ex: java.lang.Exception) {
+                        Log.e(TAG, ex.message)
                     }
                 }
                 return result
@@ -143,16 +133,13 @@ class TVBrowserSonyIPControlPlugin : Service(),
                 val startPref =
                     Intent(this@TVBrowserSonyIPControlPlugin, MainActivity::class.java)
                 startPref.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                //startPref.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 Log.i(
                     TAG,
                     "openPreferences:start"
                 )
                 if (mPluginManager != null) {
-                    writeChannelListIntoPreference(mPluginManager!!.subscribedChannels)
-                    val arrayList =
-                        ArrayList(subscribedChannels)
-                    startPref.putParcelableArrayListExtra("channelList", arrayList)
+                    updateChannelProgramMap(mPluginManager!!.subscribedChannels)
+                    startPref.putExtra("startedFromTVBrowser", true)
                 }
                 startActivity(startPref)
             }
@@ -184,30 +171,14 @@ class TVBrowserSonyIPControlPlugin : Service(),
             @Throws(RemoteException::class)
             override fun onActivation(pluginManager: PluginManager) {
                 mPluginManager = pluginManager
-                getSharedPreferences(
-                    getString(R.string.pref_control_file_key),
-                    Context.MODE_PRIVATE
-                ).registerOnSharedPreferenceChangeListener(this@TVBrowserSonyIPControlPlugin)
-                setControlAndChannelMapFromPreferences(true)
-                writeChannelListIntoPreference(mPluginManager!!.subscribedChannels)
-                val intentService =
-                    Intent(applicationContext, SonyIPControlIntentService::class.java)
-                val controlJSON =
-                    SonyIPControl.getGson().toJson(mSonyIpControl!!.toJSON())
-                intentService.putExtra(SonyIPControlIntentService.CONTROL, controlJSON)
-                intentService.putExtra(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.RENEW_COOKIE_ACTION_PLUGIN
-                )
-                Log.d(TAG, "check token")
-                applicationContext.startService(intentService)
+                updateChannelProgramMap(mPluginManager!!.subscribedChannels)
                 Log.d(TAG, "onActivation")
             }
 
             override fun onDeactivation() {
                 /* Don't keep instance of plugin manager*/
                 mPluginManager = null
-                mSonyIpControl = null
+                //mSonyIpControl = null
             }
 
             override fun isMarked(programId: Long): Boolean {
@@ -232,10 +203,6 @@ class TVBrowserSonyIPControlPlugin : Service(),
     override fun onUnbind(intent: Intent): Boolean {
         /* Don't keep instance of plugin manager*/
         mPluginManager = null
-        getSharedPreferences(
-            getString(R.string.pref_control_file_key),
-            Context.MODE_PRIVATE
-        ).unregisterOnSharedPreferenceChangeListener(this@TVBrowserSonyIPControlPlugin)
         stopSelf()
         return false
     }
@@ -246,7 +213,17 @@ class TVBrowserSonyIPControlPlugin : Service(),
         super.onDestroy()
     }
 
-    private fun writeChannelListIntoPreference(channelList: List<Channel>) {
+    private fun updateChannelProgramMap(channelList: List<Channel>) {
+        val channelNameList = ArrayList<String>()
+        for (channel in channelList) {
+            channelNameList.add(channel.channelName)
+        }
+        Log.d(TAG,"updateChannelProgramMap: ${channelNameList.size}")
+        repository.updateChannelMapsFromChannelNameList(channelNameList)
+    }
+
+
+    /*private fun writeChannelListIntoPreference(channelList: List<Channel>) {
         val preferences = getSharedPreferences(
             getString(R.string.pref_channel_switch_file_key),
             Context.MODE_PRIVATE
@@ -274,126 +251,10 @@ class TVBrowserSonyIPControlPlugin : Service(),
             TAG,
             "writeChannelListIntoPreference"
         )
-    }
-
-    private fun setControlAndChannelMapFromPreferences(calledOnActivation: Boolean) {
-        Log.i(
-            TAG,
-            "setControlAndChannelMapFromPreferences():start"
-        )
-        // try instantiating control from json stored in preference
-        val controlPreferences = getSharedPreferences(
-            getString(R.string.pref_control_file_key),
-            Context.MODE_PRIVATE
-        )
-        val controlConfig =
-            controlPreferences.getString(CONTROL_CONFIG, "")
-        if (controlConfig != null && !controlConfig.isEmpty()) {
-            var selectedControlIndex = -1
-            var controlsJSON =
-                SonyIPControl.getGson().fromJson(controlConfig, JsonObject::class.java)
-            var controls = controlsJSON["controls"] as JsonArray
-            mSonyIpControl = null
-            if (controlsJSON.has("selected")) {
-                selectedControlIndex = controlsJSON["selected"].asInt
-                if (selectedControlIndex >= 0) mSonyIpControl =
-                    SonyIPControl(controls[selectedControlIndex] as JsonObject)
-            } else if (calledOnActivation) {
-                // try conversion of old config/preferences
-                val mapChannelPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(
-                        applicationContext
-                    )
-                val mapConfig =
-                    mapChannelPreferences.getString(getString(R.string.pref_map_channel_key), "")
-                val channelMap =
-                    LinkedHashMap<String, String>()
-                var mapsForControlKey: String? = null
-                Log.i(
-                    TAG,
-                    "setControlAndChannelMapFromPreferences():mapconfig $mapConfig"
-                )
-                if (mapConfig != null && !mapConfig.isEmpty()) {
-                    Log.i(
-                        TAG,
-                        "setControlAndChannelMapFromPreferences(): mapConfig exists, try convert"
-                    )
-                    try {
-                        val mapsForControlJSON = SonyIPControl.getGson()
-                            .fromJson(mapConfig, JsonObject::class.java)
-                        mapsForControlKey = mapsForControlJSON["active_control"].asString
-                        val mapsJSON =
-                            mapsForControlJSON[mapsForControlKey] as JsonObject
-                        for ((key, value) in mapsJSON.entrySet()) {
-                            channelMap[key] = value.asString
-                        }
-                    } catch (ex: Exception) {
-                        Log.e(
-                            TAG,
-                            "setControlAndChannelMapFromPreferences(): " + ex.message
-                        )
-                    }
-                }
-                Log.i(
-                    TAG,
-                    "setControlAndChannelMapFromPreferences():map " + channelMap.size + ":" + mapsForControlKey
-                )
-                val mControlList =
-                    ArrayList<SonyIPControl>()
-                if (mapsForControlKey != null) {
-                    for (i in 0 until controls.size()) {
-                        val ipControl = SonyIPControl(controls[i] as JsonObject)
-                        mControlList.add(ipControl)
-                        if (ipControl.uuid == mapsForControlKey) {
-                            selectedControlIndex = i
-                        }
-                    }
-                }
-                if (mControlList.size > 0 && selectedControlIndex == -1) {
-                    // control not found by key. Use first one.
-                    selectedControlIndex = 0
-                }
-                controlsJSON = JsonObject()
-                controls = JsonArray()
-                for (ipControl in mControlList) {
-                    try {
-                        val e = ipControl.toJSON()
-                        controls.add(e)
-                    } catch (ex: Exception) {
-                        Log.i(TAG, ex.message)
-                    }
-                }
-                controlsJSON.add("controls", controls)
-                controlsJSON.addProperty("selected", selectedControlIndex)
-                val editor = controlPreferences.edit()
-                editor.putString("controlConfig", SonyIPControl.getGson().toJson(controlsJSON))
-                editor.commit()
-                Log.i(
-                    TAG,
-                    "setControlAndChannelMapFromPreferences(): written control to preference " + channelMap.size + " mappings"
-                )
-            }
-        }
-        Log.i(
-            TAG,
-            "setControlAndChannelMapFromPreferences():control:" + if (mSonyIpControl != null) mSonyIpControl!!.uuid else "null"
-        )
-        Log.i(
-            TAG,
-            "setControlAndChannelMapFromPreferences():end:"
-        )
-    }
-
-    override fun onSharedPreferenceChanged(
-        sharedPreferences: SharedPreferences,
-        key: String
-    ) {
-        Log.i(TAG, "onSharedPreferenceChanged")
-        setControlAndChannelMapFromPreferences(false)
-    }
+    }*/
 
     companion object {
-        const val CONTROL_CONFIG = "controlConfig"
+        //const val CONTROL_CONFIG = "controlConfig"
         const val CHANNELS_LIST_CONFIG = "channels_list_config"
         private val TAG = TVBrowserSonyIPControlPlugin::class.java.simpleName
 

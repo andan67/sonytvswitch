@@ -5,6 +5,7 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
+import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,7 +36,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideHttpLoggingInterceptor(tokenStore: TokenStore): HttpLoggingInterceptor {
+    fun provideHttpLoggingInterceptor(tokenStore: ControlPreferenceStore): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
@@ -47,7 +48,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, tokenStore: TokenStore,
+    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, tokenStore: ControlPreferenceStore,
                             authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
