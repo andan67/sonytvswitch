@@ -31,6 +31,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     val sonyControls = preferenceStore.sonyControls
     val selectedSonyControl = preferenceStore.selectedSonyControl
 
+    private val _requestErrorMessage = MutableLiveData("")
+    val requestErrorMessage: LiveData<String> = _requestErrorMessage
+
     val gson = GsonBuilder().create()
     init {
         (client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
@@ -65,8 +68,6 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 )
             )
             _playingContentInfo.value = resource
-            Log.d(TAG, resource.status.name)
-            Log.d(TAG, resource.data.toString())
             //Log.d(TAG, resource.data!!.title)
         }
     }
@@ -86,6 +87,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     params
                 )
             )
+            if(resource.status == Status.ERROR) {
+                _requestErrorMessage.postValue(resource.message)
+            }
         }
     }
 

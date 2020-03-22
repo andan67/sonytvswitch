@@ -29,6 +29,8 @@ class TestViewModel : ViewModel() {
         emit(repository.getCurrentTime())
     }*/
 
+    val requestErrorMessage = repository.requestErrorMessage
+
     private var _selectedSonyControl = MutableLiveData<SonyControl>()
     val selectedSonyControl: LiveData<SonyControl>
         get() = _selectedSonyControl
@@ -132,7 +134,7 @@ class TestViewModel : ViewModel() {
     }
 
     val playingContentInfo = repository.playingContentInfo
-    val noPlayingContentInfo = PlayingContentInfoResponse("","","","","","","",0)
+    val noPlayingContentInfo = PlayingContentInfoResponse("","----","","Not available","","","",0)
     fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
         //val result = repository.getCurrentTime()
         // Log.d(TAG,"currentTime: " + result)

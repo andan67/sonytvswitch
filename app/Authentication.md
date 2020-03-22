@@ -42,3 +42,18 @@ if(cookieString!=null && !cookieString.isEmpty()) {
             if(userPassword!=null && !userPassword.isEmpty()) {
                 connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(userPassword.getBytes()));
             }
+
+Token handling:
+- Principle: Domain model only in repository
+- In repository:
+  - sonyControls = controlStore.loadControls() // get control from preferences
+  - token = controlStore.loadToken() // get latest stored token from preferences
+  - updated selected Control with latest token value
+  - on any change of sonyControls:
+    - before change:
+      - get latest token for selected control by controlStore.loadToken()
+      - updated selected Control with latest token value
+    - apply change to selected controls
+    - save changes in store by controlStore.storeControls(controls)
+    - token = selectedControl.cookie // get token of new control
+    - controlStore.storeToken(token) -> store token of selected control in token preference

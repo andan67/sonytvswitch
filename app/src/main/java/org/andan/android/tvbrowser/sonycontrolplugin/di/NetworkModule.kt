@@ -9,6 +9,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreference
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -52,6 +53,7 @@ class NetworkModule {
                             authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
+            .connectTimeout(2,TimeUnit.SECONDS)
             .addInterceptor(AddTokenInterceptor(tokenStore))
         if (BuildConfig.DEBUG) {
             client.addInterceptor(loggingInterceptor)

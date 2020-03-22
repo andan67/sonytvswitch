@@ -126,21 +126,9 @@ class ProgramListFragment : Fragment() {
                 fetchPlayingContentInfo()
             })
 
-            testViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change playingContentInfo")
-                when (it.status) {
-                    Status.SUCCESS -> {
-                        binding.activeProgram.activeProgram = it.data
-                        if (testViewModel.uriProgramMap.containsKey(it.data!!.uri)) {
-                            testViewModel.updateCurrentProgram(testViewModel.uriProgramMap[it.data!!.uri]!!)
-                        }
-                    }
-                    Status.ERROR -> {
-                        Log.e(TAG, it.message)
-                        binding.activeProgram.activeProgram = testViewModel.noPlayingContentInfo
-                    }
-                    //Status.LOADING -> showLoading()
-                }
+            testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
+                Log.d(TAG, "observed requestError")
+                Toast.makeText(context, "$it.value", Toast.LENGTH_LONG).show()
             })
 
             //val manager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)
