@@ -25,12 +25,12 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     }
 
     var cookie = ""
-    val sourceList: List<String> = emptyList()
-    val systemModel = ""
-    val systemName = ""
+    var sourceList: List<String> = emptyList()
+    var systemModel = ""
+    var systemName = ""
     var systemProduct = ""
-    val systemMacAddr = ""
-    val systemWolMode = true
+    var systemMacAddr = ""
+    var systemWolMode = true
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null

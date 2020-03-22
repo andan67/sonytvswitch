@@ -1,25 +1,20 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.annotation.Nullable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.ArrayList
 import javax.inject.Inject
-import javax.inject.Named
 
 class SonyRepository @Inject constructor(val client: OkHttpClient, val api: SonyService, val preferenceStore: ControlPreferenceStore) {
     private val TAG = SonyRepository::class.java.name
@@ -28,15 +23,32 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     //var selectedSonyControl : SonyControl? = null
     //var selectedIndex = -1
 
-    val sonyControls = preferenceStore.sonyControls
-    val selectedSonyControl = preferenceStore.selectedSonyControl
+    var sonyControls = MutableLiveData<SonyControls>()
+    var selectedSonyControl = MutableLiveData<SonyControl>()
 
     private val _requestErrorMessage = MutableLiveData("")
     val requestErrorMessage: LiveData<String> = _requestErrorMessage
 
     val gson = GsonBuilder().create()
     init {
-        (client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
+        //(client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
+        sonyControls.value = preferenceStore.loadControls()
+        selectedSonyControl.value = getSelectedControl(sonyControls.value!!)
+        SonyControlApplication.get().appComponent.serviceHolder().sonyService = api
+        if(selectedSonyControl.value != null) {
+            SonyControlApplication.get().appComponent.serviceHolder().ip = selectedSonyControl.value!!.ip
+            SonyControlApplication.get().appComponent.serviceHolder().uuid = selectedSonyControl.value!!.uuid
+        }
+    }
+
+    private fun <T> MutableLiveData<T>.notifyObserver() {
+        this.value = this.value
+    }
+
+    private fun getSelectedControl(sonyControls: SonyControls) : SonyControl? {
+        return if(sonyControls.selected >= 0 && sonyControls.selected <= sonyControls.controls.size-1) {
+            sonyControls.controls[sonyControls.selected ]
+        } else null
     }
 
     private val _currentTime = MutableLiveData("N/A")
@@ -107,7 +119,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 //ToDo: Handle deletion of channels
             }
         }
-        if(isUpdated) preferenceStore.onControlsChanged()
+        //if(isUpdated) preferenceStore.onControlsChanged()
         Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
     }
 
@@ -141,6 +153,11 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             Log.d("apiCall", "evaluate exception ${e.message}")
             return Resource.Error(e.message!!)
         }
+    }
+
+    fun saveControls() {
+        preferenceStore.storeControls(sonyControls.value!!)
+        sonyControls.notifyObserver()
     }
 
     fun addControl(control: SonyControl) {

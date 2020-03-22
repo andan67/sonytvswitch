@@ -12,6 +12,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.andan.android.tvbrowser.sonycontrolplugin.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 import org.andan.av.sony.model.SonyProgram
 
 /**
@@ -28,7 +31,7 @@ import org.andan.av.sony.model.SonyProgram
  */
 class ChannelMapFragment : Fragment() {
     private val TAG = ChannelMapFragment::class.java.name
-    private lateinit var controlViewModel: ControlViewModel
+    private lateinit var testViewModel: TestViewModel
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     //private var searchQuery: String? = null
@@ -49,17 +52,17 @@ class ChannelMapFragment : Fragment() {
         )
 
         val view = binding.root
-        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+        testViewModel = ViewModelProvider(this).get(TestViewModel::class.java)
 
-        binding.controlViewModel = controlViewModel
+        binding.testViewModel = testViewModel
 
-        if (controlViewModel.getSelectedControl() == null || controlViewModel.getChannelNameList().isNullOrEmpty()) {
+        if (testViewModel.getSelectedControl() == null || testViewModel.channelNameList.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
-            if (controlViewModel.getSelectedControl() == null) {
+            if (testViewModel.getSelectedControl() == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
-            } else if (controlViewModel.getChannelNameList().isNullOrEmpty()) {
+            } else if (testViewModel.channelNameList.isNullOrEmpty()) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_channels_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_channels_message))
             }
@@ -71,19 +74,19 @@ class ChannelMapFragment : Fragment() {
                 ChannelMapItemRecyclerViewAdapter(
                     ChannelMapListener(
                         { view: View, channelName: String ->
-                            if (controlViewModel.programTitleList.isNullOrEmpty()) {
+                            if (testViewModel.programTitleList.isNullOrEmpty()) {
                                 alertNoPrograms()
                             } else {
-                                controlViewModel.selectedChannelName = channelName
+                                testViewModel.selectedChannelName = channelName
                                 view.findNavController()
                                     .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
                             }
                         },
                         { channelName: String ->
                             val uri: String? =
-                                (controlViewModel.getSelectedControl())!!.channelProgramUriMap[channelName]
+                                (testViewModel.getSelectedControl())!!.channelProgramMap[channelName]
                             if (!uri.isNullOrEmpty()) {
-                                val program = controlViewModel.uriProgramMap[uri]
+                                val program = testViewModel.uriProgramMap[uri]
                                 val extras = Bundle()
                                 extras.putInt(
                                     SonyIPControlIntentService.ACTION,
@@ -103,21 +106,21 @@ class ChannelMapFragment : Fragment() {
                                 ).show()
                             }
                             true
-                        }), controlViewModel
+                        }), testViewModel
                 )
 
             binding.listChannelMap.adapter = adapter
             Log.d(
                 TAG,
-                "controlViewModel.channelList.size ${controlViewModel.getFilteredChannelNameList().value?.size}"
+                "controlViewModel.channelList.size ${testViewModel.getFilteredChannelNameList().value?.size}"
             )
 
-            controlViewModel.getControls().observe(viewLifecycleOwner, Observer {
+            testViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change getControls")
                 adapter.notifyDataSetChanged()
             })
 
-            controlViewModel.getFilteredChannelNameList().observe(viewLifecycleOwner, Observer {
+            testViewModel.getFilteredChannelNameList().observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change filtered Channel")
                 adapter.notifyDataSetChanged()
             })
@@ -149,10 +152,10 @@ class ChannelMapFragment : Fragment() {
             searchView = searchItem.actionView as SearchView
         }
         if (searchView != null) {
-            if (controlViewModel.getChannelNameSearchQuery().isNullOrEmpty()) {
+            if (testViewModel.channelNameSearchQuery.isNullOrEmpty()) {
                 searchView?.isIconified = true
             } else {
-                searchView?.setQuery(controlViewModel.getChannelNameSearchQuery(), true)
+                searchView?.setQuery(testViewModel.channelNameSearchQuery, true)
                 searchView?.isIconified = false
                 searchView?.clearFocus()
                 // searchView.setIconified(true);
@@ -165,7 +168,7 @@ class ChannelMapFragment : Fragment() {
                     if (query.isNullOrEmpty()) {
                         Log.i(TAG, "onQueryTextChange: $query")
                         //searchQuery = query
-                        controlViewModel.filterChannelNameList(query)
+                        testViewModel.filterChannelNameList(query)
                     }
                     return false
                 }
@@ -173,7 +176,7 @@ class ChannelMapFragment : Fragment() {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     Log.i(TAG, "onQueryTextSubmit: $query")
                     //searchQuery = query
-                    controlViewModel.filterChannelNameList(query)
+                    testViewModel.filterChannelNameList(query)
                     searchView?.clearFocus()
                     return false
                 }
@@ -199,10 +202,10 @@ class ChannelMapFragment : Fragment() {
                 // Not implemented here
                 return true
             R.id.match_channels -> {
-                if (controlViewModel.programTitleList.isEmpty()) {
+                if (testViewModel.programTitleList.isEmpty()) {
                     alertNoPrograms()
                 } else {
-                    controlViewModel.performFuzzyMatchForChannelList()
+                    //testViewModel.performFuzzyMatchForChannelList()
                 }
                 Toast.makeText(
                     context,
@@ -211,7 +214,7 @@ class ChannelMapFragment : Fragment() {
                 ).show()
             }
             R.id.clear_match -> {
-                controlViewModel.clearMapping(true)
+                //testViewModel.clearMapping(true)
                 Toast.makeText(
                     context,
                     resources.getString(R.string.toast_channel_map_program_cleared),
@@ -226,13 +229,13 @@ class ChannelMapFragment : Fragment() {
     }
 }
 
-class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val controlViewModel: ControlViewModel) :
+class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val testViewModel: TestViewModel) :
     RecyclerView.Adapter<ChannelMapItemRecyclerViewAdapter.ViewHolder>() {
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val channelName = controlViewModel.getFilteredChannelNameList().value?.get(position)!!
-        holder.bind(channelName, clickListener,controlViewModel)
+        val channelName = testViewModel.getFilteredChannelNameList().value?.get(position)!!
+        holder.bind(channelName, clickListener, testViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -242,18 +245,18 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
     }
 
     override fun getItemCount(): Int {
-        return controlViewModel.getFilteredChannelNameList().value!!.size
+        return testViewModel.getFilteredChannelNameList().value!!.size
     }
 
     class ViewHolder private constructor(val binding: MapChannnelItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: String, clickListener: ChannelMapListener, controlViewModel: ControlViewModel) {
+        fun bind(item: String, clickListener: ChannelMapListener, testViewModel: TestViewModel) {
             binding.channelName = item
             binding.channelPosition = adapterPosition+1
-            val programUri: String? = controlViewModel.getSelectedControl()!!.channelProgramUriMap[item]
+            val programUri: String? = testViewModel.getSelectedControl()!!.channelProgramMap[item]
             if (!programUri.isNullOrEmpty()) {
-                val program: SonyProgram? = controlViewModel.getSelectedControl()!!.programUriMap[programUri]
+                val program: SonyProgram2? = testViewModel.getSelectedControl()!!.programUriMap!![programUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else
@@ -263,7 +266,7 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
             }
 
             binding.clickListener = clickListener
-            binding.controlViewModel = controlViewModel
+            binding.testViewModel = testViewModel
             binding.executePendingBindings()
             //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
             binding.root.setOnLongClickListener { clickListener.longClickListener(item)}

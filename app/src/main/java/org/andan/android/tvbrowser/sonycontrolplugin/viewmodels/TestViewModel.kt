@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.di.DaggerApplicationComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
@@ -35,8 +36,13 @@ class TestViewModel : ViewModel() {
     val selectedSonyControl: LiveData<SonyControl>
         get() = _selectedSonyControl
 
+    private var _sonyControls = MutableLiveData<SonyControls>()
+    val sonyControls: LiveData<SonyControls>
+        get() = _sonyControls
+
     init {
         _selectedSonyControl = repository.selectedSonyControl
+        //filterChannelNameList("")
     }
 
     fun getSelectedControl(): SonyControl? {
@@ -57,9 +63,11 @@ class TestViewModel : ViewModel() {
     private var currentProgram: SonyProgram2? = null
     var lastProgram: SonyProgram2? = null
 
-    private var channelNameList: MutableList<String> = ArrayList()
+    var channelNameList: MutableList<String> = ArrayList()
     private var filteredChannelNameList = MutableLiveData<List<String>>()
-    private var channelNameSearchQuery: String? = null
+    var channelNameSearchQuery: String? = null
+
+    var selectedChannelMapProgramUri = MutableLiveData<String?>()
 
     fun updateCurrentProgram(program: SonyProgram2) {
         if(currentProgram?.uri!=program.uri) {
@@ -76,13 +84,13 @@ class TestViewModel : ViewModel() {
         //activeContentInfo.value = noActiveProgram
         refreshDerivedVariablesForSelectedControl()
         filterProgramList(null)
-        //filterChannelNameList(null)
+        filterChannelNameList(null)
     }
 
     fun refreshDerivedVariablesForSelectedControl() {
         Log.d(TAG,"refreshDerivedVariablesForSelectedControl()")
         programTitleList.clear()
-        //channelNameList.clear()
+        channelNameList.clear()
         uriProgramMap.clear()
         if (getSelectedControl()?.programList != null) {
             if (getSelectedControl()?.channelProgramMap != null) {
@@ -133,6 +141,35 @@ class TestViewModel : ViewModel() {
         return programChannelMap[uri] ?: ""
     }
 
+    fun getFilteredChannelNameList(): MutableLiveData<List<String>> {
+        //Log.d(TAG,"getFilteredChannelNameList()")
+        // get list of channel names from preference
+        if(filteredChannelNameList.value==null) {
+            filterChannelNameList("")
+        }
+        return filteredChannelNameList
+    }
+
+    fun filterChannelNameList(query: String?) {
+        Log.d(TAG, "filter channel name list $query ")
+        if(channelNameList != null) {
+            channelNameSearchQuery = query
+            filteredChannelNameList.value = channelNameList.filter { c ->
+                channelNameSearchQuery.isNullOrEmpty() || c.contains(
+                    channelNameSearchQuery!!,
+                    true
+                )
+            }
+            Log.d(TAG, "channelNameList!=null ${filteredChannelNameList.value!!.size} ")
+            Log.d(TAG, "channelNameList!=null ${channelNameList.size} ")
+        }
+        else {
+            filteredChannelNameList.value = ArrayList()
+            Log.d(TAG, "channelNameList==null ${filteredChannelNameList.value!!.size} ")
+        }
+    }
+
+
     val playingContentInfo = repository.playingContentInfo
     val noPlayingContentInfo = PlayingContentInfoResponse("","----","","Not available","","","",0)
     fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
@@ -145,6 +182,13 @@ class TestViewModel : ViewModel() {
         repository.setPlayContent(uri)
     }
 
+    fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
+        Log.d(TAG,"setSelectedChannelMapProgramUri()")
+        selectedChannelMapProgramUri.value = programUri
+        getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
+        refreshDerivedVariablesForSelectedControl()
+        repository.saveControls()
+    }
 
     fun addControl(control: SonyControl) {
         repository.addControl(control)

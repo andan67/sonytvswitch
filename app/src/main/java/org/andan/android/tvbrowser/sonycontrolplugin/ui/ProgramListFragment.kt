@@ -102,7 +102,6 @@ class ProgramListFragment : Fragment() {
             }
             binding.activeProgram.activeProgramView.setOnLongClickListener {
                     fetchPlayingContentInfo()
-                    Toast.makeText(context, "Refreshed current program", Toast.LENGTH_LONG).show()
                     true }
 
             val adapter =
@@ -128,7 +127,26 @@ class ProgramListFragment : Fragment() {
 
             testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed requestError")
-                Toast.makeText(context, "$it.value", Toast.LENGTH_LONG).show()
+                if(!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            })
+
+            testViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
+                Log.d(TAG, "observed change playingContentInfo")
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        binding.activeProgram.activeProgram = it.data
+                        if (testViewModel.uriProgramMap.containsKey(it.data!!.uri)) {
+                            testViewModel.updateCurrentProgram(testViewModel.uriProgramMap[it.data!!.uri]!!)
+                            Toast.makeText(context, "Refreshed playing content info", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    Status.ERROR -> {
+                        Log.e(TAG, it.message)
+                        binding.activeProgram.activeProgram = testViewModel.noPlayingContentInfo
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    //Status.LOADING -> showLoading()
+                }
             })
 
             //val manager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)

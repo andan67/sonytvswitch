@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -41,4 +42,11 @@ class AppModule(private val context: Context) {
     fun provideControlPreferenceStore(context: Context): ControlPreferenceStore {
         return ControlPreferenceStore(context)
     }
+
+    @Singleton
+    @Provides
+    fun provideTokenPreferenceStore(context: Context): TokenStore {
+        return ControlPreferenceStore(context)
+    }
 }
+

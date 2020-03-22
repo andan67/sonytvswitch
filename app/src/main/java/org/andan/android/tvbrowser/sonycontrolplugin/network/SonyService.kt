@@ -5,9 +5,8 @@ import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Route
-import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
-import org.andan.av.sony.model.SonyPlayingContentInfo
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -135,26 +134,24 @@ class TokenStore @Inject constructor(@Nullable @Named("TokenStore") val preferen
 }
 */
 
-class AddTokenInterceptor @Inject constructor(val tokenStore: ControlPreferenceStore) : Interceptor {
+class AddTokenInterceptor @Inject constructor( private val serviceHolder: SonyServiceHolder?,
+                                               private val tokenStore: TokenStore) : Interceptor {
 
     /**
      * Interceptor class for setting of the headers for every request
      */
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         var request = chain.request()
-        request = request.newBuilder().addHeader("Cookie", tokenStore.getToken()).build()
+        //request = request.newBuilder().addHeader("Cookie", tokenStore.getToken()).build()
+        request = request.newBuilder().addHeader("Cookie", tokenStore.loadToken(serviceHolder!!.uuid)).build()
         return chain.proceed(request)
     }
 }
 
 class TokenAuthenticator @Inject constructor(
-    private val _serviceHolder: SonyServiceHolder?,
-    private val _controlPreferenceStore: ControlPreferenceStore
+    private val serviceHolder: SonyServiceHolder,
+    private val tokenStore: TokenStore
 ) : Authenticator {
-
-    val tokenStore = _controlPreferenceStore
-
-    val serviceHolder = _serviceHolder
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         // This is a synchronous call
@@ -185,7 +182,7 @@ class TokenAuthenticator @Inject constructor(
 
         if (serviceHolder != null) {
             val response =
-                serviceHolder.sonyService!!.refreshToken("http://" + _controlPreferenceStore.selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
+                serviceHolder.sonyService!!.refreshToken("http://" + serviceHolder.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
             if (response.code() == HTTP_OK) {
                 if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                     val cookieString: String? = response.headers()["Set-Cookie"]
@@ -193,7 +190,7 @@ class TokenAuthenticator @Inject constructor(
                         Pattern.compile("auth=([A-Za-z0-9]+)")
                     var matcher = pattern.matcher(cookieString)
                     if (matcher.find()) {
-                        tokenStore.storeToken("auth=" + matcher.group(1))
+                        tokenStore.storeToken(serviceHolder.uuid, "auth=" + matcher.group(1))
                         /*
                         pattern = Pattern.compile("max-age=([0-9]+)")
                         matcher = pattern.matcher(cookieString)
@@ -208,7 +205,7 @@ class TokenAuthenticator @Inject constructor(
                 }
             }
         }
-        return tokenStore.getToken()
+        return tokenStore.loadToken(serviceHolder.uuid)
     }
 }
 
@@ -229,5 +226,7 @@ enum class Status {
 }
 
 class SonyServiceHolder(
-    var sonyService: SonyService? = null
+    var sonyService: SonyService? = null,
+    var ip: String = "",
+    var uuid: String = ""
 )
