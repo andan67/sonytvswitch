@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -34,8 +35,7 @@ import org.andan.av.sony.model.SonyProgram
  */
 class ProgramListFragment : Fragment() {
     private val TAG = ProgramListFragment::class.java.name
-    //private lateinit var controlViewModel: ControlViewModel
-    private lateinit var testViewModel: TestViewModel
+    private val testViewModel: TestViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     private lateinit var playingContentInfo: PlayingContentInfoResponse
@@ -63,7 +63,6 @@ class ProgramListFragment : Fragment() {
             }
 
         }
-        testViewModel = ViewModelProvider(this).get(TestViewModel::class.java)
         testViewModel.onSelectedIndexChange()
 
         if (testViewModel.getFilteredProgramList().value.isNullOrEmpty()) {

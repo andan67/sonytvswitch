@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import org.andan.android.tvbrowser.sonycontrolplugin.R
@@ -20,12 +21,13 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 class TestFragment : Fragment() {
 
     private val TAG = TestFragment::class.java.name
-
+    private val viewModel: TestViewModel by activityViewModels()
     companion object {
         fun newInstance() = TestFragment()
     }
 
-    private lateinit var viewModel: TestViewModel
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,8 +40,6 @@ class TestFragment : Fragment() {
 
         // Set the LifecycleOwner to be able to observe LiveData objects
         binding.lifecycleOwner = this
-
-        viewModel = ViewModelProvider(this).get(TestViewModel::class.java)
         binding.viewmodel = viewModel
 
         /* viewModel.currentTime.observe(viewLifecycleOwner, Observer<String> {

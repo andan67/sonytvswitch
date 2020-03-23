@@ -14,13 +14,18 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelSingleBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 import org.andan.av.sony.SonyIPControl
 import org.andan.av.sony.model.SonyProgram
 import java.util.*
@@ -30,7 +35,7 @@ import java.util.*
  */
 class ChannelMapSingleFragment : Fragment() {
     private val TAG = ChannelMapSingleFragment::class.java.name
-    private lateinit var controlViewModel: ControlViewModel
+    private val testViewModel: TestViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     private var searchQuery: String? = null
@@ -41,7 +46,7 @@ class ChannelMapSingleFragment : Fragment() {
     lateinit var arrayAdapter: ChannelMapProgramListAdapter
     private var selectedChannelName: String? = null
     private var programUriMatchList: ArrayList<String> = ArrayList()
-    var control: SonyIPControl? = null
+    var control: SonyControl? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,23 +63,22 @@ class ChannelMapSingleFragment : Fragment() {
             R.layout.fragment_channel_single, container, false)
 
         val view = binding.root
-        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
-
-        selectedChannelName =  controlViewModel.selectedChannelName
-        val channelPosition = controlViewModel.getFilteredChannelNameList().value?.indexOfFirst { it==selectedChannelName }
+        selectedChannelName =  testViewModel.selectedChannelName
+        Log.d(TAG,"selectedChannelName: $selectedChannelName")
+        val channelPosition = testViewModel.getFilteredChannelNameList().value?.indexOfFirst { it==selectedChannelName }
         binding.channelPosition = channelPosition!! +1
 
         binding.channelName = selectedChannelName
-        control=controlViewModel.getSelectedControl()
+        control=testViewModel.getSelectedControl()
 
-        initialProgramUri = control!!.channelProgramUriMap[selectedChannelName]
+        initialProgramUri = control!!.channelProgramMap[selectedChannelName!!]
         Log.d(TAG,"initialProgramUri : $initialProgramUri")
-        controlViewModel.setSelectedChannelMapProgramUri(binding.channelName , initialProgramUri)
+        testViewModel.setSelectedChannelMapProgramUri(binding.channelName , initialProgramUri)
 
-        controlViewModel.selectedChannelMapProgramUri.observe(viewLifecycleOwner, Observer {
-            val selectedProgramUri = controlViewModel.selectedChannelMapProgramUri.value
+        testViewModel.selectedChannelMapProgramUri.observe(viewLifecycleOwner, Observer {
+            val selectedProgramUri = testViewModel.selectedChannelMapProgramUri.value
             if (!selectedProgramUri.isNullOrEmpty()) {
-                val program: SonyProgram? = controlViewModel.getSelectedControl()!!.programUriMap[selectedProgramUri]
+                val program: SonyProgram2? = testViewModel.getSelectedControl()?.programUriMap!![selectedProgramUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else
@@ -89,7 +93,7 @@ class ChannelMapSingleFragment : Fragment() {
             ChannelMapProgramListAdapter(
                 context,
                 programUriMatchList,
-                controlViewModel.getSelectedControl()!!.programUriMap
+                testViewModel.getSelectedControl()?.programUriMap!!
             )
         binding.channelMapProgramListView.setSelector(R.drawable.list_selector)
         binding.channelMapProgramListView.adapter = arrayAdapter
@@ -102,13 +106,13 @@ class ChannelMapSingleFragment : Fragment() {
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
             val selectedChannelMapProgramUri = programUriMatchList[currentProgramPosition]
-            controlViewModel.setSelectedChannelMapProgramUri(binding.channelName, selectedChannelMapProgramUri)
+            testViewModel.setSelectedChannelMapProgramUri(binding.channelName, selectedChannelMapProgramUri)
             // Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
         }
         binding.channelMapProgramListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
-            val program = controlViewModel.uriProgramMap[programUriMatchList[currentProgramPosition]]
+            val program = testViewModel.uriProgramMap[programUriMatchList[currentProgramPosition]]
             val extras = Bundle()
             extras.putInt(
                 SonyIPControlIntentService.ACTION,
@@ -123,7 +127,7 @@ class ChannelMapSingleFragment : Fragment() {
         Log.d(TAG,"currentProgramPosition=${currentProgramPosition}")
         Log.d(TAG,"adapter.count=${arrayAdapter.count}")
 
-        controlViewModel.getControls().observe(viewLifecycleOwner, Observer {
+        testViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed change getControls")
 
         })
@@ -187,7 +191,7 @@ class ChannelMapSingleFragment : Fragment() {
 
     fun createMatchIndicesListAndSetPositions(query: String?) {
         programUriMatchList.clear()
-        programUriMatchList.addAll(controlViewModel.createProgramUriMatchList(selectedChannelName, query))
+        programUriMatchList.addAll(testViewModel.createProgramUriMatchList(selectedChannelName, query))
         programPosition = programUriMatchList.indexOfFirst { it==initialProgramUri }
         currentProgramPosition = if (!initialProgramUri.isNullOrEmpty()) programPosition else -1
     }
@@ -198,12 +202,12 @@ class ChannelMapSingleFragment : Fragment() {
                 // Not implemented here
                 return true
             R.id.channel_map_reset -> {
-                controlViewModel.setSelectedChannelMapProgramUri(binding.channelName, initialProgramUri)
+                testViewModel.setSelectedChannelMapProgramUri(binding.channelName, initialProgramUri)
                 currentProgramPosition = programPosition
                 binding.channelMapProgramListView.setItemChecked(currentProgramPosition, true)
             }
             R.id.channel_map_unmap -> {
-                controlViewModel.setSelectedChannelMapProgramUri( binding.channelName, "")
+                testViewModel.setSelectedChannelMapProgramUri( binding.channelName, "")
                 Toast.makeText( context, "Selected item with currentProgramPosition: $currentProgramPosition",  Toast.LENGTH_SHORT).show()
                 binding.channelMapProgramListView.setItemChecked(currentProgramPosition, false)
                 binding.channelMapProgramListView.clearChoices()
@@ -215,12 +219,12 @@ class ChannelMapSingleFragment : Fragment() {
     }
 }
 
-class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram>) :
+class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram2>) :
     BaseAdapter() {
 
 
     private var ctx: Context? = null
-    private var programUriMap: MutableMap<String, SonyProgram>? = null
+    private var programUriMap: MutableMap<String, SonyProgram2>? = null
     private var programUriMatchList: ArrayList<String>? = null
 
     private var mInflater: LayoutInflater? = null
@@ -249,7 +253,7 @@ class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: Array
     override fun getView(position: Int, convertView: View?, arg2: ViewGroup): View {
         var convertView = convertView
 
-        val program: SonyProgram? = programUriMap!![programUriMatchList!![position]]
+        val program: SonyProgram2? = programUriMap!![programUriMatchList!![position]]
 
         val holder: ViewHolder
 

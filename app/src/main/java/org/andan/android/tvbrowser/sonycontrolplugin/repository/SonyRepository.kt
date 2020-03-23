@@ -14,6 +14,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Response
 import java.util.ArrayList
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 class SonyRepository @Inject constructor(val client: OkHttpClient, val api: SonyService, val preferenceStore: ControlPreferenceStore) {
@@ -70,6 +71,10 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         return apiCall(call = { api.avContent("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
+    /*suspend inline fun <reified T> accessControlService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
+        return apiCall(call = { api.accessControl("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, jsonRpcRequest) })
+    }*/
+
     suspend fun getPlayingContentInfo() {
         withContext(Dispatchers.Main) {
             val resource = avContentService<PlayingContentInfoResponse>(
@@ -104,6 +109,40 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             }
         }
     }
+
+    suspend fun registerControl() {
+        withContext(Dispatchers.Main) {
+            val params = ArrayList<Any>()
+            params.add(
+                hashMapOf(
+                    "clientid" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
+                    "nickname" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
+                    "level" to "private"
+                )
+            )
+            params.add(
+                listOf(
+                    hashMapOf(
+                        "value" to "yes",
+                        "function" to "WOL"
+                    )
+                )
+            )
+            val response = api.accessControl("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params))
+            // update token
+            if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
+                val cookieString: String? = response.headers()["Set-Cookie"]
+                var pattern =
+                    Pattern.compile("auth=([A-Za-z0-9]+)")
+                var matcher = pattern.matcher(cookieString)
+                if (matcher.find()) {
+                    preferenceStore.storeToken(selectedSonyControl.value?.uuid!!, "auth=" + matcher.group(1))
+                }
+            }
+
+        }
+    }
+
 
     fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
         var isUpdated = false

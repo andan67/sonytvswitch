@@ -6,19 +6,20 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_manage_control.*
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 import java.text.DateFormat
 import java.text.DateFormat.getDateTimeInstance
 
 class ManageControlFragment : Fragment() {
     private val TAG = ManageControlFragment::class.java.name
-
-    private lateinit var controlViewModel: ControlViewModel
+    private val testViewModel: TestViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,28 +35,26 @@ class ManageControlFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
-        // TODO: Use the ViewModel
-        controlViewModel.getControls().observe(viewLifecycleOwner, Observer {
-            if(controlViewModel.getSelectedControlIndex() >= 0) {
-                controlDetailIPValueTextView.text = controlViewModel.getSelectedControl()?.ip
+        testViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
+            if(testViewModel.sonyControls.value!!.selected >= 0) {
+                controlDetailIPValueTextView.text = testViewModel.getSelectedControl()?.ip
                 controlDetailNicknameValueTextView.text =
-                    controlViewModel.getSelectedControl()?.nickname
+                    testViewModel.getSelectedControl()?.nickname
                 controlDetailDevicenameValueTextView.text =
-                    controlViewModel.getSelectedControl()?.devicename
-                controlDetailUuidValueTextView.text = controlViewModel.getSelectedControl()?.uuid
-                controlDetailCookieValueTextView.text = controlViewModel.getSelectedControl()?.cookie
-                controlDetailCookieExpireValueTextView.text =
-                    getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT).format(controlViewModel.getSelectedControl()?.cookieExprireTime)
+                    testViewModel.getSelectedControl()?.devicename
+                controlDetailUuidValueTextView.text = testViewModel.getSelectedControl()?.uuid
+                controlDetailCookieValueTextView.text = testViewModel.getSelectedControl()?.cookie
+                controlDetailCookieExpireValueTextView.text = ""
                 controlDetailNumberOfProgramsTextView.text = String.format(
                     "%d",
-                    controlViewModel.getSelectedControl()?.programList?.size ?: -1
+                    testViewModel.getSelectedControl()?.programList?.size ?: -1
                 )
-                controlDetailSystemModel.text = controlViewModel.getSelectedControl()?.systemProductInformation
-                controlDetailSystemMacAddr.text = controlViewModel.getSelectedControl()?.systemMacAddr
-                controlDetailSystemWolMode.text = controlViewModel.getSelectedControl()?.systemWolMode.toString()
+                //controlDetailSystemModel.text = testViewModel.getSelectedControl()?.systemProductInformation
+                controlDetailSystemModel.text = ""
+                controlDetailSystemMacAddr.text = testViewModel.getSelectedControl()?.systemMacAddr
+                controlDetailSystemWolMode.text = testViewModel.getSelectedControl()?.systemWolMode.toString()
 
-                Log.d(TAG, "auth cookie: ${controlViewModel.getSelectedControl()?.cookie}")
+                Log.d(TAG, "auth cookie: ${testViewModel.getSelectedControl()?.cookie}")
             } else {
                 controlDetailIPValueTextView.text = ""
                 controlDetailNicknameValueTextView.text = ""
@@ -82,7 +81,7 @@ class ManageControlFragment : Fragment() {
                 builder.setMessage("Do you want to delete this control?").setTitle("Confirm delete")
                 builder.setPositiveButton("Yes") { dialog, id ->
                     Log.d(TAG, "deleteControl")
-                    controlViewModel.deleteSelectedControl()
+                    //controlViewModel.deleteSelectedControl()
                 }
                 builder.setNegativeButton(
                     "No"
@@ -91,12 +90,13 @@ class ManageControlFragment : Fragment() {
                 dialog.show()
             }
             R.id.register_control -> {
-                val extras = Bundle()
+                /*val extras = Bundle()
                 extras.putInt(
                     SonyIPControlIntentService.ACTION,
                     SonyIPControlIntentService.REGISTER_CONTROL_ACTION
                 )
-                (activity as MainActivity).startControlService(extras)
+                (activity as MainActivity).startControlService(extras)*/
+                testViewModel.registerControl()
             }
             R.id.get_program_list -> {
                 val extras = Bundle()

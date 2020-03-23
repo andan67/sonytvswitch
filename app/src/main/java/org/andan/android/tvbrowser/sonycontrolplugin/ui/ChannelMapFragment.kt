@@ -11,12 +11,14 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.selects.select
 import org.andan.android.tvbrowser.sonycontrolplugin.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
@@ -31,7 +33,7 @@ import org.andan.av.sony.model.SonyProgram
  */
 class ChannelMapFragment : Fragment() {
     private val TAG = ChannelMapFragment::class.java.name
-    private lateinit var testViewModel: TestViewModel
+    private val testViewModel: TestViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     //private var searchQuery: String? = null
@@ -52,10 +54,9 @@ class ChannelMapFragment : Fragment() {
         )
 
         val view = binding.root
-        testViewModel = ViewModelProvider(this).get(TestViewModel::class.java)
-
+        testViewModel.onSelectedIndexChange()
         binding.testViewModel = testViewModel
-
+        Log.d(TAG, "onCreateView: ${testViewModel.channelNameList.size}")
         if (testViewModel.getSelectedControl() == null || testViewModel.channelNameList.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
@@ -78,6 +79,7 @@ class ChannelMapFragment : Fragment() {
                                 alertNoPrograms()
                             } else {
                                 testViewModel.selectedChannelName = channelName
+                                Log.d(TAG, "selectedChannelName: $channelName")
                                 view.findNavController()
                                     .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
                             }

@@ -244,7 +244,7 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-    private fun updateChannelMapsFromChannelNameList() {
+    private fun  updateChannelMapsFromChannelNameList() {
         Log.d(TAG, "updateChannelMapsFromChannelNameList()")
         var isUpdated = false
 

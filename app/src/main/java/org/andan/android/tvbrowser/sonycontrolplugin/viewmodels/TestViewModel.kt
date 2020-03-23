@@ -11,6 +11,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
+import org.andan.av.sony.ProgramFuzzyMatch
+import java.util.LinkedHashSet
 
 class TestViewModel : ViewModel() {
     // TODO: Implement the ViewModel
@@ -169,6 +171,30 @@ class TestViewModel : ViewModel() {
         }
     }
 
+    internal fun createProgramUriMatchList(channelName: String?, query: String?) : ArrayList<String> {
+        Log.d(TAG, "createProgramUriMatchList()")
+        val programUriMatchList: ArrayList<String> = ArrayList()
+        if (programTitleList.isNotEmpty()) {
+            var matchTopSet: MutableSet<Int>? = null
+            if (query == null || query.isEmpty()) {
+                matchTopSet = ProgramFuzzyMatch.matchTop(channelName, programTitleList, 30, true)
+            } else {
+                matchTopSet = LinkedHashSet()
+                for (i in programTitleList.indices) {
+                    val programTitle = programTitleList[i]
+                    if (programTitle.toLowerCase().contains(query.toLowerCase())) {
+                        matchTopSet.add(i)
+                        if (matchTopSet.size == 30) break
+                    }
+                }
+            }
+            if (matchTopSet != null && !getSelectedControl()?.programList.isNullOrEmpty()) {
+                matchTopSet.forEach {programUriMatchList.add(getSelectedControl()!!.programList[it].uri)}
+            }
+            repository.saveControls()
+        }
+        return programUriMatchList
+    }
 
     val playingContentInfo = repository.playingContentInfo
     val noPlayingContentInfo = PlayingContentInfoResponse("","----","","Not available","","","",0)
@@ -180,6 +206,10 @@ class TestViewModel : ViewModel() {
 
     fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
         repository.setPlayContent(uri)
+    }
+
+    fun registerControl() = viewModelScope.launch(Dispatchers.IO) {
+        repository.registerControl()
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
