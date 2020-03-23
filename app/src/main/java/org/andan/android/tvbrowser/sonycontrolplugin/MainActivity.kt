@@ -124,9 +124,9 @@ class MainActivity : AppCompatActivity() {
                 "observed: controlViewModel.getSelectedControlIndex()=${controlViewModel.getSelectedControlIndex()}"
             )
             // renew cookie if required
-            val extras = Bundle()
+           /* val extras = Bundle()
             extras.putInt(SonyIPControlIntentService.ACTION, SonyIPControlIntentService.RENEW_COOKIE_ACTION )
-            startControlService(extras)
+            startControlService(extras)*/
             //selectActiveControlSpinner.setSelection(controlViewModel.getSelectedControlIndex())
             controlListAdapter.notifyDataSetChanged()
             //navController.navigate(R.id.nav_manage_control)

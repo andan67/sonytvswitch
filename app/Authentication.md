@@ -1,7 +1,8 @@
 - First registration of control with nickname, devicename, no token, no challenge code (user:password in format :XXXX)
   - Non 401 error Code
     - control cannot be registered (control must be deleted)
-    - resposne:   {"error":[42000,"not register any more"],"id":8}
+    -   {"error":[42000,"not register any more"],"id":8}
+    -   {"error":[7,"not power-on"],"id":8}
   - 401-response
     - Navigate to enter challenge code view
     - Enter challenge code

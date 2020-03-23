@@ -115,8 +115,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             val params = ArrayList<Any>()
             params.add(
                 hashMapOf(
-                    "clientid" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
-                    "nickname" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
+                    "nickname" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
+                    "clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
                     "level" to "private"
                 )
             )
