@@ -13,6 +13,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Response
+import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.util.ArrayList
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -71,9 +73,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         return apiCall(call = { api.avContent("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
-    /*suspend inline fun <reified T> accessControlService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
+    suspend inline fun <reified T> accessControlService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
         return apiCall(call = { api.accessControl("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, jsonRpcRequest) })
-    }*/
+    }
 
     suspend fun getPlayingContentInfo() {
         withContext(Dispatchers.Main) {
@@ -116,7 +118,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             params.add(
                 hashMapOf(
                     "nickname" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
-                    "clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
+                    //"clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
+                    "clientid" to selectedSonyControl.value?.nickname + ":1234",
                     "level" to "private"
                 )
             )
@@ -128,18 +131,38 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     )
                 )
             )
-            val response = api.accessControl("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params))
-            // update token
-            if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
-                val cookieString: String? = response.headers()["Set-Cookie"]
-                var pattern =
-                    Pattern.compile("auth=([A-Za-z0-9]+)")
-                var matcher = pattern.matcher(cookieString)
-                if (matcher.find()) {
-                    preferenceStore.storeToken(selectedSonyControl.value?.uuid!!, "auth=" + matcher.group(1))
+            try {
+                val response = api.accessControl(
+                    "http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT,
+                    JsonRpcRequest(8, "actRegister", params)
+                )
+                // update token
+                if (response.isSuccessful) {
+                    val jsonRpcResponse = response.body()
+                    if (jsonRpcResponse?.error != null) {
+                        _requestErrorMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
+                    } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
+                        // get token from set cookie and store
+                        val cookieString: String? = response.headers()["Set-Cookie"]
+                        val pattern = Pattern.compile("auth=([A-Za-z0-9]+)")
+                        val matcher = pattern.matcher(cookieString)
+                        if (matcher.find()) {
+                            preferenceStore.storeToken(selectedSonyControl.value?.uuid!!, "auth=" + matcher.group(1)
+                            )
+                        }
+                    }
                 }
+                else {
+                    if(response.code() == HttpURLConnection.HTTP_UNAUTHORIZED ) {
+                        // Navigate to enter challenge code view
+                    } else {
+                        _requestErrorMessage.postValue(response.message())
+                    }
+                }
+            } catch (se: SocketTimeoutException) {
+                Log.e(TAG, "Error: ${se.message}")
+                _requestErrorMessage.postValue(se.message)
             }
-
         }
     }
 
@@ -171,11 +194,12 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 when {
                     jsonRpcResponse?.error != null -> {
                         Log.d("apiCall", "evaluate error")
-                        Resource.Error(jsonRpcResponse.error.asJsonArray.get(1).asString)
+                        Resource.Error(jsonRpcResponse.error.asJsonArray.get(1).asString, response.code())
                     }
                     else -> {
                         Log.d("apiCall", "evaluate result")
                         Resource.Success(
+                            response.code(),
                             gson.fromJson(
                                 jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject,
                                 T::class.java
@@ -185,12 +209,12 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 }
             } else {
                 Log.d("apiCall", "evaluate response unsuccessful")
-                Resource.Error(response.message())
+                Resource.Error(response.message(), response.code())
             }
 
         } catch (e: Exception) {
             Log.d("apiCall", "evaluate exception ${e.message}")
-            return Resource.Error(e.message!!)
+            return Resource.Error(e.message!!, 0)
         }
     }
 

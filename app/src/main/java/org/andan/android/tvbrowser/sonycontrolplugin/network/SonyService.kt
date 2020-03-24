@@ -211,12 +211,13 @@ class TokenAuthenticator @Inject constructor(
 
 sealed class Resource<T>(
     val data: T? = null,
+    val code: Int=0,
     val message: String? = null,
     val status: Status
 ) {
-    class Success<T>(data: T) : Resource<T>(data, status = Status.SUCCESS)
+    class Success<T>(code: Int, data: T) : Resource<T>(data, code, status = Status.SUCCESS)
     class Loading<T>(data: T? = null) : Resource<T>(data, status = Status.LOADING)
-    class Error<T>(message: String, data: T? = null) : Resource<T>(data, message, Status.ERROR)
+    class Error<T>(message: String, code: Int, data: T? = null) : Resource<T>(data, code, message, Status.ERROR)
 }
 
 enum class Status {

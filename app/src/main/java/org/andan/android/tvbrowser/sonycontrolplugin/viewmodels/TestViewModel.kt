@@ -12,6 +12,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
 import org.andan.av.sony.ProgramFuzzyMatch
+import java.net.SocketTimeoutException
 import java.util.LinkedHashSet
 
 class TestViewModel : ViewModel() {
@@ -210,6 +211,11 @@ class TestViewModel : ViewModel() {
 
     fun registerControl() = viewModelScope.launch(Dispatchers.IO) {
         repository.registerControl()
+        /*try {
+            repository.registerControl()
+        }
+        catch (se: SocketTimeoutException) {
+            Log.e(TAG, "Error: ${se.message}")}*/
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
