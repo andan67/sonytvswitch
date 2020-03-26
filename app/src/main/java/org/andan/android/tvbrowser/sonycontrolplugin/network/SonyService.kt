@@ -1,10 +1,7 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
 import com.google.gson.JsonElement
-import okhttp3.Authenticator
-import okhttp3.Interceptor
-import okhttp3.Request
-import okhttp3.Route
+import okhttp3.*
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import retrofit2.Call
@@ -121,21 +118,8 @@ fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
     )
 }
 
-/*
-class TokenStore @Inject constructor(@Nullable @Named("TokenStore") val preference: SharedPreferences) {
-
-    fun getToken(): String {
-        return preference.getString("TokenStore", "")!!
-    }
-
-    fun storeToken(token: String) {
-        preference.edit().putString("TokenStore", token).apply();
-    }
-}
-*/
-
-class AddTokenInterceptor @Inject constructor( private val serviceHolder: SonyServiceHolder?,
-                                               private val tokenStore: TokenStore) : Interceptor {
+class AddTokenInterceptor @Inject constructor(private val serviceClientContext: SonyServiceClientContext?,
+                                              private val tokenStore: TokenStore) : Interceptor {
 
     /**
      * Interceptor class for setting of the headers for every request
@@ -143,13 +127,17 @@ class AddTokenInterceptor @Inject constructor( private val serviceHolder: SonySe
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         var request = chain.request()
         //request = request.newBuilder().addHeader("Cookie", tokenStore.getToken()).build()
-        request = request.newBuilder().addHeader("Cookie", tokenStore.loadToken(serviceHolder!!.uuid)).build()
+        val builder = request.newBuilder()
+        if(serviceClientContext!!.preSharedKey.isEmpty()) builder.addHeader("Cookie", tokenStore.loadToken(serviceClientContext.uuid))
+        else builder.addHeader("X-Auth-PSK", serviceClientContext.preSharedKey)
+        if(serviceClientContext.password.isNotEmpty())  builder.addHeader("Authorization", Credentials.basic(serviceClientContext.username, serviceClientContext.password))
+        request = builder.build()
         return chain.proceed(request)
     }
 }
 
 class TokenAuthenticator @Inject constructor(
-    private val serviceHolder: SonyServiceHolder,
+    private val serviceClientContext: SonyServiceClientContext,
     private val tokenStore: TokenStore
 ) : Authenticator {
 
@@ -180,9 +168,9 @@ class TokenAuthenticator @Inject constructor(
             )
         )
 
-        if (serviceHolder != null) {
+        if (serviceClientContext != null) {
             val response =
-                serviceHolder.sonyService!!.refreshToken("http://" + serviceHolder.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
+                serviceClientContext.sonyService!!.refreshToken("http://" + serviceClientContext.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
             if (response.code() == HTTP_OK) {
                 if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                     val cookieString: String? = response.headers()["Set-Cookie"]
@@ -190,7 +178,7 @@ class TokenAuthenticator @Inject constructor(
                         Pattern.compile("auth=([A-Za-z0-9]+)")
                     var matcher = pattern.matcher(cookieString)
                     if (matcher.find()) {
-                        tokenStore.storeToken(serviceHolder.uuid, "auth=" + matcher.group(1))
+                        tokenStore.storeToken(serviceClientContext.uuid, "auth=" + matcher.group(1))
                         /*
                         pattern = Pattern.compile("max-age=([0-9]+)")
                         matcher = pattern.matcher(cookieString)
@@ -205,7 +193,7 @@ class TokenAuthenticator @Inject constructor(
                 }
             }
         }
-        return tokenStore.loadToken(serviceHolder.uuid)
+        return tokenStore.loadToken(serviceClientContext.uuid)
     }
 }
 
@@ -226,8 +214,11 @@ enum class Status {
     LOADING
 }
 
-class SonyServiceHolder(
+class SonyServiceClientContext(
     var sonyService: SonyService? = null,
     var ip: String = "",
-    var uuid: String = ""
+    var uuid: String = "",
+    var username : String = "",
+    var password : String = "",
+    var preSharedKey : String = ""
 )

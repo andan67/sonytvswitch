@@ -6,11 +6,14 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_manage_control.*
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
@@ -30,42 +33,15 @@ class ManageControlFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_manage_control, container, false)
-    }
+        val binding: FragmentManageControlBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_manage_control, container, false
+        )
+        val view = binding.root
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        testViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
-            if(testViewModel.sonyControls.value!!.selected >= 0) {
-                controlDetailIPValueTextView.text = testViewModel.getSelectedControl()?.ip
-                controlDetailNicknameValueTextView.text =
-                    testViewModel.getSelectedControl()?.nickname
-                controlDetailDevicenameValueTextView.text =
-                    testViewModel.getSelectedControl()?.devicename
-                controlDetailUuidValueTextView.text = testViewModel.getSelectedControl()?.uuid
-                controlDetailCookieValueTextView.text = testViewModel.getSelectedControl()?.cookie
-                controlDetailCookieExpireValueTextView.text = ""
-                controlDetailNumberOfProgramsTextView.text = String.format(
-                    "%d",
-                    testViewModel.getSelectedControl()?.programList?.size ?: -1
-                )
-                //controlDetailSystemModel.text = testViewModel.getSelectedControl()?.systemProductInformation
-                controlDetailSystemModel.text = ""
-                controlDetailSystemMacAddr.text = testViewModel.getSelectedControl()?.systemMacAddr
-                controlDetailSystemWolMode.text = testViewModel.getSelectedControl()?.systemWolMode.toString()
-
-                Log.d(TAG, "auth cookie: ${testViewModel.getSelectedControl()?.cookie}")
-            } else {
-                controlDetailIPValueTextView.text = ""
-                controlDetailNicknameValueTextView.text = ""
-                controlDetailDevicenameValueTextView.text = ""
-                controlDetailUuidValueTextView.text = ""
-                controlDetailCookieValueTextView.text = ""
-                controlDetailCookieExpireValueTextView.text = ""
-                controlDetailNumberOfProgramsTextView.text = ""
-            }
-            Log.d(TAG, "observed change getControls")
-        })
+        binding.testViewModel = testViewModel
+        binding.lifecycleOwner = this
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

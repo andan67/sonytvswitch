@@ -18,8 +18,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideSonyServiceHolder(): SonyServiceHolder {
-        return SonyServiceHolder()
+    fun provideSonyServiceHolder(): SonyServiceClientContext {
+        return SonyServiceClientContext()
     }
 
 
@@ -50,12 +50,12 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, serviceHolder: SonyServiceHolder, tokenStore: TokenStore,
+    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, serviceClientContext: SonyServiceClientContext, tokenStore: TokenStore,
                             authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
             .connectTimeout(2,TimeUnit.SECONDS)
-            .addInterceptor(AddTokenInterceptor(serviceHolder, tokenStore))
+            .addInterceptor(AddTokenInterceptor(serviceClientContext, tokenStore))
         if (BuildConfig.DEBUG) {
             client.addInterceptor(loggingInterceptor)
         }
