@@ -57,7 +57,7 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/program_item_channelid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/program_item_channelid"
-            tools:text="Eurosport Deutschland HD abcdefghijklmnopqrst" />
+            tools:text="ServusTV HD Deutschland" />
 
         <ImageView
             android:id="@+id/program_item_program_source_icon"
@@ -109,9 +109,9 @@
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/program_item_program_source"
             app:layout_constraintStart_toEndOf="@+id/program_item_mapped_icon"
-            tools:text="Eurosport Deutschland Eurosport Deutschland" />
+            app:layout_constraintTop_toTopOf="@+id/program_item_program_source"
+            tools:text="ServusTV Österreich" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

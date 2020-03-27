@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -41,6 +42,12 @@ class ManageControlFragment : Fragment() {
 
         binding.testViewModel = testViewModel
         binding.lifecycleOwner = this
+
+        testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observed requestError")
+            if(!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        })
+
         return binding.root
     }
 

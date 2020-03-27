@@ -118,8 +118,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             params.add(
                 hashMapOf(
                     "nickname" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
-                    //"clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
-                    "clientid" to selectedSonyControl.value?.nickname + ":1234",
+                    "clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
+                    //"clientid" to selectedSonyControl.value?.nickname + ":1234",
                     "level" to "private"
                 )
             )
@@ -155,6 +155,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 else {
                     if(response.code() == HttpURLConnection.HTTP_UNAUTHORIZED ) {
                         // Navigate to enter challenge code view
+                        _requestErrorMessage.postValue(response.message())
                     } else {
                         _requestErrorMessage.postValue(response.message())
                     }
@@ -224,6 +225,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     fun addControl(control: SonyControl) {
-
+        sonyControls.value!!.controls.add(control)
+        sonyControls.value!!.selected = sonyControls.value!!.controls.size-1
+        preferenceStore.storeControls(sonyControls.value!!)
+        selectedSonyControl.value =getSelectedControl(sonyControls.value!!)
     }
 }

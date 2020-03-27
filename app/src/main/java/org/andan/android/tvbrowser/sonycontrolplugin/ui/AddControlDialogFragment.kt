@@ -27,7 +27,6 @@ class AddControlDialogFragment : DialogFragment() {
         dialogBuilder.setMessage("Add control")
         val dialogView:View = this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_dialog, null, false)
         dialogBuilder.setView(dialogView)
-        val controlViewModel = ViewModelProvider(this).get(ControlViewModel::class.java)
         val testViewModel = ViewModelProvider(this).get(TestViewModel::class.java)
         dialogBuilder.setPositiveButton("Add"
         ) { _, _ ->
@@ -39,7 +38,6 @@ class AddControlDialogFragment : DialogFragment() {
                 if (nickname.contains("#android", true)) SonyIPControl.createSample("192.168.178.27", "android", "sony")
                 else if (nickname.contains("sample", true)) SonyIPControl.createSample(ip, nickname, devicename)
                 else SonyIPControl(ip, nickname, devicename)
-            //controlViewModel.addControl(sonyIPControl)
             val sonyControl = SonyControl(ip, nickname, devicename)
             testViewModel.addControl(sonyControl)
             val navController = activity!!.findNavController(R.id.nav_host_fragment)

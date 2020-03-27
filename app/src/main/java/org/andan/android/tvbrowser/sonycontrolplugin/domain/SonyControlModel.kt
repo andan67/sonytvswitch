@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), val selected: Int = -1) {
+data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), var selected: Int = -1) {
 
     fun toJson() : String = gson.toJson(this)
 
