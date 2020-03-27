@@ -113,13 +113,7 @@ class ChannelMapSingleFragment : Fragment() {
             //binding.channelMapProgramListView.setItemChecked(position,true)
             currentProgramPosition = position
             val program = testViewModel.uriProgramMap[programUriMatchList[currentProgramPosition]]
-            val extras = Bundle()
-            extras.putInt(
-                SonyIPControlIntentService.ACTION,
-                SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
-            )
-            extras.putString(SonyIPControlIntentService.URI, program?.uri)
-            (activity as MainActivity).startControlService(extras)
+            // switch to program
             Toast.makeText(context, "Switched to ${program?.title}", Toast.LENGTH_LONG).show()
             true
         }

@@ -88,7 +88,7 @@ class RemoteControlFragment : Fragment() {
                     SonyIPControlIntentService.SCREEN_OFF_ACTION
                 )
         }
-        (activity as MainActivity).startControlService(extras)
+        //(activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
     }
 
@@ -99,7 +99,7 @@ class RemoteControlFragment : Fragment() {
             SonyIPControlIntentService.SEND_IRCC_BY_NAME_ACTION
         )
         extras.putString(SonyIPControlIntentService.CODE, name)
-        (activity as MainActivity).startControlService(extras)
+        //(activity as MainActivity).startControlService(extras)
     }
 
     class CommandListener(val clickListener: (name: String) -> Unit) {

@@ -9,7 +9,7 @@ import javax.inject.Singleton
 @Singleton
 interface ApplicationComponent {
     fun sonyRepository(): SonyRepository
-    fun serviceHolder(): SonyServiceClientContext
+    fun sonyServiceContext(): SonyServiceClientContext
     //fun inject(sonyRepository: SonyRepository)
 
   /*  @Component.Builder

@@ -296,8 +296,8 @@ class ControlViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun saveControls(hasChanged: Boolean) {
-        Log.d(TAG, "caveControls(hasChanged: Boolean) $hasChanged")
-        controlRepository.saveControls(hasChanged)
+        //Log.d(TAG, "caveControls(hasChanged: Boolean) $hasChanged")
+        //controlRepository.saveControls(hasChanged)
     }
 
     internal fun createProgramUriMatchList(channelName: String?, query: String?) : ArrayList<String> {

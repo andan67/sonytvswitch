@@ -89,18 +89,7 @@ class ChannelMapFragment : Fragment() {
                                 (testViewModel.getSelectedControl())!!.channelProgramMap[channelName]
                             if (!uri.isNullOrEmpty()) {
                                 val program = testViewModel.uriProgramMap[uri]
-                                val extras = Bundle()
-                                extras.putInt(
-                                    SonyIPControlIntentService.ACTION,
-                                    SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
-                                )
-                                extras.putString(
-                                    SonyIPControlIntentService.URI,
-                                    program?.uri
-                                )
-                                (activity as MainActivity).startControlService(
-                                    extras
-                                )
+                                // switch to program
                                 Toast.makeText(
                                     context,
                                     "Switched to ${program?.title}",

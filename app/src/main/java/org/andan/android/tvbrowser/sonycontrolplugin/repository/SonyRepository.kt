@@ -36,11 +36,11 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     init {
         //(client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
         sonyControls.value = preferenceStore.loadControls()
-        selectedSonyControl.value = getSelectedControl(sonyControls.value!!)
-        SonyControlApplication.get().appComponent.serviceHolder().sonyService = api
+        selectedSonyControl.value = getSelectedControl()
+        SonyControlApplication.get().appComponent.sonyServiceContext().sonyService = api
         if(selectedSonyControl.value != null) {
-            SonyControlApplication.get().appComponent.serviceHolder().ip = selectedSonyControl.value!!.ip
-            SonyControlApplication.get().appComponent.serviceHolder().uuid = selectedSonyControl.value!!.uuid
+            SonyControlApplication.get().appComponent.sonyServiceContext().ip = selectedSonyControl.value!!.ip
+            SonyControlApplication.get().appComponent.sonyServiceContext().uuid = selectedSonyControl.value!!.uuid
         }
     }
 
@@ -48,9 +48,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         this.value = this.value
     }
 
-    private fun getSelectedControl(sonyControls: SonyControls) : SonyControl? {
-        return if(sonyControls.selected >= 0 && sonyControls.selected <= sonyControls.controls.size-1) {
-            sonyControls.controls[sonyControls.selected ]
+    private fun getSelectedControl() : SonyControl? {
+        return if(sonyControls.value!!.selected >= 0 && sonyControls.value!!.selected <= sonyControls.value!!.controls.size-1) {
+            sonyControls.value!!.controls[sonyControls.value!!.selected]
         } else null
     }
 
@@ -227,7 +227,20 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     fun addControl(control: SonyControl) {
         sonyControls.value!!.controls.add(control)
         sonyControls.value!!.selected = sonyControls.value!!.controls.size-1
-        preferenceStore.storeControls(sonyControls.value!!)
-        selectedSonyControl.value =getSelectedControl(sonyControls.value!!)
+        //preferenceStore.storeControls(sonyControls.value!!)
+        saveControls()
+        selectedSonyControl.value =getSelectedControl()
+        selectedSonyControl.notifyObserver()
+    }
+
+    fun setSelectedControlIndex(index : Int): Boolean {
+        if(index < sonyControls.value!!.controls.size) {
+            sonyControls.value!!.selected = index
+            saveControls()
+            selectedSonyControl.value =getSelectedControl()
+            //selectedSonyControl.notifyObserver()
+            return true
+        }
+        return false
     }
 }

@@ -40,8 +40,12 @@ class ManageControlFragment : Fragment() {
         )
         val view = binding.root
 
+        binding.lifecycleOwner = activity
         binding.testViewModel = testViewModel
-        binding.lifecycleOwner = this
+
+        testViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observed change ${testViewModel.selectedSonyControl.value}")
+        })
 
         testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed requestError")
@@ -82,20 +86,10 @@ class ManageControlFragment : Fragment() {
                 testViewModel.registerControl()
             }
             R.id.get_program_list -> {
-                val extras = Bundle()
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.SET_PROGRAM_LIST_ACTION
-                )
-                (activity as MainActivity).startControlService(extras)
+
             }
             R.id.enable_wol -> {
-                val extras = Bundle()
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.ENABLE_WOL_ACTION
-                )
-                (activity as MainActivity).startControlService(extras)
+
             }
         }
         return super.onOptionsItemSelected(item)

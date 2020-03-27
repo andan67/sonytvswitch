@@ -35,6 +35,8 @@ class TestViewModel : ViewModel() {
 
     val requestErrorMessage = repository.requestErrorMessage
 
+    var isCreated: Boolean = false
+
     private var _selectedSonyControl = MutableLiveData<SonyControl>()
     val selectedSonyControl: LiveData<SonyControl>
         get() = _selectedSonyControl
@@ -44,6 +46,7 @@ class TestViewModel : ViewModel() {
         get() = _sonyControls
 
     init {
+        _sonyControls = repository.sonyControls
         _selectedSonyControl = repository.selectedSonyControl
         //filterChannelNameList("")
     }
@@ -79,6 +82,11 @@ class TestViewModel : ViewModel() {
             Log.d(TAG, "updateCurrentProgram ${lastProgram?.title} ${currentProgram?.title} ${program.title}"
             )
         }
+    }
+
+    fun setSelectedControlIndex(index: Int) {
+        Log.d(TAG,"setSelectedControlIndex(index: $index)")
+        if(repository.setSelectedControlIndex(index)) onSelectedIndexChange()
     }
 
     fun onSelectedIndexChange() {

@@ -63,7 +63,6 @@ class ProgramListFragment : Fragment() {
             }
 
         }
-        testViewModel.onSelectedIndexChange()
 
         if (testViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
@@ -226,7 +225,7 @@ class ProgramListFragment : Fragment() {
                     SonyIPControlIntentService.SCREEN_OFF_ACTION
                 )
         }
-        (activity as MainActivity).startControlService(extras)
+        //(activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
     }
 

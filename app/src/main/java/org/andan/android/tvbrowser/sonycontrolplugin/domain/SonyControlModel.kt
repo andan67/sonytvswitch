@@ -49,6 +49,10 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
 
     val channelProgramMap = LinkedHashMap<String, String>()
 
+    override fun toString(): String {
+        return "$nickname ($devicename)"
+    }
+
 }
 
 data class SonyProgram2(val source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
