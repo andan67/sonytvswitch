@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.ip}"
+                android:text="@{testViewModel.selectedSonyControl.ip}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 tools:text="192.168.178.27" />
 
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.nickname}"
+                android:text="@{testViewModel.selectedSonyControl.nickname}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -73,8 +73,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.devicename}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:text="@{testViewModel.selectedSonyControl.devicename.replace('\n','x')}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="sample device" />
 
             <View style="@style/Divider" />
 
@@ -92,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.uuid}"
+                android:text="@{testViewModel.selectedSonyControl.uuid}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -111,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.systemModel}"
+                android:text="@{testViewModel.selectedSonyControl.systemModel}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -130,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedControl.systemMacAddr}"
+                android:text="@{testViewModel.selectedSonyControl.systemMacAddr}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -149,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Boolean.toString(testViewModel.selectedControl.systemWolMode)}"
+                android:text="@{Boolean.toString(testViewModel.selectedSonyControl.systemWolMode)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -168,7 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Integer.toString(testViewModel.selectedControl.programList.size())}"
+                android:text="@{Integer.toString(testViewModel.selectedSonyControl.programList.size())}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />

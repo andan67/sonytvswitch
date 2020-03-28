@@ -238,6 +238,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             sonyControls.value!!.selected = index
             saveControls()
             selectedSonyControl.value =getSelectedControl()
+            SonyControlApplication.get().appComponent.sonyServiceContext().ip = selectedSonyControl.value!!.ip
+            SonyControlApplication.get().appComponent.sonyServiceContext().uuid = selectedSonyControl.value!!.uuid
             //selectedSonyControl.notifyObserver()
             return true
         }

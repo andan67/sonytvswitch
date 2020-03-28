@@ -1,25 +1,17 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.fragment_manage_control.*
-import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
-import java.text.DateFormat
-import java.text.DateFormat.getDateTimeInstance
 
 class ManageControlFragment : Fragment() {
     private val TAG = ManageControlFragment::class.java.name
@@ -38,9 +30,7 @@ class ManageControlFragment : Fragment() {
             inflater,
             R.layout.fragment_manage_control, container, false
         )
-        val view = binding.root
-
-        binding.lifecycleOwner = activity
+        binding.lifecycleOwner = this
         binding.testViewModel = testViewModel
 
         testViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {

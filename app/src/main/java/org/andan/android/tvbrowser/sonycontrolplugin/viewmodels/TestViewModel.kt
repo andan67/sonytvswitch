@@ -90,6 +90,7 @@ class TestViewModel : ViewModel() {
     }
 
     fun onSelectedIndexChange() {
+        Log.d(TAG,"onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
         lastProgram = null
         currentProgram = null
         //activeContentInfo.value = noActiveProgram
