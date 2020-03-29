@@ -28,19 +28,27 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
+    val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
     private val _requestErrorMessage = MutableLiveData("")
     val requestErrorMessage: LiveData<String> = _requestErrorMessage
 
     val gson = GsonBuilder().create()
     init {
-        //(client.authenticator as TokenAuthenticator).serviceHolder?.sonyService=api
+        Log.d(TAG, "init")
         sonyControls.value = preferenceStore.loadControls()
+        sonyServiceContext.sonyService = api
+        onSonyControlsChange()
+    }
+
+    private fun onSonyControlsChange() {
         selectedSonyControl.value = getSelectedControl()
-        SonyControlApplication.get().appComponent.sonyServiceContext().sonyService = api
+        sonyServiceContext.sonyService = api
         if(selectedSonyControl.value != null) {
-            SonyControlApplication.get().appComponent.sonyServiceContext().ip = selectedSonyControl.value!!.ip
-            SonyControlApplication.get().appComponent.sonyServiceContext().uuid = selectedSonyControl.value!!.uuid
+            sonyServiceContext.ip = selectedSonyControl.value!!.ip
+            sonyServiceContext.uuid = selectedSonyControl.value!!.uuid
+            sonyServiceContext.nickname = selectedSonyControl.value!!.nickname
+            sonyServiceContext.devicename = selectedSonyControl.value!!.devicename
         }
     }
 
@@ -66,8 +74,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         }
     }
 
-    private val _playingContentInfo = MutableLiveData<Resource<PlayingContentInfoResponse>>()
-    val playingContentInfo: LiveData<Resource<PlayingContentInfoResponse>> = _playingContentInfo
+    private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
+    val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
 
     suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
         return apiCall(call = { api.avContent("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
@@ -86,7 +94,12 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     emptyList()
                 )
             )
-            _playingContentInfo.value = resource
+            if(resource.status == Status.ERROR) {
+                _requestErrorMessage.postValue(resource.message)
+                _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
+            } else {
+                _playingContentInfo.value = resource.data
+            }
             //Log.d(TAG, resource.data!!.title)
         }
     }
@@ -114,55 +127,37 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     suspend fun registerControl() {
         withContext(Dispatchers.Main) {
-            val params = ArrayList<Any>()
-            params.add(
-                hashMapOf(
-                    "nickname" to selectedSonyControl.value?.nickname + " (" + selectedSonyControl.value?.devicename + ")",
-                    "clientid" to selectedSonyControl.value?.nickname + ":" + selectedSonyControl.value?.uuid,
-                    //"clientid" to selectedSonyControl.value?.nickname + ":1234",
-                    "level" to "private"
-                )
-            )
-            params.add(
-                listOf(
-                    hashMapOf(
-                        "value" to "yes",
-                        "function" to "WOL"
+            selectedSonyControl.value?.let {
+                try {
+                    val response = api.accessControl(
+                        "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegisterRequest(it.nickname, it.devicename, it.uuid)
                     )
-                )
-            )
-            try {
-                val response = api.accessControl(
-                    "http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT,
-                    JsonRpcRequest(8, "actRegister", params)
-                )
-                // update token
-                if (response.isSuccessful) {
-                    val jsonRpcResponse = response.body()
-                    if (jsonRpcResponse?.error != null) {
-                        _requestErrorMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
-                    } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
-                        // get token from set cookie and store
-                        val cookieString: String? = response.headers()["Set-Cookie"]
-                        val pattern = Pattern.compile("auth=([A-Za-z0-9]+)")
-                        val matcher = pattern.matcher(cookieString)
-                        if (matcher.find()) {
-                            preferenceStore.storeToken(selectedSonyControl.value?.uuid!!, "auth=" + matcher.group(1)
-                            )
+                    // update token
+                    if (response.isSuccessful) {
+                        val jsonRpcResponse = response.body()
+                        if (jsonRpcResponse?.error != null) {
+                            _requestErrorMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
+                        } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
+                            // get token from set cookie and store
+                            val cookieString: String? = response.headers()["Set-Cookie"]
+                            val pattern = Pattern.compile("auth=([A-Za-z0-9]+)")
+                            val matcher = pattern.matcher(cookieString)
+                            if (matcher.find()) {
+                                preferenceStore.storeToken(it.uuid, "auth=" + matcher.group(1))
+                            }
+                        }
+                    } else {
+                        if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                            // Navigate to enter challenge code view
+                            _requestErrorMessage.postValue(response.message())
+                        } else {
+                            _requestErrorMessage.postValue(response.message())
                         }
                     }
+                } catch (se: SocketTimeoutException) {
+                    Log.e(TAG, "Error: ${se.message}")
+                    _requestErrorMessage.postValue(se.message)
                 }
-                else {
-                    if(response.code() == HttpURLConnection.HTTP_UNAUTHORIZED ) {
-                        // Navigate to enter challenge code view
-                        _requestErrorMessage.postValue(response.message())
-                    } else {
-                        _requestErrorMessage.postValue(response.message())
-                    }
-                }
-            } catch (se: SocketTimeoutException) {
-                Log.e(TAG, "Error: ${se.message}")
-                _requestErrorMessage.postValue(se.message)
             }
         }
     }
@@ -182,7 +177,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 //ToDo: Handle deletion of channels
             }
         }
-        //if(isUpdated) preferenceStore.onControlsChanged()
+        if(isUpdated) saveControls()
         Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
     }
 
@@ -222,25 +217,37 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     fun saveControls() {
         preferenceStore.storeControls(sonyControls.value!!)
         sonyControls.notifyObserver()
+        selectedSonyControl.value =getSelectedControl()
+        onSonyControlsChange()
     }
 
     fun addControl(control: SonyControl) {
         sonyControls.value!!.controls.add(control)
         sonyControls.value!!.selected = sonyControls.value!!.controls.size-1
-        //preferenceStore.storeControls(sonyControls.value!!)
+        Log.d(TAG, "addControl: #${sonyControls.value!!.selected} $control")
         saveControls()
-        selectedSonyControl.value =getSelectedControl()
-        selectedSonyControl.notifyObserver()
+    }
+
+    fun removeControl(index: Int): Boolean {
+        if(index >=0 && index < sonyControls.value!!.controls.size) {
+
+            var newSelected = sonyControls.value!!.selected -1
+            if  (sonyControls.value!!.selected == 0 && sonyControls.value!!.controls.size > 1)
+            {
+                newSelected = sonyControls.value!!.controls.size - 2
+            }
+            sonyControls.value!!.controls.removeAt(index)
+            sonyControls.value!!.selected = newSelected
+            saveControls()
+            return true
+        }
+        return false
     }
 
     fun setSelectedControlIndex(index : Int): Boolean {
         if(index < sonyControls.value!!.controls.size) {
             sonyControls.value!!.selected = index
             saveControls()
-            selectedSonyControl.value =getSelectedControl()
-            SonyControlApplication.get().appComponent.sonyServiceContext().ip = selectedSonyControl.value!!.ip
-            SonyControlApplication.get().appComponent.sonyServiceContext().uuid = selectedSonyControl.value!!.uuid
-            //selectedSonyControl.notifyObserver()
             return true
         }
         return false

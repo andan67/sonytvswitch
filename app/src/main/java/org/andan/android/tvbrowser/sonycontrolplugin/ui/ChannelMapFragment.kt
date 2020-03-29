@@ -57,12 +57,13 @@ class ChannelMapFragment : Fragment() {
         testViewModel.onSelectedIndexChange()
         binding.testViewModel = testViewModel
         Log.d(TAG, "onCreateView: ${testViewModel.channelNameList.size}")
-        if (testViewModel.getSelectedControl() == null || testViewModel.channelNameList.isNullOrEmpty()) {
+        if (testViewModel.selectedSonyControl.value == null || testViewModel.channelNameList.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
-            if (testViewModel.getSelectedControl() == null) {
+            if (testViewModel.selectedSonyControl.value == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
+                Log.d(TAG, "No active control")
             } else if (testViewModel.channelNameList.isNullOrEmpty()) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_channels_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_channels_message))
@@ -86,7 +87,7 @@ class ChannelMapFragment : Fragment() {
                         },
                         { channelName: String ->
                             val uri: String? =
-                                (testViewModel.getSelectedControl())!!.channelProgramMap[channelName]
+                                testViewModel.selectedSonyControl.value!!.channelProgramMap[channelName]
                             if (!uri.isNullOrEmpty()) {
                                 val program = testViewModel.uriProgramMap[uri]
                                 // switch to program
@@ -196,7 +197,7 @@ class ChannelMapFragment : Fragment() {
                 if (testViewModel.programTitleList.isEmpty()) {
                     alertNoPrograms()
                 } else {
-                    //testViewModel.performFuzzyMatchForChannelList()
+                    testViewModel.performFuzzyMatchForChannelList()
                 }
                 Toast.makeText(
                     context,
@@ -245,9 +246,9 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
         fun bind(item: String, clickListener: ChannelMapListener, testViewModel: TestViewModel) {
             binding.channelName = item
             binding.channelPosition = adapterPosition+1
-            val programUri: String? = testViewModel.getSelectedControl()!!.channelProgramMap[item]
+            val programUri: String? = testViewModel.selectedSonyControl.value!!.channelProgramMap[item]
             if (!programUri.isNullOrEmpty()) {
-                val program: SonyProgram2? = testViewModel.getSelectedControl()!!.programUriMap!![programUri]
+                val program: SonyProgram2? = testViewModel.selectedSonyControl.value!!.programUriMap!![programUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else

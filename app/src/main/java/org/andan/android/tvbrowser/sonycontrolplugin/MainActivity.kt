@@ -1,9 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -11,15 +7,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -27,13 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
-import org.andan.av.sony.SonyIPControl
-import org.andan.av.sony.model.SonyPlayingContentInfo
-import org.tvbrowser.devplugin.Channel
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 

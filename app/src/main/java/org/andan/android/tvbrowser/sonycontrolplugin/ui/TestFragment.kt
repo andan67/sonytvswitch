@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -48,13 +47,9 @@ class TestFragment : Fragment() {
 
         viewModel.playingContentInfo.observe(
             viewLifecycleOwner,
-            Observer<Resource<PlayingContentInfoResponse>> {
+            Observer<PlayingContentInfoResponse> {
                 Log.d(TAG, "observed change playingcontentinfo")
-                when (it.status) {
-                    Status.SUCCESS -> binding.playingContentInfo = it.data
-                    Status.ERROR -> Log.e(TAG, it.message)
-                    //Status.LOADING -> showLoading()
-                }
+                binding.playingContentInfo = it
             })
 
         viewModel.selectedSonyControl.observe(

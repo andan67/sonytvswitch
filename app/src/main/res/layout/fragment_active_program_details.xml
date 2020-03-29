@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="activeProgram"
-            type="org.andan.av.sony.model.SonyPlayingContentInfo" />
+            name="testViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
 
     </data>
 
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:text="@{activeProgram.title}" />
+                android:text="@{testViewModel.playingContentInfo.title}" />
 
             <View style="@style/Divider"/>
 
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.dispNumber}"
+                android:text="@{testViewModel.playingContentInfo.dispNumber}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.programTitle}"
+                android:text="@{testViewModel.playingContentInfo.programTitle}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.startDateTimeFormatted}"
+                android:text="@{testViewModel.playingContentInfo.startDateTimeFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -113,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.endDateTimeFormatted}"
+                android:text="@{testViewModel.playingContentInfo.endDateTimeFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -132,7 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Integer.toString(activeProgram.durationSec/60)}"
+                android:text="@{Long.toString(testViewModel.playingContentInfo.durationSec/60)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -151,7 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.source}"
+                android:text="@{testViewModel.playingContentInfo.source}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -170,7 +170,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{activeProgram.mediaType}"
+                android:text="@{testViewModel.playingContentInfo.mediaType}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>

@@ -46,7 +46,29 @@ data class JsonRpcRequest(
     val method: String,
     val params: List<Any>,
     val version: String = "1.0"
-)
+) {
+    companion object {
+        fun actRegisterRequest(nickname: String, devicename: String, uuid: String): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(
+                hashMapOf(
+                    "nickname" to "$nickname ($devicename)",
+                    "clientid" to "$nickname:$uuid",
+                    "level" to "private"
+                )
+            )
+            params.add(
+                listOf(
+                    hashMapOf(
+                        "value" to "yes",
+                        "function" to "WOL"
+                    )
+                )
+            )
+            return JsonRpcRequest(8, "actRegister", params)
+        }
+    }
+}
 
 data class JsonRpcResponse(
     val id: Long,
@@ -62,7 +84,7 @@ data class JsonRpcError(
 data class PlayingContentInfoResponse(
     val source: String,
     val dispNumber: String,
-    val programMediaType: String,
+    val mediaType: String,
     val title: String,
     val uri: String,
     val programTitle: String,
@@ -74,6 +96,7 @@ data class PlayingContentInfoResponse(
         private val DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
         private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
         private val cal = Calendar.getInstance()
+        val notAvailableValue = PlayingContentInfoResponse("","----","","Not available","","","",0)
     }
 
     fun getStartDateTimeFormatted(): String? {
@@ -114,7 +137,7 @@ data class PlayingContentInfoResponse(
 
 fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
     return PlayingContentInfo(
-        source, dispNumber, programMediaType, title, uri, programTitle, startDateTime, durationSec
+        source, dispNumber, mediaType, title, uri, programTitle, startDateTime, durationSec
     )
 }
 
@@ -143,54 +166,40 @@ class TokenAuthenticator @Inject constructor(
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         // This is a synchronous call
-        val updatedToken = getNewToken()
         val request = response.request
-        return request.newBuilder()
-            .addHeader("Cookie", updatedToken)
-            .build()
+        //bypass authenticator for registration endpoint
+        return if(request.url.toString().endsWith(SONY_ACCESS_CONTROL_ENDPOINT)) {
+            request
+        } else {
+            val updatedToken = getNewToken()
+            request.newBuilder()
+                .addHeader("Cookie", updatedToken)
+                .build()
+        }
     }
 
     private fun getNewToken(): String {
-        val params = ArrayList<Any>()
-        params.add(
-            hashMapOf(
-                "clientid" to "value1",
-                "nickname" to "Nexus 5 (TV SideView)",
-                "level" to "private"
-            )
-        )
-        params.add(
-            listOf(
-                hashMapOf(
-                    "value" to "yes",
-                    "function" to "WOL"
-                )
-            )
-        )
-
-        if (serviceClientContext != null) {
-            val response =
-                serviceClientContext.sonyService!!.refreshToken("http://" + serviceClientContext.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest(8, "actRegister", params)).execute()
-            if (response.code() == HTTP_OK) {
-                if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
-                    val cookieString: String? = response.headers()["Set-Cookie"]
-                    var pattern =
-                        Pattern.compile("auth=([A-Za-z0-9]+)")
-                    var matcher = pattern.matcher(cookieString)
+        val response = serviceClientContext.sonyService!!.refreshToken("http://" + serviceClientContext.ip + SONY_ACCESS_CONTROL_ENDPOINT,
+                JsonRpcRequest.actRegisterRequest(serviceClientContext.nickname, serviceClientContext.devicename, serviceClientContext.uuid)).execute()
+        if (response.code() == HTTP_OK) {
+            if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
+                val cookieString: String? = response.headers()["Set-Cookie"]
+                var pattern =
+                    Pattern.compile("auth=([A-Za-z0-9]+)")
+                var matcher = pattern.matcher(cookieString)
+                if (matcher.find()) {
+                    tokenStore.storeToken(serviceClientContext.uuid, "auth=" + matcher.group(1))
+                    /*
+                    pattern = Pattern.compile("max-age=([0-9]+)")
+                    matcher = pattern.matcher(cookieString)
                     if (matcher.find()) {
-                        tokenStore.storeToken(serviceClientContext.uuid, "auth=" + matcher.group(1))
-                        /*
-                        pattern = Pattern.compile("max-age=([0-9]+)")
-                        matcher = pattern.matcher(cookieString)
-                        if (matcher.find()) {
-                            tokenRepository.expiryTime =
-                                System.currentTimeMillis() + 1000 * matcher.group(1).toLong()
-                        }
-                        */
-
+                        tokenRepository.expiryTime =
+                            System.currentTimeMillis() + 1000 * matcher.group(1).toLong()
                     }
+                    */
 
                 }
+
             }
         }
         return tokenStore.loadToken(serviceClientContext.uuid)
@@ -220,5 +229,7 @@ class SonyServiceClientContext(
     var uuid: String = "",
     var username : String = "",
     var password : String = "",
+    var nickname: String = "",
+    var devicename: String = "",
     var preSharedKey : String = ""
 )

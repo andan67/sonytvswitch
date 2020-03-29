@@ -69,7 +69,7 @@ class ChannelMapSingleFragment : Fragment() {
         binding.channelPosition = channelPosition!! +1
 
         binding.channelName = selectedChannelName
-        control=testViewModel.getSelectedControl()
+        control=testViewModel.selectedSonyControl.value!!
 
         initialProgramUri = control!!.channelProgramMap[selectedChannelName!!]
         Log.d(TAG,"initialProgramUri : $initialProgramUri")
@@ -78,7 +78,7 @@ class ChannelMapSingleFragment : Fragment() {
         testViewModel.selectedChannelMapProgramUri.observe(viewLifecycleOwner, Observer {
             val selectedProgramUri = testViewModel.selectedChannelMapProgramUri.value
             if (!selectedProgramUri.isNullOrEmpty()) {
-                val program: SonyProgram2? = testViewModel.getSelectedControl()?.programUriMap!![selectedProgramUri]
+                val program: SonyProgram2? = testViewModel.selectedSonyControl.value!!.programUriMap!![selectedProgramUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else
@@ -93,7 +93,7 @@ class ChannelMapSingleFragment : Fragment() {
             ChannelMapProgramListAdapter(
                 context,
                 programUriMatchList,
-                testViewModel.getSelectedControl()?.programUriMap!!
+                testViewModel.selectedSonyControl.value!!.programUriMap!!
             )
         binding.channelMapProgramListView.setSelector(R.drawable.list_selector)
         binding.channelMapProgramListView.adapter = arrayAdapter

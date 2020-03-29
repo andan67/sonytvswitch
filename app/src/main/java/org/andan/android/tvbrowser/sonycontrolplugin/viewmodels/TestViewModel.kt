@@ -45,13 +45,9 @@ class TestViewModel : ViewModel() {
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
 
-    init {
-        _sonyControls = repository.sonyControls
-        _selectedSonyControl = repository.selectedSonyControl
-        //filterChannelNameList("")
-    }
 
-    fun getSelectedControl(): SonyControl? {
+
+    private fun getSelectedControl(): SonyControl? {
         return selectedSonyControl.value
     }
 
@@ -75,6 +71,15 @@ class TestViewModel : ViewModel() {
 
     var selectedChannelMapProgramUri = MutableLiveData<String?>()
 
+    init {
+
+        Log.d(TAG, "init")
+        _sonyControls = repository.sonyControls
+        _selectedSonyControl = repository.selectedSonyControl
+        onSelectedIndexChange()
+        //filterChannelNameList("")
+    }
+
     fun updateCurrentProgram(program: SonyProgram2) {
         if(currentProgram?.uri!=program.uri) {
             lastProgram = currentProgram
@@ -82,6 +87,16 @@ class TestViewModel : ViewModel() {
             Log.d(TAG, "updateCurrentProgram ${lastProgram?.title} ${currentProgram?.title} ${program.title}"
             )
         }
+    }
+
+    fun addControl(control: SonyControl) {
+        Log.d(TAG, "addControl(): $control")
+        Log.d(TAG, "testViewModel: $this")
+        repository.addControl(control)
+    }
+
+    fun deleteSelectedControl() {
+        if(repository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
     }
 
     fun setSelectedControlIndex(index: Int) {
@@ -207,10 +222,7 @@ class TestViewModel : ViewModel() {
     }
 
     val playingContentInfo = repository.playingContentInfo
-    val noPlayingContentInfo = PlayingContentInfoResponse("","----","","Not available","","","",0)
     fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
-        //val result = repository.getCurrentTime()
-        // Log.d(TAG,"currentTime: " + result)
         repository.getPlayingContentInfo()
     }
 
@@ -220,11 +232,6 @@ class TestViewModel : ViewModel() {
 
     fun registerControl() = viewModelScope.launch(Dispatchers.IO) {
         repository.registerControl()
-        /*try {
-            repository.registerControl()
-        }
-        catch (se: SocketTimeoutException) {
-            Log.e(TAG, "Error: ${se.message}")}*/
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
@@ -235,17 +242,17 @@ class TestViewModel : ViewModel() {
         repository.saveControls()
     }
 
-    fun addControl(control: SonyControl) {
-        repository.addControl(control)
+    internal fun performFuzzyMatchForChannelList() {
+        Log.d(TAG, "performFuzzyMatchForChannelList()")
+        if (channelNameList.isNotEmpty() && programTitleList.isNotEmpty() && getSelectedControl()?.programList != null ) {
+            for (channelName in channelNameList) {
+                val index1 = ProgramFuzzyMatch.matchOne(channelName, programTitleList, true)
+                if (index1 >= 0) {
+                    val programUri = getSelectedControl()!!.programList[index1].uri
+                    getSelectedControl()!!.channelProgramMap[channelName]= programUri
+                }
+            }
+            repository.saveControls()
+        }
     }
-
-    //fun registerControl()
-
-//    fun getCurrentTime() = repository.getCurrentTime()
-
-//val currentTime = repository.currentTimeString
-
-//fun getCurrentTime(): LiveData<String> = repository.getCurrentTime()
-
-//val currentTimeString = getCurrentTime()
 }

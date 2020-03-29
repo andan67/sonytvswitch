@@ -8,8 +8,10 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.junit.Before
 import org.junit.Test
+import retrofit2.http.Url
 import java.io.BufferedReader
 import java.io.File
+import java.net.URL
 
 class JsonSerDeTests {
 
@@ -57,6 +59,8 @@ class JsonSerDeTests {
         //val sonyControls = SonyControls(listOf(sonyControl, sonyControl2),0)
         sonyControls = SonyControls.fromJson(bufferedReader.use { it.readText() })
         println(sonyControls.toJson())
+        val sonyControlSample = SonyControl.fromJson(File("/home/andan/Development/Android/TV-Browser_Projects/sony_tv_switch-github/sdb/src/main/resources/SonyIPControl_sample.json").bufferedReader().use {it.readText()})
+        println(sonyControlSample)
         /*sonyControl3.programList = plist
         println("get 4 ${sonyControl3.programUriMap}")
         println("get 5 ${sonyControl3.programUriMap}")
@@ -70,6 +74,13 @@ class JsonSerDeTests {
         assertEquals("CGTN Documentary", sonyControl3.programUriMap?.get("tv:dvbs?trip=1.1022.6912&srvName=CGTN%20Documentary")!!.title)
         assertEquals("ZDF HD", sonyControls.controls[sonyControls.selected].programList[1].title)
         assertEquals("tv:dvbs?trip=1.1039.10377&srvName=ARD-alpha%20HD", sonyControls.controls[sonyControls.selected].channelProgramMap["ARD-alpha"])
+    }
+
+    @Test
+    fun checkUrl() {
+        //val url = Url("http://192.168.178.27/sony/accessControl")
+        val url = URL("http://192.168.178.27/sony/accessControl")
+        assertEquals(true, url.toString().endsWith("accessControl"))
     }
 
 }

@@ -16,6 +16,11 @@ data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), va
 
 data class SonyControl(val ip: String, val nickname: String, val devicename: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
 
+    companion object {
+        private val gson = Gson()
+        fun fromJson(json: String) = gson.fromJson(json, SonyControl::class.java)
+    }
+
     private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
 
     var programList : List<SonyProgram2> = emptyList()
@@ -47,7 +52,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
         return field?: _programUriMap
     }
 
-    val channelProgramMap = LinkedHashMap<String, String>()
+    var channelProgramMap = LinkedHashMap<String, String>()
 
     override fun toString(): String {
         return "$nickname ($devicename)"

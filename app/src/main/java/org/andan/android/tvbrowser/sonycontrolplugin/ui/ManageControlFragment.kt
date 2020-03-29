@@ -33,6 +33,9 @@ class ManageControlFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.testViewModel = testViewModel
 
+        Log.d(TAG, "sonyControls: ${testViewModel.sonyControls.value!!.controls.size}")
+        Log.d(TAG, "testViewModel: $testViewModel")
+
         testViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed change ${testViewModel.selectedSonyControl.value}")
         })
@@ -58,7 +61,7 @@ class ManageControlFragment : Fragment() {
                 builder.setMessage("Do you want to delete this control?").setTitle("Confirm delete")
                 builder.setPositiveButton("Yes") { dialog, id ->
                     Log.d(TAG, "deleteControl")
-                    //controlViewModel.deleteSelectedControl()
+                    testViewModel.deleteSelectedControl()
                 }
                 builder.setNegativeButton(
                     "No"

@@ -1,32 +1,21 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.plugin
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.os.RemoteException
-import android.preference.PreferenceManager
 import android.util.Log
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
-import org.andan.av.sony.SonyIPControl
 import org.tvbrowser.devplugin.*
 import java.io.ByteArrayOutputStream
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * A service class that provides a channel switch functionality for Sony TVs within TV-Browser for Android.
@@ -36,7 +25,7 @@ import kotlin.collections.ArrayList
 class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
     private var mPluginManager: PluginManager? = null
-
+    private val TAG = TVBrowserSonyIPControlPlugin::class.java.name
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
     private val repository: SonyRepository =
@@ -130,13 +119,8 @@ class TVBrowserSonyIPControlPlugin : Service() {
                     "openPreferences:start"
                 )
                 // start main activity
-                val startPref =
-                    Intent(this@TVBrowserSonyIPControlPlugin, MainActivity::class.java)
+                val startPref = Intent(this@TVBrowserSonyIPControlPlugin, MainActivity::class.java)
                 startPref.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                Log.i(
-                    TAG,
-                    "openPreferences:start"
-                )
                 if (mPluginManager != null) {
                     updateChannelProgramMap(mPluginManager!!.subscribedChannels)
                     startPref.putExtra("startedFromTVBrowser", true)
@@ -223,35 +207,6 @@ class TVBrowserSonyIPControlPlugin : Service() {
     }
 
 
-    /*private fun writeChannelListIntoPreference(channelList: List<Channel>) {
-        val preferences = getSharedPreferences(
-            getString(R.string.pref_channel_switch_file_key),
-            Context.MODE_PRIVATE
-        )
-        // write channels into preference file
-        val editor = preferences.edit()
-
-        // create JSON Object
-        try {
-            val channelListJSON = JsonObject()
-            val channelListJsonArray = JsonArray()
-            for (channel in channelList) {
-                channelListJsonArray.add(channel.channelName)
-            }
-            channelListJSON.add("subscribed channels", channelListJsonArray)
-            editor.putString(
-                CHANNELS_LIST_CONFIG,
-                SonyIPControl.getGson().toJson(channelListJSON)
-            )
-        } catch (ex: Exception) {
-            Log.e(TAG, ex.message)
-        }
-        editor.commit()
-        Log.i(
-            TAG,
-            "writeChannelListIntoPreference"
-        )
-    }*/
 
     companion object {
         //const val CONTROL_CONFIG = "controlConfig"
