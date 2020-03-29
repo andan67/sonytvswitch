@@ -1,7 +1,7 @@
 {
     "ip": "192.168.178.27",
-    "nickname": "android",
-    "devicename": "sony",
+    "nickname": "android sample",
+    "devicename": "sample device",
     "uuid": "da02f81c-0d85-47f3-b225-77ba82496b33",
     "cookie": "auth\\u003d57ab3fbda036118cdd61d50b17a3d9c6fb56035c0d2b099c1b2202f881803c6b",
     "cookieExpire": 1575829453029,

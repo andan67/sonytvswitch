@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
+import android.util.Log
 import com.google.gson.JsonElement
 import okhttp3.*
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
@@ -163,13 +164,16 @@ class TokenAuthenticator @Inject constructor(
     private val serviceClientContext: SonyServiceClientContext,
     private val tokenStore: TokenStore
 ) : Authenticator {
+    val TAG = TokenAuthenticator::class.java.name
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         // This is a synchronous call
+        Log.d(TAG,"authenticate(): ${serviceClientContext.nickname}")
         val request = response.request
         //bypass authenticator for registration endpoint
         return if(request.url.toString().endsWith(SONY_ACCESS_CONTROL_ENDPOINT)) {
-            request
+            //request.newBuilder().build()
+            null
         } else {
             val updatedToken = getNewToken()
             request.newBuilder()

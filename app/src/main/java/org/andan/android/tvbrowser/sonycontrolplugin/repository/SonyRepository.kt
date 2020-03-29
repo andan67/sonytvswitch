@@ -44,7 +44,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     private fun onSonyControlsChange() {
         selectedSonyControl.value = getSelectedControl()
         sonyServiceContext.sonyService = api
+        Log.d(TAG, "onSonyControlsChange()")
         if(selectedSonyControl.value != null) {
+            Log.d(TAG, "onSonyControlsChange(): ${selectedSonyControl.value}")
             sonyServiceContext.ip = selectedSonyControl.value!!.ip
             sonyServiceContext.uuid = selectedSonyControl.value!!.uuid
             sonyServiceContext.nickname = selectedSonyControl.value!!.nickname
@@ -128,6 +130,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     suspend fun registerControl() {
         withContext(Dispatchers.Main) {
             selectedSonyControl.value?.let {
+                Log.d(TAG, "registerControl(): ${sonyServiceContext.nickname}")
                 try {
                     val response = api.accessControl(
                         "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegisterRequest(it.nickname, it.devicename, it.uuid)
