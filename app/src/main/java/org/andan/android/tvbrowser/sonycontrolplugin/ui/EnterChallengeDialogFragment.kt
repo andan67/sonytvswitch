@@ -36,14 +36,7 @@ class EnterChallengeDialogFragment : DialogFragment() {
 
             val challengeCode = challengeCodeEditText.text.toString()
             Log.i(TAG, "Enter Challenge & Register:$challengeCode")
-            /*val intentService = Intent(context, SonyIPControlIntentService::class.java)
-            intentService.putExtra(SonyIPControlIntentService.CONTROL, ipControlJSON)
-            intentService.putExtra(
-                SonyIPControlIntentService.ACTION,
-                SonyIPControlIntentService.REGISTER_CONTROL_ACTION
-            )
-            intentService.putExtra(SonyIPControlIntentService.CODE, challengeCode)
-            activity?.startService(intentService)*/
+            testViewModel.registerControl(challengeCode)
             dialog.dismiss()
         }
         dialogBuilder.setNeutralButton(R.string.dialog_cancel)

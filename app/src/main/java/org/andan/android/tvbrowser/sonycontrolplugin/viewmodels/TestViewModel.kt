@@ -226,12 +226,20 @@ class TestViewModel : ViewModel() {
         repository.getPlayingContentInfo()
     }
 
+    fun fetchProgramList() = viewModelScope.launch(Dispatchers.IO) {
+        repository.fetchProgramList()
+    }
+
     fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
         repository.setPlayContent(uri)
     }
 
-    fun registerControl() = viewModelScope.launch(Dispatchers.IO) {
-        repository.registerControl()
+    fun registerControl() {
+        registerControl(null)
+    }
+
+    fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
+        repository.registerControl(challenge)
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {

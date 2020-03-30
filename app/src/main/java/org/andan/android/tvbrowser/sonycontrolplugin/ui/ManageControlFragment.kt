@@ -9,6 +9,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
@@ -42,7 +45,10 @@ class ManageControlFragment : Fragment() {
 
         testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed requestError")
-            if(!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            //if(!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            if(it.equals("Unauthorized")) {
+                binding.root.findNavController().navigate(R.id.nav_enter_challenge)
+            }
         })
 
         return binding.root
@@ -70,16 +76,10 @@ class ManageControlFragment : Fragment() {
                 dialog.show()
             }
             R.id.register_control -> {
-                /*val extras = Bundle()
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.REGISTER_CONTROL_ACTION
-                )
-                (activity as MainActivity).startControlService(extras)*/
                 testViewModel.registerControl()
             }
             R.id.get_program_list -> {
-
+                testViewModel.fetchProgramList()
             }
             R.id.enable_wol -> {
 

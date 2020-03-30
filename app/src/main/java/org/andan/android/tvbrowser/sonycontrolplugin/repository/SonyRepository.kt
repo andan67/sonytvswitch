@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -11,11 +12,15 @@ import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
+import org.andan.av.sony.model.SonyProgram
+import org.andan.av.sony.network.SonyJsonRpc
+import org.andan.av.sony.network.SonyJsonRpcResponse
 import retrofit2.Response
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
-import java.util.ArrayList
+import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -90,12 +95,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     suspend fun getPlayingContentInfo() {
         withContext(Dispatchers.Main) {
             val resource = avContentService<PlayingContentInfoResponse>(
-                JsonRpcRequest(
-                    103,
-                    "getPlayingContentInfo",
-                    emptyList()
-                )
-            )
+                JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
             if(resource.status == Status.ERROR) {
                 _requestErrorMessage.postValue(resource.message)
                 _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
@@ -109,28 +109,66 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     suspend fun setPlayContent(uri: String) {
         withContext(Dispatchers.Main) {
             val params = ArrayList<Any>()
-            params.add(
-                hashMapOf(
-                    "uri" to uri
-                )
-            )
-            val resource = avContentService<Unit>(
-                JsonRpcRequest(
-                    101,
-                    "setPlayContent",
-                    params
-                )
-            )
+            params.add(hashMapOf("uri" to uri))
+            val resource = avContentService<Unit>(JsonRpcRequest(101, "setPlayContent", params))
             if(resource.status == Status.ERROR) {
                 _requestErrorMessage.postValue(resource.message)
             }
         }
     }
 
-    suspend fun registerControl() {
+    suspend fun fetchProgramList() {
+
+    }
+
+    private suspend fun getTvContentList(sourceType: String, stIdx: Int, cnt: Int, pList: MutableList<SonyProgram2>): Int {
+        val sourceSplit = sourceType.split("#").toTypedArray()
+        val source = sourceSplit[0]
+        var type = ""
+        if (sourceSplit.size > 1) type = sourceSplit[1]
+        val params = ArrayList<Any>()
+        params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "te" to type))
+        var fetchedPrograms = 0
+        val resource = avContentService<Array<SonyProgram2>>(JsonRpcRequest(103, "getContentList", params))
+        if(resource.status==Status.SUCCESS) {
+            val programList = resource.data
+            /*val jsonContentList =
+            gson.fromJson(resource.data as JsonElement, Array<SonyProgram2>::class.java)
+            response.result.asJsonArray[0].asJsonArray
+            for (i in 0 until jsonContentList.size()) {
+                val programItem = jsonContentList[i].asJsonObject
+                val mediaType = programItem["programMediaType"].asString
+                val title = programItem["title"].asString
+
+                // ignore non tv programs and empty titles
+                if (mediaType.equals(
+                        "tv",
+                        ignoreCase = true
+                    ) && title != "." && !title.isEmpty() && !title.contains("TEST")
+                ) {
+                    pList.add(
+                        SonyProgram(
+                            sourceType,
+                            programItem["dispNum"].asString,
+                            programItem["index"].asInt,
+                            mediaType,
+                            title,
+                            programItem["uri"].asString
+                        )
+                    )
+                }
+            }*/
+        }
+        return fetchedPrograms
+    }
+
+    suspend fun registerControl(challenge: String?) {
         withContext(Dispatchers.Main) {
             selectedSonyControl.value?.let {
                 Log.d(TAG, "registerControl(): ${sonyServiceContext.nickname}")
+                if(challenge != null) {
+                    sonyServiceContext.password=challenge
+                }
                 try {
                     val response = api.accessControl(
                         "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegisterRequest(it.nickname, it.devicename, it.uuid)
@@ -161,6 +199,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     Log.e(TAG, "Error: ${se.message}")
                     _requestErrorMessage.postValue(se.message)
                 }
+                sonyServiceContext.password=""
             }
         }
     }
