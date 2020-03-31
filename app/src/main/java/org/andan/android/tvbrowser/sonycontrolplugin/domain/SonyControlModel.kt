@@ -19,11 +19,12 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     companion object {
         private val gson = Gson()
         fun fromJson(json: String) = gson.fromJson(json, SonyControl::class.java)
+        val PAGE_SIZE = 25
     }
 
     private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
 
-    var programList : List<SonyProgram2> = emptyList()
+    var programList= mutableListOf<SonyProgram2>()
     set(value) {
         _programUriMap=null
         field = value
@@ -60,7 +61,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
 
 }
 
-data class SonyProgram2(val source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
+data class SonyProgram2(var source: String, val dispNum: String, val index : Int, val programMediaType: String, val title: String, val uri: String ) {
 
     val shortSource: String
         get() {

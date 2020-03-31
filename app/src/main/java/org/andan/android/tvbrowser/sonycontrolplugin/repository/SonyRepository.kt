@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -14,8 +15,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
-import org.andan.av.sony.model.SonyProgram
-import org.andan.av.sony.network.SonyJsonRpc
 import org.andan.av.sony.network.SonyJsonRpcResponse
 import retrofit2.Response
 import java.net.HttpURLConnection
@@ -118,48 +117,50 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend fun fetchProgramList() {
-
+        Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.sourceList}")
+        if(getSelectedControl()!!.sourceList.isNullOrEmpty()) {
+        }
+        getSelectedControl()!!.programList.clear()
+        if (!getSelectedControl()!!.sourceList.isNullOrEmpty()) {
+            for (sonySource in getSelectedControl()!!.sourceList) {
+                // get programs in pages
+                var response: SonyJsonRpcResponse
+                var stidx = 0
+                do {
+                    val sizeOld = getSelectedControl()!!.programList.size
+                    getSelectedControl()!!.programList.addAll(getTvContentList(sonySource!!, stidx, SonyControl.PAGE_SIZE))
+                    stidx += SonyControl.PAGE_SIZE
+                } while (getSelectedControl()!!.programList.size - sizeOld > 0)
+            }
+            Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.programList.size}")
+        }
     }
 
-    private suspend fun getTvContentList(sourceType: String, stIdx: Int, cnt: Int, pList: MutableList<SonyProgram2>): Int {
+    private suspend fun getTvContentList(sourceType: String, stIdx: Int, cnt: Int): List<SonyProgram2> {
         val sourceSplit = sourceType.split("#").toTypedArray()
         val source = sourceSplit[0]
         var type = ""
         if (sourceSplit.size > 1) type = sourceSplit[1]
         val params = ArrayList<Any>()
-        params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "te" to type))
+        params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "type" to type))
         var fetchedPrograms = 0
+        //Log.d(TAG, "getTvContentList(): avContentService")
         val resource = avContentService<Array<SonyProgram2>>(JsonRpcRequest(103, "getContentList", params))
-        if(resource.status==Status.SUCCESS) {
-            val programList = resource.data
-            /*val jsonContentList =
-            gson.fromJson(resource.data as JsonElement, Array<SonyProgram2>::class.java)
-            response.result.asJsonArray[0].asJsonArray
-            for (i in 0 until jsonContentList.size()) {
-                val programItem = jsonContentList[i].asJsonObject
-                val mediaType = programItem["programMediaType"].asString
-                val title = programItem["title"].asString
-
-                // ignore non tv programs and empty titles
-                if (mediaType.equals(
-                        "tv",
-                        ignoreCase = true
-                    ) && title != "." && !title.isEmpty() && !title.contains("TEST")
-                ) {
-                    pList.add(
-                        SonyProgram(
-                            sourceType,
-                            programItem["dispNum"].asString,
-                            programItem["index"].asInt,
-                            mediaType,
-                            title,
-                            programItem["uri"].asString
-                        )
-                    )
-                }
-            }*/
+        //Log.d(TAG, "getTvContentList(): $resource")
+        return if(resource.status==Status.SUCCESS) {
+            val programList = mutableListOf<SonyProgram2>()
+            val programArrayFromResponse = resource.data!!
+            for(sonyProgram in programArrayFromResponse) {
+                //Log.d(TAG, "$sonyProgram")
+                sonyProgram.source = sourceType
+                if (sonyProgram.programMediaType.equals("tv", true)
+                    && sonyProgram.title != "." && !sonyProgram.title.isEmpty() && !sonyProgram.title.contains("TEST")) programList.add(sonyProgram)
+            }
+            //Log.d(TAG, "getTvContentList(): ${programList.size}")
+            programList
+        } else {
+            emptyList()
         }
-        return fetchedPrograms
     }
 
     suspend fun registerControl(challenge: String?) {
@@ -236,12 +237,13 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     }
                     else -> {
                         Log.d("apiCall", "evaluate result")
-                        Resource.Success(
-                            response.code(),
+                        Resource.Success(response.code(),
                             gson.fromJson(
-                                jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject,
-                                T::class.java
-                            )
+                                when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
+                                    is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
+                                    is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
+                                    else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
+                                }, T::class.java)
                         )
                     }
                 }

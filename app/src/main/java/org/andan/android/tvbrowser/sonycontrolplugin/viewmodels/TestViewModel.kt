@@ -263,4 +263,14 @@ class TestViewModel : ViewModel() {
             repository.saveControls()
         }
     }
+
+    /*internal fun clearMapping(clearMatch: Boolean) {
+        Log.d(TAG, "clearMapping(clearMatch: Boolean)")
+        if (getSelectedControl()?.channelProgramMap != null) {
+            for (channelName in channelNameList) {
+                getSelectedControl()!!.channelProgramMap[channelName]=""
+                controlRepository.getControls().notifyObserver()
+            }
+        }
+    }*/
 }
