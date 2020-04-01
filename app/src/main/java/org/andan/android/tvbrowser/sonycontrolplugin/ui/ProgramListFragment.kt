@@ -116,7 +116,7 @@ class ProgramListFragment : Fragment() {
                     "observed change filtered program list with filter ${testViewModel.getProgramSearchQuery()}"
                 )
                 adapter.notifyDataSetChanged()
-                //fetchPlayingContentInfo()
+                fetchPlayingContentInfo()
             })
 
             testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {

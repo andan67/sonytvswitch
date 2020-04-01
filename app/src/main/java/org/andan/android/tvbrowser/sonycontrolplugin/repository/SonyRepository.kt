@@ -34,19 +34,19 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     var selectedSonyControl = MutableLiveData<SonyControl>()
     val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
-    private val _requestErrorMessage = MutableLiveData("")
-    val requestErrorMessage: LiveData<String> = _requestErrorMessage
+    private val _responseMessage = MutableLiveData("")
+    val responseMessage: LiveData<String> = _responseMessage
 
     val gson = GsonBuilder().create()
     init {
         Log.d(TAG, "init")
         sonyControls.value = preferenceStore.loadControls()
         sonyServiceContext.sonyService = api
+        selectedSonyControl.value = getSelectedControl()
         onSonyControlsChange()
     }
 
     private fun onSonyControlsChange() {
-        selectedSonyControl.value = getSelectedControl()
         sonyServiceContext.sonyService = api
         Log.d(TAG, "onSonyControlsChange()")
         if(selectedSonyControl.value != null) {
@@ -60,6 +60,10 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     private fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value
+    }
+
+    private fun <T> MutableLiveData<T>.notifyObserverBackground() {
+        this.postValue(this.value)
     }
 
     private fun getSelectedControl() : SonyControl? {
@@ -96,7 +100,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             val resource = avContentService<PlayingContentInfoResponse>(
                 JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
             if(resource.status == Status.ERROR) {
-                _requestErrorMessage.postValue(resource.message)
+                _responseMessage.postValue(resource.message)
                 _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
             } else {
                 _playingContentInfo.value = resource.data
@@ -111,7 +115,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             params.add(hashMapOf("uri" to uri))
             val resource = avContentService<Unit>(JsonRpcRequest(101, "setPlayContent", params))
             if(resource.status == Status.ERROR) {
-                _requestErrorMessage.postValue(resource.message)
+                _responseMessage.postValue(resource.message)
             }
         }
     }
@@ -121,45 +125,51 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         if(getSelectedControl()!!.sourceList.isNullOrEmpty()) {
         }
         getSelectedControl()!!.programList.clear()
+        val programList = mutableListOf<SonyProgram2>()
         if (!getSelectedControl()!!.sourceList.isNullOrEmpty()) {
             for (sonySource in getSelectedControl()!!.sourceList) {
                 // get programs in pages
                 var response: SonyJsonRpcResponse
                 var stidx = 0
-                do {
-                    val sizeOld = getSelectedControl()!!.programList.size
-                    getSelectedControl()!!.programList.addAll(getTvContentList(sonySource!!, stidx, SonyControl.PAGE_SIZE))
-                    stidx += SonyControl.PAGE_SIZE
-                } while (getSelectedControl()!!.programList.size - sizeOld > 0)
+                var count = 0
+                while(fetchTvContentList(sonySource, stidx, SonyControl.PAGE_SIZE, programList).let {
+                        count = it; it>0
+                    }) { stidx += SonyControl.PAGE_SIZE }
+                // Break loop over source in case of error
+                if(count == -1) {
+                    Log.d(TAG, "fetchProgramList(): error")
+                }
             }
+            getSelectedControl()!!.programList.clear()
+            getSelectedControl()!!.programList.addAll(programList)
+            saveControls(true)
+            _responseMessage.postValue("Fetched ${getSelectedControl()!!.programList.size} programs from TV")
             Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.programList.size}")
         }
     }
 
-    private suspend fun getTvContentList(sourceType: String, stIdx: Int, cnt: Int): List<SonyProgram2> {
+    private suspend fun fetchTvContentList(sourceType: String, stIdx: Int, cnt: Int, plist: MutableList<SonyProgram2>): Int {
         val sourceSplit = sourceType.split("#").toTypedArray()
         val source = sourceSplit[0]
         var type = ""
         if (sourceSplit.size > 1) type = sourceSplit[1]
         val params = ArrayList<Any>()
         params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "type" to type))
-        var fetchedPrograms = 0
-        //Log.d(TAG, "getTvContentList(): avContentService")
-        val resource = avContentService<Array<SonyProgram2>>(JsonRpcRequest(103, "getContentList", params))
-        //Log.d(TAG, "getTvContentList(): $resource")
+        val resource = avContentService<Array<SonyProgramResponse>>(JsonRpcRequest(103, "getContentList", params))
         return if(resource.status==Status.SUCCESS) {
-            val programList = mutableListOf<SonyProgram2>()
-            val programArrayFromResponse = resource.data!!
-            for(sonyProgram in programArrayFromResponse) {
-                //Log.d(TAG, "$sonyProgram")
-                sonyProgram.source = sourceType
-                if (sonyProgram.programMediaType.equals("tv", true)
-                    && sonyProgram.title != "." && !sonyProgram.title.isEmpty() && !sonyProgram.title.contains("TEST")) programList.add(sonyProgram)
+            for(sonyProgramResponse in resource.data!!) {
+                if (sonyProgramResponse.programMediaType.equals("tv", true)
+                    && sonyProgramResponse.title != "." && !sonyProgramResponse.title.isEmpty()
+                    && !sonyProgramResponse.title.contains("TEST")) {
+                    val sonyProgram = sonyProgramResponse.asDomainModel()
+                    sonyProgram.source = source
+                    plist.add(sonyProgram)
+                }
             }
-            //Log.d(TAG, "getTvContentList(): ${programList.size}")
-            programList
+            resource.data!!.size
         } else {
-            emptyList()
+            _responseMessage.postValue(resource.message)
+            -1
         }
     }
 
@@ -178,7 +188,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     if (response.isSuccessful) {
                         val jsonRpcResponse = response.body()
                         if (jsonRpcResponse?.error != null) {
-                            _requestErrorMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
+                            _responseMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
                         } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                             // get token from set cookie and store
                             val cookieString: String? = response.headers()["Set-Cookie"]
@@ -191,14 +201,14 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     } else {
                         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             // Navigate to enter challenge code view
-                            _requestErrorMessage.postValue(response.message())
+                            _responseMessage.postValue(response.message())
                         } else {
-                            _requestErrorMessage.postValue(response.message())
+                            _responseMessage.postValue(response.message())
                         }
                     }
                 } catch (se: SocketTimeoutException) {
                     Log.e(TAG, "Error: ${se.message}")
-                    _requestErrorMessage.postValue(se.message)
+                    _responseMessage.postValue(se.message)
                 }
                 sonyServiceContext.password=""
             }
@@ -259,9 +269,19 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     fun saveControls() {
+        saveControls(false)
+    }
+
+    fun saveControls(fromBackground: Boolean) {
         preferenceStore.storeControls(sonyControls.value!!)
-        sonyControls.notifyObserver()
-        selectedSonyControl.value =getSelectedControl()
+        if(fromBackground) {
+            sonyControls.notifyObserverBackground()
+            selectedSonyControl.postValue(getSelectedControl())
+        }
+        else {
+            sonyControls.notifyObserver()
+            selectedSonyControl.value = getSelectedControl()
+        }
         onSonyControlsChange()
     }
 

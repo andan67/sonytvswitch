@@ -5,14 +5,11 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
-import org.andan.android.tvbrowser.sonycontrolplugin.di.DaggerApplicationComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
 import org.andan.av.sony.ProgramFuzzyMatch
-import java.net.SocketTimeoutException
 import java.util.LinkedHashSet
 
 class TestViewModel : ViewModel() {
@@ -33,7 +30,7 @@ class TestViewModel : ViewModel() {
         emit(repository.getCurrentTime())
     }*/
 
-    val requestErrorMessage = repository.requestErrorMessage
+    val requestErrorMessage = repository.responseMessage
 
     var isCreated: Boolean = false
 

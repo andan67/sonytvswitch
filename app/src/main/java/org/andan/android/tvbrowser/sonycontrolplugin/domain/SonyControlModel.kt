@@ -61,7 +61,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
 
 }
 
-data class SonyProgram2(var source: String, val dispNum: String, val index : Int, val programMediaType: String, val title: String, val uri: String ) {
+data class SonyProgram2(var source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
 
     val shortSource: String
         get() {

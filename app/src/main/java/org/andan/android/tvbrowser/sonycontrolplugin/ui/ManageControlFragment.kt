@@ -45,9 +45,10 @@ class ManageControlFragment : Fragment() {
 
         testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed requestError")
-            //if(!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            if(it.equals("Unauthorized")) {
+            if(it == "Unauthorized") {
                 binding.root.findNavController().navigate(R.id.nav_enter_challenge)
+            } else if(!it.isNullOrEmpty()) {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
             }
         })
 
