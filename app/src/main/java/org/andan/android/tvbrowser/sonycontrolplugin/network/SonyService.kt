@@ -85,8 +85,8 @@ data class JsonRpcError(
 
 data class PlayingContentInfoResponse(
     val source: String,
-    val dispNumber: String,
-    val mediaType: String,
+    val dispNum: String,
+    val programMediaType: String,
     val title: String,
     val uri: String,
     val programTitle: String,
@@ -139,7 +139,7 @@ data class PlayingContentInfoResponse(
 
 fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
     return PlayingContentInfo(
-        source, dispNumber, mediaType, title, uri, programTitle, startDateTime, durationSec
+        source, dispNum, programMediaType, title, uri, programTitle, startDateTime, durationSec
     )
 }
 

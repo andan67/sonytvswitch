@@ -85,7 +85,7 @@ data class SonyProgram2(var source: String, val dispNumber: String, val index : 
 
 data class PlayingContentInfo(
     val source: String = "",
-    val dispNumber: String = "",
+    val dispNum: String = "",
     val programMediaType: String = "",
     val title: String = "N/A",
     val uri: String = "",

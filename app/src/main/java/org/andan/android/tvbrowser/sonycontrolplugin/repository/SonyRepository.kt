@@ -243,17 +243,25 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 when {
                     jsonRpcResponse?.error != null -> {
                         Log.d("apiCall", "evaluate error")
-                        Resource.Error(jsonRpcResponse.error.asJsonArray.get(1).asString, response.code())
+                        Resource.Error(
+                            jsonRpcResponse.error.asJsonArray.get(1).asString, response.code()
+                        )
                     }
                     else -> {
                         Log.d("apiCall", "evaluate result")
-                        Resource.Success(response.code(),
+                        Resource.Success(
+                            response.code(),
                             gson.fromJson(
-                                when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
-                                    is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
-                                    is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
-                                    else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
-                                }, T::class.java)
+                                if (jsonRpcResponse?.result?.asJsonArray?.size() == 0) {
+                                    JsonObject()
+                                } else {
+                                    when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
+                                        is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
+                                        is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
+                                        else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
+                                    }
+                                }, T::class.java
+                            )
                         )
                     }
                 }
@@ -263,6 +271,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             }
 
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.d("apiCall", "evaluate exception ${e.message}")
             return Resource.Error(e.message!!, 0)
         }

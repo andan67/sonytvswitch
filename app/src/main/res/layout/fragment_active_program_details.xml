@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.dispNumber}"
+                android:text="@{testViewModel.playingContentInfo.dispNum}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -170,7 +170,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.mediaType}"
+                android:text="@{testViewModel.playingContentInfo.programMediaType}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>

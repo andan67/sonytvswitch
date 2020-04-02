@@ -28,7 +28,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:gravity="end"
-            android:text="@{activeProgram.dispNumber}"
+            android:text="@{activeProgram.dispNum}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
