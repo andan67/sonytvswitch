@@ -11,9 +11,9 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
+import java.lang.Exception
 import java.net.HttpURLConnection.HTTP_OK
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -50,24 +50,81 @@ data class JsonRpcRequest(
     val version: String = "1.0"
 ) {
     companion object {
-        fun actRegisterRequest(nickname: String, devicename: String, uuid: String): JsonRpcRequest {
+
+        // accessControl service
+
+        fun actRegister(nickname: String, devicename: String, uuid: String): JsonRpcRequest {
             val params = ArrayList<Any>()
-            params.add(
-                hashMapOf(
-                    "nickname" to "$nickname ($devicename)",
+            params.add(hashMapOf("nickname" to "$nickname ($devicename)",
                     "clientid" to "$nickname:$uuid",
-                    "level" to "private"
-                )
-            )
-            params.add(
-                listOf(
-                    hashMapOf(
-                        "value" to "yes",
-                        "function" to "WOL"
-                    )
-                )
-            )
+                    "level" to "private"))
+            params.add(listOf(hashMapOf("value" to "yes", "function" to "WOL")))
             return JsonRpcRequest(8, "actRegister", params)
+        }
+
+        //system service
+
+        fun getRemoteControllerInfo(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(10, "getRemoteControllerInfo", params)
+        }
+
+        fun setWolMode(enabled: Boolean): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("enabled" to enabled))
+            return JsonRpcRequest(55, "setWolMode", params)
+        }
+
+        fun getWolMode(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(50, "getWolMode", params)
+        }
+
+        fun setPowerStatus(status: Boolean): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("status" to status))
+            return JsonRpcRequest(55, "setPowerStatus", params)
+        }
+
+        fun getPowerStatus(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(50, "getPowerStatus", params)
+        }
+
+        fun setPowerSavingMode(mode: Boolean): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("mode" to mode))
+            return JsonRpcRequest(52, "setPowerSavingMode", params)
+        }
+
+        fun getPowerStatusMode(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(51, "getPowerStatusMode", params)
+        }
+
+        // avContent service
+
+        fun getSourceList(scheme: String): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("scheme" to scheme))
+            return JsonRpcRequest(2, "getSourceList", params)
+        }
+
+        fun setPlayContent(uri: String): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("uri" to uri))
+            return JsonRpcRequest(101, "setPlayContent", params)
+        }
+
+        fun getPlayingContentInfo(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(103, "getPlayingContentInfo", params)
+        }
+
+        fun getContentList(source: String, stIdx: Int, cnt: Int, type: String): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "type" to type))
+            return JsonRpcRequest(103, "getContentList", params)
         }
     }
 }
@@ -105,8 +162,8 @@ data class PlayingContentInfoResponse(
         return try {
             val date = sdfInput.parse(startDateTime)
             DateTimeFormat.format(date)
-        } catch (e: ParseException) {
-            startDateTime
+        } catch (e: Exception) {
+            ""
         }
     }
 
@@ -116,7 +173,7 @@ data class PlayingContentInfoResponse(
             cal.time = date
             cal.add(Calendar.SECOND, durationSec.toInt())
             DateTimeFormat.format(cal.time)
-        } catch (e: ParseException) {
+        } catch (e: Exception) {
             ""
         }
     }
@@ -130,7 +187,7 @@ data class PlayingContentInfoResponse(
             val endTime =
                 TimeFormat.format(cal.time)
             "$startTime - $endTime"
-        } catch (e: ParseException) {
+        } catch (e: Exception) {
             ""
         }
     }
@@ -143,11 +200,25 @@ fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
     )
 }
 
-data class SonyProgramResponse(val dispNum: String, val index : Int, val programMediaType: String, val title: String, val uri: String )
+data class ContentListItemResponse(val dispNum: String, val index : Int, val programMediaType: String, val title: String, val uri: String )
 
-fun SonyProgramResponse.asDomainModel() : SonyProgram2{
+fun ContentListItemResponse.asDomainModel() : SonyProgram2{
     return SonyProgram2("", dispNum, index, programMediaType, title, uri)
 }
+
+data class SourceListItemResponse(val source: String)
+
+data class SystemInformationResponse(val product: String, val name: String, val model: String, val macAddr: String)
+
+data class WolModeResponse(val enabled: Boolean)
+
+data class PowerStatusResponse(val status: Boolean)
+
+data class PowerSavingModeResponse(val mode: Boolean)
+
+
+
+
 
 class AddTokenInterceptor @Inject constructor(private val serviceClientContext: SonyServiceClientContext?,
                                               private val tokenStore: TokenStore) : Interceptor {
@@ -191,7 +262,7 @@ class TokenAuthenticator @Inject constructor(
 
     private fun getNewToken(): String {
         val response = serviceClientContext.sonyService!!.refreshToken("http://" + serviceClientContext.ip + SONY_ACCESS_CONTROL_ENDPOINT,
-                JsonRpcRequest.actRegisterRequest(serviceClientContext.nickname, serviceClientContext.devicename, serviceClientContext.uuid)).execute()
+                JsonRpcRequest.actRegister(serviceClientContext.nickname, serviceClientContext.devicename, serviceClientContext.uuid)).execute()
         if (response.code() == HTTP_OK) {
             if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                 val cookieString: String? = response.headers()["Set-Cookie"]

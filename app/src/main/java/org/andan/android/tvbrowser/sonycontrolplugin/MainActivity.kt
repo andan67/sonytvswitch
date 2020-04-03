@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         val testViewModel: TestViewModel by viewModels()
-        Log.d(TAG, "testViewModel.sonyControls.value.selected ${testViewModel.sonyControls.value}")
 
         if (!testViewModel.isCreated) {
             val graph = navController.navInflater.inflate(R.navigation.navigation)

@@ -134,14 +134,13 @@ class TestViewModel : ViewModel() {
         }
     }
 
-    fun getFilteredProgramList(): MutableLiveData<List<SonyProgram2>> {
+    fun getFilteredProgramList(): LiveData<List<SonyProgram2>> {
         return filteredProgramList
     }
 
 
     fun filterProgramList(query: String?) {
-        Log.d(TAG,"filterProgramList(query: String?)")
-        Log.d(TAG, "filter program list $query ")
+        Log.d(TAG, "filter program list query='$query' ")
         if(getSelectedControl()?.programList!=null) {
             programSearchQuery = query
             filteredProgramList.value = getSelectedControl()!!.programList.filter { p ->
@@ -156,7 +155,6 @@ class TestViewModel : ViewModel() {
     }
 
     fun getProgramSearchQuery(): String? {
-        Log.d(TAG,"getProgramSearchQuery()")
         return programSearchQuery
     }
 
@@ -165,7 +163,7 @@ class TestViewModel : ViewModel() {
         return programChannelMap[uri] ?: ""
     }
 
-    fun getFilteredChannelNameList(): MutableLiveData<List<String>> {
+    fun getFilteredChannelNameList(): LiveData<List<String>> {
         //Log.d(TAG,"getFilteredChannelNameList()")
         // get list of channel names from preference
         if(filteredChannelNameList.value==null) {
@@ -175,7 +173,7 @@ class TestViewModel : ViewModel() {
     }
 
     fun filterChannelNameList(query: String?) {
-        Log.d(TAG, "filter channel name list $query ")
+        Log.d(TAG, "filter channel name list query='$query' ")
         if(channelNameList != null) {
             channelNameSearchQuery = query
             filteredChannelNameList.value = channelNameList.filter { c ->
@@ -184,12 +182,9 @@ class TestViewModel : ViewModel() {
                     true
                 )
             }
-            Log.d(TAG, "channelNameList!=null ${filteredChannelNameList.value!!.size} ")
-            Log.d(TAG, "channelNameList!=null ${channelNameList.size} ")
         }
         else {
             filteredChannelNameList.value = ArrayList()
-            Log.d(TAG, "channelNameList==null ${filteredChannelNameList.value!!.size} ")
         }
     }
 

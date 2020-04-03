@@ -19,7 +19,6 @@ import org.andan.av.sony.network.SonyJsonRpcResponse
 import retrofit2.Response
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
-import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -48,7 +47,6 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     private fun onSonyControlsChange() {
         sonyServiceContext.sonyService = api
-        Log.d(TAG, "onSonyControlsChange()")
         if(selectedSonyControl.value != null) {
             Log.d(TAG, "onSonyControlsChange(): ${selectedSonyControl.value}")
             sonyServiceContext.ip = selectedSonyControl.value!!.ip
@@ -72,18 +70,6 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         } else null
     }
 
-    private val _currentTime = MutableLiveData("N/A")
-    val currentTime: LiveData<String> = _currentTime
-
-    suspend fun getCurrentTime() {
-        withContext(Dispatchers.Main) {
-            _currentTime.value = "Fetching new data..."
-            val response: JsonRpcResponse =
-                api.system(JsonRpcRequest(51, "getCurrentTime", emptyList()))
-            _currentTime.value = response.result.asJsonArray.get(0).asString
-        }
-    }
-
     private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
     val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
 
@@ -97,8 +83,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     suspend fun getPlayingContentInfo() {
         withContext(Dispatchers.Main) {
-            val resource = avContentService<PlayingContentInfoResponse>(
-                JsonRpcRequest(103, "getPlayingContentInfo", emptyList()))
+            val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
             if(resource.status == Status.ERROR) {
                 _responseMessage.postValue(resource.message)
                 _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
@@ -111,9 +96,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
 
     suspend fun setPlayContent(uri: String) {
         withContext(Dispatchers.Main) {
-            val params = ArrayList<Any>()
-            params.add(hashMapOf("uri" to uri))
-            val resource = avContentService<Unit>(JsonRpcRequest(101, "setPlayContent", params))
+            val resource = avContentService<Unit>(JsonRpcRequest.setPlayContent(uri))
             if(resource.status == Status.ERROR) {
                 _responseMessage.postValue(resource.message)
             }
@@ -153,9 +136,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         val source = sourceSplit[0]
         var type = ""
         if (sourceSplit.size > 1) type = sourceSplit[1]
-        val params = ArrayList<Any>()
-        params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "type" to type))
-        val resource = avContentService<Array<SonyProgramResponse>>(JsonRpcRequest(103, "getContentList", params))
+        val resource = avContentService<Array<ContentListItemResponse>>(JsonRpcRequest.getContentList(source, stIdx, cnt, type))
         return if(resource.status==Status.SUCCESS) {
             for(sonyProgramResponse in resource.data!!) {
                 if (sonyProgramResponse.programMediaType.equals("tv", true)
@@ -182,7 +163,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                 }
                 try {
                     val response = api.accessControl(
-                        "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegisterRequest(it.nickname, it.devicename, it.uuid)
+                        "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegister(it.nickname, it.devicename, it.uuid)
                     )
                     // update token
                     if (response.isSuccessful) {
@@ -254,6 +235,8 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                             gson.fromJson(
                                 if (jsonRpcResponse?.result?.asJsonArray?.size() == 0) {
                                     JsonObject()
+                                } else if(jsonRpcResponse?.result?.asJsonArray?.size()!! > 1) {
+                                    jsonRpcResponse.result.asJsonArray
                                 } else {
                                     when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
                                         is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
