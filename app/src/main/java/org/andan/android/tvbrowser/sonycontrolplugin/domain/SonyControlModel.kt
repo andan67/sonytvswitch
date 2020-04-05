@@ -31,7 +31,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     }
 
     var cookie = ""
-    var sourceList: List<String> = emptyList()
+    var sourceList= mutableListOf<String>()
     var systemModel = ""
     var systemName = ""
     var systemProduct = ""

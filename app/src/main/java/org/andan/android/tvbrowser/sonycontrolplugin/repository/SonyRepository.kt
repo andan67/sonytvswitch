@@ -103,9 +103,26 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         }
     }
 
+    suspend fun fetchSourceList() {
+        val resource = avContentService<Array<SourceListItemResponse>>(
+            JsonRpcRequest.getSourceList("tv"))
+        if(resource.status==Status.SUCCESS) {
+            getSelectedControl()!!.sourceList.clear()
+            for(sourceItem in resource.data!!) {
+                if (sourceItem.source == "tv:dvbs") {
+                    getSelectedControl()!!.sourceList.add(sourceItem.source + "#general")
+                    getSelectedControl()!!.sourceList.add(sourceItem.source + "#preferred")
+                } else {
+                    getSelectedControl()!!.sourceList.add(sourceItem.source)
+                }
+            }
+        }
+    }
+
     suspend fun fetchProgramList() {
         Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.sourceList}")
         if(getSelectedControl()!!.sourceList.isNullOrEmpty()) {
+            fetchSourceList()
         }
         getSelectedControl()!!.programList.clear()
         val programList = mutableListOf<SonyProgram2>()
