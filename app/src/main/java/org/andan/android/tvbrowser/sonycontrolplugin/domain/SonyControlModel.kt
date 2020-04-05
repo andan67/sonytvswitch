@@ -1,8 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RemoteControllerInfoItemResponse
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), var selected: Int = -1) {
 
@@ -37,6 +39,8 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
+    //var commandList = mutableListOf<HashMap<String,String>>()
+    var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null

@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
 const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
+const val SONY_SYSTEM_ENDPOINT = "/sony/system"
 
 interface SonyService {
     @POST("/sony/system")
@@ -29,14 +30,8 @@ interface SonyService {
     /*@POST("/sony/avContent")
     suspend fun avContent(@Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>*/
 
-
-    //POST("/sony/avContent")
     @POST
-    suspend fun avContent(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
-
-    //@POST("/sony/accessControl")
-    @POST
-    suspend fun accessControl(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
+    suspend fun sonyRpcService(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
 
     //@POST("/sony/accessControl")
     @POST
@@ -216,9 +211,7 @@ data class PowerStatusResponse(val status: Boolean)
 
 data class PowerSavingModeResponse(val mode: Boolean)
 
-
-
-
+data class RemoteControllerInfoItemResponse(val name: String, val value: String)
 
 class AddTokenInterceptor @Inject constructor(private val serviceClientContext: SonyServiceClientContext?,
                                               private val tokenStore: TokenStore) : Interceptor {

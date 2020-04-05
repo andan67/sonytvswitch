@@ -74,11 +74,25 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
 
     suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.avContent("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
+        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
     suspend inline fun <reified T> accessControlService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.accessControl("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, jsonRpcRequest) })
+        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, jsonRpcRequest) })
+    }
+
+    suspend inline fun <reified T> systemService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
+        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_SYSTEM_ENDPOINT, jsonRpcRequest) })
+    }
+
+    suspend fun remoteControllerInfo() {
+        val resource = systemService<Array<RemoteControllerInfoItemResponse>>(JsonRpcRequest.getRemoteControllerInfo())
+        if(resource.status==Status.SUCCESS) {
+            getSelectedControl()!!.commandList.clear()
+            for(remoteControllerInfoItem in resource.data!!) {
+                getSelectedControl()!!.commandList.add(remoteControllerInfoItem)
+            }
+        }
     }
 
     suspend fun getPlayingContentInfo() {
@@ -179,7 +193,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     sonyServiceContext.password=challenge
                 }
                 try {
-                    val response = api.accessControl(
+                    val response = api.sonyRpcService(
                         "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegister(it.nickname, it.devicename, it.uuid)
                     )
                     // update token
@@ -250,15 +264,19 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                         Resource.Success(
                             response.code(),
                             gson.fromJson(
-                                if (jsonRpcResponse?.result?.asJsonArray?.size() == 0) {
-                                    JsonObject()
-                                } else if(jsonRpcResponse?.result?.asJsonArray?.size()!! > 1) {
-                                    jsonRpcResponse.result.asJsonArray
-                                } else {
-                                    when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
-                                        is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
-                                        is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
-                                        else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
+                                when {
+                                    jsonRpcResponse?.result?.asJsonArray?.size() == 0 -> {
+                                        JsonObject()
+                                    }
+                                    jsonRpcResponse?.result?.asJsonArray?.size()!! > 1 -> {
+                                        jsonRpcResponse.result.asJsonArray?.get(1)
+                                    }
+                                    else -> {
+                                        when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
+                                            is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
+                                            is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
+                                            else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
+                                        }
                                     }
                                 }, T::class.java
                             )
