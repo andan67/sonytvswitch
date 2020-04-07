@@ -85,13 +85,48 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_SYSTEM_ENDPOINT, jsonRpcRequest) })
     }
 
-    suspend fun remoteControllerInfo() {
-        val resource = systemService<Array<RemoteControllerInfoItemResponse>>(JsonRpcRequest.getRemoteControllerInfo())
+    suspend fun setWolMode(enabled: Boolean) {
+        val resource = systemService<Any>(JsonRpcRequest.setWolMode(enabled))
+        if(resource.status==Status.ERROR) {
+            _responseMessage.postValue(resource.message)
+        }
+    }
+
+    suspend fun fetchWolMode() {
+        val resource = systemService<WolModeResponse>(JsonRpcRequest.getWolMode())
         if(resource.status==Status.SUCCESS) {
-            getSelectedControl()!!.commandList.clear()
+            getSelectedControl()!!.systemWolMode = resource.data!!.enabled
+            saveControls(true)
+        } else {
+            _responseMessage.postValue(resource.message)
+        }
+    }
+
+    suspend fun fetchRemoteControllerInfo() {
+        val resource = systemService<Array<RemoteControllerInfoItemResponse>>(JsonRpcRequest.getRemoteControllerInfo())
+        Log.d(TAG, "remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
+        if(resource.status==Status.SUCCESS) {
+            getSelectedControl()!!.commandList = mutableListOf()
             for(remoteControllerInfoItem in resource.data!!) {
-                getSelectedControl()!!.commandList.add(remoteControllerInfoItem)
+                getSelectedControl()!!.commandList.add(hashMapOf(remoteControllerInfoItem.name to remoteControllerInfoItem.value))
             }
+            saveControls(true)
+        } else {
+            _responseMessage.postValue(resource.message)
+        }
+    }
+
+    suspend fun fetchSystemInformation() {
+        val resource = systemService<SystemInformationResponse>(JsonRpcRequest.getSystemInformation())
+        Log.d(TAG, "remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
+        if(resource.status==Status.SUCCESS) {
+            getSelectedControl()!!.systemName = resource.data!!.name
+            getSelectedControl()!!.systemProduct = resource.data!!.product
+            getSelectedControl()!!.systemModel = resource.data!!.model
+            getSelectedControl()!!.systemMacAddr = resource.data!!.macAddr
+            saveControls(true)
+        } else {
+            _responseMessage.postValue(resource.message)
         }
     }
 
@@ -121,7 +156,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         val resource = avContentService<Array<SourceListItemResponse>>(
             JsonRpcRequest.getSourceList("tv"))
         if(resource.status==Status.SUCCESS) {
-            getSelectedControl()!!.sourceList.clear()
+            getSelectedControl()!!.sourceList = mutableListOf()
             for(sourceItem in resource.data!!) {
                 if (sourceItem.source == "tv:dvbs") {
                     getSelectedControl()!!.sourceList.add(sourceItem.source + "#general")
@@ -130,6 +165,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                     getSelectedControl()!!.sourceList.add(sourceItem.source)
                 }
             }
+            saveControls(true)
+        } else {
+            _responseMessage.postValue(resource.message)
         }
     }
 

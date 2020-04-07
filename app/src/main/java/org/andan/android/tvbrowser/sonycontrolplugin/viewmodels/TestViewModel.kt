@@ -232,6 +232,11 @@ class TestViewModel : ViewModel() {
 
     fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
         repository.registerControl(challenge)
+        repository.fetchRemoteControllerInfo()
+        repository.fetchSourceList()
+        repository.setWolMode(true)
+        repository.fetchWolMode()
+        repository.fetchSystemInformation()
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {

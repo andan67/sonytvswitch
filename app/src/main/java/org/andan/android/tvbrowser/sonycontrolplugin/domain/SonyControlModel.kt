@@ -21,7 +21,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     companion object {
         private val gson = Gson()
         fun fromJson(json: String) = gson.fromJson(json, SonyControl::class.java)
-        val PAGE_SIZE = 25
+        const val PAGE_SIZE = 25
     }
 
     private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
@@ -39,8 +39,8 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
-    //var commandList = mutableListOf<HashMap<String,String>>()
-    var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
+    var commandList = mutableListOf<HashMap<String,String>>()
+    //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null

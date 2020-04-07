@@ -64,6 +64,11 @@ data class JsonRpcRequest(
             return JsonRpcRequest(10, "getRemoteControllerInfo", params)
         }
 
+        fun getSystemInformation(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(33, "getSystemInformation", params)
+        }
+
         fun setWolMode(enabled: Boolean): JsonRpcRequest {
             val params = ArrayList<Any>()
             params.add(hashMapOf("enabled" to enabled))
