@@ -5,6 +5,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RemoteControllerInf
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
 data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), var selected: Int = -1) {
 
@@ -39,7 +40,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
-    var commandList = mutableListOf<HashMap<String,String>>()
+    var commandList = LinkedHashMap<String,String>()
     //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
 
     @Transient

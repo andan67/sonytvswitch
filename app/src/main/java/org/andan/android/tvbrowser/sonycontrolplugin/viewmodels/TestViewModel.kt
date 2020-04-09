@@ -230,6 +230,11 @@ class TestViewModel : ViewModel() {
         registerControl(null)
     }
 
+    fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
+        repository.wakeOnLan()
+    }
+
+
     fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
         repository.registerControl(challenge)
         repository.fetchRemoteControllerInfo()
@@ -245,6 +250,10 @@ class TestViewModel : ViewModel() {
         getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
         refreshDerivedVariablesForSelectedControl()
         repository.saveControls()
+    }
+
+    fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
+        repository.sendIRCC(getSelectedControl()!!.commandList[name]!!)
     }
 
     internal fun performFuzzyMatchForChannelList() {

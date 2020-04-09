@@ -11,7 +11,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
-import java.lang.Exception
 import java.net.HttpURLConnection.HTTP_OK
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -22,18 +21,25 @@ import javax.inject.Inject
 const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
 const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
 const val SONY_SYSTEM_ENDPOINT = "/sony/system"
+const val SONY_IRCC_ENDPOINT = "/sony/IRCC"
+const val SONY_IRCC_REQUEST_TEMPLATE = "<?xml version=\"1.0\"?>\n" +
+        "<s:Envelope\n" +
+        "    xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+        "    s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n" +
+        "    <s:Body>\n" +
+        "        <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">\n" +
+        "            <IRCCCode></IRCCCode>\n" +
+        "        </u:X_SendIRCC>\n" +
+        "    </s:Body>\n" +
+        "</s:Envelope>"
 
 interface SonyService {
-    @POST("/sony/system")
-    suspend fun system(@Body rpcRequest: JsonRpcRequest): JsonRpcResponse
-
-    /*@POST("/sony/avContent")
-    suspend fun avContent(@Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>*/
-
     @POST
     suspend fun sonyRpcService(@Url url: String, @Body rpcRequest: JsonRpcRequest): Response<JsonRpcResponse>
 
-    //@POST("/sony/accessControl")
+    @POST
+    suspend fun sendIRCC(@Url url: String, @Body requestBody: RequestBody): Response<Unit>
+
     @POST
     fun refreshToken(@Url url: String, @Body rpcRequest: JsonRpcRequest): Call<JsonRpcResponse>
 }

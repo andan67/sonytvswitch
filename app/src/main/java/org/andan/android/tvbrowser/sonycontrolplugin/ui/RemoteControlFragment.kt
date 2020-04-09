@@ -88,13 +88,7 @@ class RemoteControlFragment : Fragment() {
     }
 
     private fun sendCode(name:String) {
-        val extras = Bundle()
-        extras.putInt(
-            SonyIPControlIntentService.ACTION,
-            SonyIPControlIntentService.SEND_IRCC_BY_NAME_ACTION
-        )
-        extras.putString(SonyIPControlIntentService.CODE, name)
-        //(activity as MainActivity).startControlService(extras)
+        testViewModel.sendIRRCCByName(name)
     }
 
     class CommandListener(val clickListener: (name: String) -> Unit) {

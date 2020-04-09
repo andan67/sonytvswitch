@@ -198,10 +198,7 @@ class ProgramListFragment : Fragment() {
         when (item.itemId) {
             R.id.action_search -> return super.onOptionsItemSelected(item)
             R.id.wake_on_lan ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.WOL_ACTION
-                )
+                testViewModel.wakeOnLan()
             R.id.screen_off ->
                 extras.putInt(
                     SonyIPControlIntentService.ACTION,

@@ -8,7 +8,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
@@ -106,9 +110,9 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         val resource = systemService<Array<RemoteControllerInfoItemResponse>>(JsonRpcRequest.getRemoteControllerInfo())
         Log.d(TAG, "remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
         if(resource.status==Status.SUCCESS) {
-            getSelectedControl()!!.commandList = mutableListOf()
+            getSelectedControl()!!.commandList = LinkedHashMap()
             for(remoteControllerInfoItem in resource.data!!) {
-                getSelectedControl()!!.commandList.add(hashMapOf(remoteControllerInfoItem.name to remoteControllerInfoItem.value))
+                getSelectedControl()!!.commandList[remoteControllerInfoItem.name] = remoteControllerInfoItem.value
             }
             saveControls(true)
         } else {
@@ -265,6 +269,30 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         }
     }
 
+    suspend fun sendIRCC(code: String) {
+        withContext(Dispatchers.Main) {
+            selectedSonyControl.value?.let {
+                val requestBodyText =
+                    SONY_IRCC_REQUEST_TEMPLATE.replace("<IRCCCode>", "<IRCCCode>$code")
+
+                val requestBody: RequestBody =
+                    requestBodyText.toRequestBody("text/xml".toMediaTypeOrNull())
+                Log.d(TAG, "sendIRCC: ${requestBodyText}")
+                val response = api.sendIRCC("http://" + it.ip + SONY_IRCC_ENDPOINT, requestBody)
+                if (!response.isSuccessful) {
+                    _responseMessage.postValue(response.message())
+                }
+            }
+        }
+    }
+
+    suspend fun wakeOnLan() {
+        withContext(Dispatchers.Main) {
+            selectedSonyControl.value?.let {
+                WakeOnLan.wakeOnLan(getSelectedControl()!!.ip, getSelectedControl()!!.systemMacAddr)
+            }
+        }
+    }
 
     fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
         var isUpdated = false
