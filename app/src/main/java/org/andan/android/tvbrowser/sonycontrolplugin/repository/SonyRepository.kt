@@ -135,20 +135,20 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend fun getPlayingContentInfo() {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
             if(resource.status == Status.ERROR) {
                 _responseMessage.postValue(resource.message)
-                _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
+                _playingContentInfo.postValue(PlayingContentInfoResponse.notAvailableValue)
             } else {
-                _playingContentInfo.value = resource.data
+                _playingContentInfo.postValue(resource.data)
             }
             //Log.d(TAG, resource.data!!.title)
         }
     }
 
     suspend fun setPlayContent(uri: String) {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             val resource = avContentService<Unit>(JsonRpcRequest.setPlayContent(uri))
             if(resource.status == Status.ERROR) {
                 _responseMessage.postValue(resource.message)
@@ -228,7 +228,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend fun registerControl(challenge: String?) {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
                 Log.d(TAG, "registerControl(): ${sonyServiceContext.nickname}")
                 if(challenge != null) {
@@ -270,7 +270,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend fun sendIRCC(code: String) {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
                 val requestBodyText =
                     SONY_IRCC_REQUEST_TEMPLATE.replace("<IRCCCode>", "<IRCCCode>$code")
@@ -287,7 +287,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
     }
 
     suspend fun wakeOnLan() {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
                 WakeOnLan.wakeOnLan(getSelectedControl()!!.ip, getSelectedControl()!!.systemMacAddr)
             }

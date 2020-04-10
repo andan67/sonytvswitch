@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
+import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -8,6 +9,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object WakeOnLan {
+    private val TAG = WakeOnLan::class.java.name
     const val PORT = 9
     private var matcher: Matcher? = null
     private const val IPADDRESS_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -40,9 +42,8 @@ object WakeOnLan {
         } catch (ex: UnknownHostException) {
             println(ex.message)
         }
-        println(validate("192.168.178.255"))
         wakeOnLan(
-            "AndreasSonyBraviaTV",
+            "192.168.178.27",
             "D8:D4:3C:4D:56:3D"
         )
     }
@@ -60,8 +61,7 @@ object WakeOnLan {
             } else {
                 throw Exception("No valid IP4 address")
             }
-            val macBytes =
-                getMacBytes(macStr)
+            val macBytes = getMacBytes(macStr)
             val bytes = ByteArray(6 + 16 * macBytes.size)
             for (i in 0..5) {
                 bytes[i] = 0xff.toByte()
@@ -83,7 +83,8 @@ object WakeOnLan {
             socket.close()
             println("Wake-on-LAN packet sent.")
         } catch (e: Exception) {
-            println("Failed to send Wake-on-LAN packet: + e")
+            println("Failed to send Wake-on-LAN packet: $e")
+            e.printStackTrace()
             return -1
         }
         return 0
@@ -92,7 +93,7 @@ object WakeOnLan {
     @Throws(IllegalArgumentException::class)
     private fun getMacBytes(macStr: String): ByteArray {
         val bytes = ByteArray(6)
-        val hex = macStr.split("(\\:|\\-)").toTypedArray()
+        val hex = macStr.split("[:\\-]".toRegex())
         require(hex.size == 6) { "Invalid MAC address." }
         try {
             for (i in 0..5) {
@@ -101,6 +102,7 @@ object WakeOnLan {
         } catch (e: NumberFormatException) {
             throw IllegalArgumentException("Invalid hex digit in MAC address.")
         }
+        //Log.d(TAG, "getMacBytes ${bytes[4]}")
         return bytes
     }
 }

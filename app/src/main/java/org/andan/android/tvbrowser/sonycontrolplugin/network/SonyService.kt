@@ -270,9 +270,9 @@ class TokenAuthenticator @Inject constructor(
         if (response.code() == HTTP_OK) {
             if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                 val cookieString: String? = response.headers()["Set-Cookie"]
-                var pattern =
+                val pattern =
                     Pattern.compile("auth=([A-Za-z0-9]+)")
-                var matcher = pattern.matcher(cookieString)
+                val matcher = pattern.matcher(cookieString)
                 if (matcher.find()) {
                     tokenStore.storeToken(serviceClientContext.uuid, "auth=" + matcher.group(1))
                     /*
