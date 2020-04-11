@@ -270,13 +270,13 @@ class TestViewModel : ViewModel() {
         }
     }
 
-    /*internal fun clearMapping(clearMatch: Boolean) {
-        Log.d(TAG, "clearMapping(clearMatch: Boolean)")
+    internal fun clearMapping() {
+        Log.d(TAG, "clearMapping()")
         if (getSelectedControl()?.channelProgramMap != null) {
             for (channelName in channelNameList) {
                 getSelectedControl()!!.channelProgramMap[channelName]=""
-                controlRepository.getControls().notifyObserver()
             }
+            repository.saveControls()
         }
-    }*/
+    }
 }

@@ -206,7 +206,7 @@ class ChannelMapFragment : Fragment() {
                 ).show()
             }
             R.id.clear_match -> {
-                //testViewModel.clearMapping(true)
+                testViewModel.clearMapping()
                 Toast.makeText(
                     context,
                     resources.getString(R.string.toast_channel_map_program_cleared),

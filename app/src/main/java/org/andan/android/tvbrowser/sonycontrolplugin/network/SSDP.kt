@@ -32,7 +32,7 @@ object SSDP {
         val responseList = getSsdpResponses()
         // seach for Sony Model
         val sonyPattern = Pattern.compile("X-AV-Server-Info:.*mn=\"(.*)\"; ")
-        val ipPattern = Pattern.compile("Location: http://(.*):")
+        val ipPattern = Pattern.compile("LOCATION: http://(.*?)[:|/]")
         responseList.forEach {
             println(it)
             var matcher = sonyPattern.matcher(it)
@@ -45,6 +45,7 @@ object SSDP {
             matcher = ipPattern.matcher(it)
             if (matcher.find()) {
                 ip = matcher.group(1)
+                //println("ip: $ip")
             }
             if(!model.isNullOrEmpty() && !ip.isNullOrEmpty()) {
                 sonyIpAndModelNameMap[ip]=model
