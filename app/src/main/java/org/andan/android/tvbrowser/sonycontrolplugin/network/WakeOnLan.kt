@@ -54,7 +54,7 @@ object WakeOnLan {
         }
         try {
             val hostAddress = InetAddress.getByName(host)
-            var broadcastIP: String? = null
+            val broadcastIP: String?
             broadcastIP = if (validate(hostAddress.hostAddress)) {
                 hostAddress.hostAddress
                     .substring(0, hostAddress.hostAddress.lastIndexOf(".")) + ".255"

@@ -10,8 +10,8 @@
             type="org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2" />
 
         <variable
-            name="testViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
 
 
         <variable
@@ -91,7 +91,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:tint="@android:color/holo_blue_dark"
-            android:visibility="@{(testViewModel.getChannelForProgramUri(program.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
+            android:visibility="@{(sonyControlViewModel.getChannelForProgramUri(program.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toEndOf="@+id/program_item_program_source"
             app:layout_constraintTop_toTopOf="@+id/program_item_program_source"
             app:srcCompat="@drawable/ic_widget_simple" />
@@ -104,7 +104,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
-            android:text="@{testViewModel.getChannelForProgramUri(program.uri)}"
+            android:text="@{sonyControlViewModel.getChannelForProgramUri(program.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"

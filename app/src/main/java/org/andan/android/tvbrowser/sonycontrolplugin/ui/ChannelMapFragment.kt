@@ -13,27 +13,21 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.selects.select
 import org.andan.android.tvbrowser.sonycontrolplugin.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
-import org.andan.av.sony.model.SonyProgram
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
 class ChannelMapFragment : Fragment() {
     private val TAG = ChannelMapFragment::class.java.name
-    private val testViewModel: TestViewModel by activityViewModels()
+    private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     //private var searchQuery: String? = null
@@ -54,42 +48,42 @@ class ChannelMapFragment : Fragment() {
         )
 
         val view = binding.root
-        testViewModel.onSelectedIndexChange()
-        binding.testViewModel = testViewModel
-        Log.d(TAG, "onCreateView: ${testViewModel.channelNameList.size}")
-        if (testViewModel.selectedSonyControl.value == null || testViewModel.channelNameList.isNullOrEmpty()) {
+        sonyControlViewModel.onSelectedIndexChange()
+        binding.sonyControlViewModel = sonyControlViewModel
+        Log.d(TAG, "onCreateView: ${sonyControlViewModel.channelNameList.size}")
+        if (sonyControlViewModel.selectedSonyControl.value == null || sonyControlViewModel.channelNameList.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
-            if (testViewModel.selectedSonyControl.value == null) {
+            if (sonyControlViewModel.selectedSonyControl.value == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
                 Log.d(TAG, "No active control")
-            } else if (testViewModel.channelNameList.isNullOrEmpty()) {
+            } else if (sonyControlViewModel.channelNameList.isNullOrEmpty()) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_channels_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_channels_message))
             }
             alertDialogBuilder.setPositiveButton( resources.getString(R.string.dialog_ok)
-            ) { dialog, arg1 -> dialog.dismiss() }
+            ) { dialog, _ -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
             val adapter =
                 ChannelMapItemRecyclerViewAdapter(
                     ChannelMapListener(
-                        { view: View, channelName: String ->
-                            if (testViewModel.programTitleList.isNullOrEmpty()) {
+                        { view2: View, channelName: String ->
+                            if (sonyControlViewModel.programTitleList.isNullOrEmpty()) {
                                 alertNoPrograms()
                             } else {
-                                testViewModel.selectedChannelName = channelName
+                                sonyControlViewModel.selectedChannelName = channelName
                                 Log.d(TAG, "selectedChannelName: $channelName")
-                                view.findNavController()
+                                view2.findNavController()
                                     .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
                             }
                         },
                         { channelName: String ->
                             val uri: String? =
-                                testViewModel.selectedSonyControl.value!!.channelProgramMap[channelName]
+                                sonyControlViewModel.selectedSonyControl.value!!.channelProgramMap[channelName]
                             if (!uri.isNullOrEmpty()) {
-                                val program = testViewModel.uriProgramMap[uri]
+                                val program = sonyControlViewModel.uriProgramMap[uri]
                                 // switch to program
                                 Toast.makeText(
                                     context,
@@ -98,21 +92,21 @@ class ChannelMapFragment : Fragment() {
                                 ).show()
                             }
                             true
-                        }), testViewModel
+                        }), sonyControlViewModel
                 )
 
             binding.listChannelMap.adapter = adapter
             Log.d(
                 TAG,
-                "controlViewModel.channelList.size ${testViewModel.getFilteredChannelNameList().value?.size}"
+                "controlViewModel.channelList.size ${sonyControlViewModel.getFilteredChannelNameList().value?.size}"
             )
 
-            testViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change getControls")
                 adapter.notifyDataSetChanged()
             })
 
-            testViewModel.getFilteredChannelNameList().observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.getFilteredChannelNameList().observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change filtered Channel")
                 adapter.notifyDataSetChanged()
             })
@@ -144,10 +138,10 @@ class ChannelMapFragment : Fragment() {
             searchView = searchItem.actionView as SearchView
         }
         if (searchView != null) {
-            if (testViewModel.channelNameSearchQuery.isNullOrEmpty()) {
+            if (sonyControlViewModel.channelNameSearchQuery.isNullOrEmpty()) {
                 searchView?.isIconified = true
             } else {
-                searchView?.setQuery(testViewModel.channelNameSearchQuery, true)
+                searchView?.setQuery(sonyControlViewModel.channelNameSearchQuery, true)
                 searchView?.isIconified = false
                 searchView?.clearFocus()
                 // searchView.setIconified(true);
@@ -160,7 +154,7 @@ class ChannelMapFragment : Fragment() {
                     if (query.isNullOrEmpty()) {
                         Log.i(TAG, "onQueryTextChange: $query")
                         //searchQuery = query
-                        testViewModel.filterChannelNameList(query)
+                        sonyControlViewModel.filterChannelNameList(query)
                     }
                     return false
                 }
@@ -168,7 +162,7 @@ class ChannelMapFragment : Fragment() {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     Log.i(TAG, "onQueryTextSubmit: $query")
                     //searchQuery = query
-                    testViewModel.filterChannelNameList(query)
+                    sonyControlViewModel.filterChannelNameList(query)
                     searchView?.clearFocus()
                     return false
                 }
@@ -184,7 +178,7 @@ class ChannelMapFragment : Fragment() {
         alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_programs_message))
         alertDialogBuilder.setPositiveButton(
             resources.getString(R.string.dialog_ok)
-        ) { dialog, arg1 -> dialog.dismiss() }
+        ) { dialog, _ -> dialog.dismiss() }
         alertDialogBuilder.create().show()
     }
 
@@ -194,10 +188,10 @@ class ChannelMapFragment : Fragment() {
                 // Not implemented here
                 return true
             R.id.match_channels -> {
-                if (testViewModel.programTitleList.isEmpty()) {
+                if (sonyControlViewModel.programTitleList.isEmpty()) {
                     alertNoPrograms()
                 } else {
-                    testViewModel.performFuzzyMatchForChannelList()
+                    sonyControlViewModel.performFuzzyMatchForChannelList()
                 }
                 Toast.makeText(
                     context,
@@ -206,7 +200,7 @@ class ChannelMapFragment : Fragment() {
                 ).show()
             }
             R.id.clear_match -> {
-                testViewModel.clearMapping()
+                sonyControlViewModel.clearMapping()
                 Toast.makeText(
                     context,
                     resources.getString(R.string.toast_channel_map_program_cleared),
@@ -221,13 +215,13 @@ class ChannelMapFragment : Fragment() {
     }
 }
 
-class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val testViewModel: TestViewModel) :
+class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val sonyControlViewModel: SonyControlViewModel) :
     RecyclerView.Adapter<ChannelMapItemRecyclerViewAdapter.ViewHolder>() {
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val channelName = testViewModel.getFilteredChannelNameList().value?.get(position)!!
-        holder.bind(channelName, clickListener, testViewModel)
+        val channelName = sonyControlViewModel.getFilteredChannelNameList().value?.get(position)!!
+        holder.bind(channelName, clickListener, sonyControlViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -237,18 +231,18 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
     }
 
     override fun getItemCount(): Int {
-        return testViewModel.getFilteredChannelNameList().value!!.size
+        return sonyControlViewModel.getFilteredChannelNameList().value!!.size
     }
 
     class ViewHolder private constructor(val binding: MapChannnelItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: String, clickListener: ChannelMapListener, testViewModel: TestViewModel) {
+        fun bind(item: String, clickListener: ChannelMapListener, sonyControlViewModel: SonyControlViewModel) {
             binding.channelName = item
             binding.channelPosition = adapterPosition+1
-            val programUri: String? = testViewModel.selectedSonyControl.value!!.channelProgramMap[item]
+            val programUri: String? = sonyControlViewModel.selectedSonyControl.value!!.channelProgramMap[item]
             if (!programUri.isNullOrEmpty()) {
-                val program: SonyProgram2? = testViewModel.selectedSonyControl.value!!.programUriMap!![programUri]
+                val program: SonyProgram2? = sonyControlViewModel.selectedSonyControl.value!!.programUriMap!![programUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else
@@ -258,7 +252,7 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
             }
 
             binding.clickListener = clickListener
-            binding.testViewModel = testViewModel
+            binding.sonyControlViewModel = sonyControlViewModel
             binding.executePendingBindings()
             //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
             binding.root.setOnLongClickListener { clickListener.longClickListener(item)}

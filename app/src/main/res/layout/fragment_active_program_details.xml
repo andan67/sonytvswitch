@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="testViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
 
     </data>
 
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:text="@{testViewModel.playingContentInfo.title}" />
+                android:text="@{sonyControlViewModel.playingContentInfo.title}" />
 
             <View style="@style/Divider"/>
 
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.dispNum}"
+                android:text="@{sonyControlViewModel.playingContentInfo.dispNum}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.programTitle}"
+                android:text="@{sonyControlViewModel.playingContentInfo.programTitle}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.startDateTimeFormatted}"
+                android:text="@{sonyControlViewModel.playingContentInfo.startDateTimeFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -113,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.endDateTimeFormatted}"
+                android:text="@{sonyControlViewModel.playingContentInfo.endDateTimeFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -132,7 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Long.toString(testViewModel.playingContentInfo.durationSec/60)}"
+                android:text="@{Long.toString(sonyControlViewModel.playingContentInfo.durationSec/60)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -151,7 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.source}"
+                android:text="@{sonyControlViewModel.playingContentInfo.source}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>
@@ -170,7 +170,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.playingContentInfo.programMediaType}"
+                android:text="@{sonyControlViewModel.playingContentInfo.programMediaType}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider"/>

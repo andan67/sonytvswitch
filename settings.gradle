@@ -1,2 +1,2 @@
-include ':app', ':sdb'
+include ':app'
 rootProject.name='Sony TV Switch'

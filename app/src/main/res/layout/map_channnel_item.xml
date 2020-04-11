@@ -16,8 +16,8 @@
             type="Integer" />
 
         <variable
-            name="testViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
 
         <variable
             name="programTitle"

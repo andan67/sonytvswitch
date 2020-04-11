@@ -21,15 +21,14 @@ import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
 class ProgramListFragment : Fragment() {
     private val TAG = ProgramListFragment::class.java.name
-    private val testViewModel: TestViewModel by activityViewModels()
+    private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
     private lateinit var playingContentInfo: PlayingContentInfoResponse
@@ -51,17 +50,17 @@ class ProgramListFragment : Fragment() {
         val view = binding.root
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
         fab.setOnClickListener { view ->
-            if (testViewModel.lastProgram != null) {
+            if (sonyControlViewModel.lastProgram != null) {
                 // Toast.makeText(context, "Switched to ${controlViewModel.lastProgram?.title}", Toast.LENGTH_LONG).show()
-                setPlayContent(testViewModel.lastProgram!!)
+                setPlayContent(sonyControlViewModel.lastProgram!!)
             }
 
         }
 
-        if (testViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
+        if (sonyControlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
-            if (testViewModel.selectedSonyControl.value == null) {
+            if (sonyControlViewModel.selectedSonyControl.value == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
                 Log.d(TAG, "No active control")
@@ -71,14 +70,14 @@ class ProgramListFragment : Fragment() {
             }
             alertDialogBuilder.setPositiveButton(
                 resources.getString(R.string.dialog_ok)
-            ) { dialog, arg1 -> dialog.dismiss() }
+            ) { dialog, _ -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
             playingContentInfo = PlayingContentInfoResponse.notAvailableValue
 
-            binding.testViewModel = testViewModel
+            binding.sonyControlViewModel = sonyControlViewModel
             binding.activeProgram.activeProgram = playingContentInfo
-            binding.activeProgram.testViewModel = testViewModel
+            binding.activeProgram.sonyControlViewModel = sonyControlViewModel
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
@@ -101,34 +100,34 @@ class ProgramListFragment : Fragment() {
                             //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
                             setPlayContent(program)
                         },
-                        { program: SonyProgram2 ->
+                        { _ : SonyProgram2 ->
                             true
                             // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
-                            //testViewModel.onProgramLongClicked(program)
-                        }), testViewModel
+                            //sonyControlViewModel.onProgramLongClicked(program)
+                        }), sonyControlViewModel
                 )
 
             binding.listProgram.adapter = adapter
 
-            testViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
                 Log.d(
                     TAG,
-                    "observed change filtered program list with filter ${testViewModel.getProgramSearchQuery()}"
+                    "observed change filtered program list with filter ${sonyControlViewModel.getProgramSearchQuery()}"
                 )
                 adapter.notifyDataSetChanged()
                 fetchPlayingContentInfo()
             })
 
-            testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed requestError")
                 if (!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
             })
 
-            testViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change playingContentInfo")
-                binding.activeProgram.activeProgram = testViewModel.playingContentInfo.value
-                if (testViewModel.uriProgramMap.containsKey(testViewModel.playingContentInfo.value!!.uri)) {
-                    testViewModel.updateCurrentProgram(testViewModel.uriProgramMap[testViewModel.playingContentInfo.value!!.uri]!!)
+                binding.activeProgram.activeProgram = sonyControlViewModel.playingContentInfo.value
+                if (sonyControlViewModel.uriProgramMap.containsKey(sonyControlViewModel.playingContentInfo.value!!.uri)) {
+                    sonyControlViewModel.updateCurrentProgram(sonyControlViewModel.uriProgramMap[sonyControlViewModel.playingContentInfo.value!!.uri]!!)
                     Toast.makeText(context, "Refreshed playing content info", Toast.LENGTH_LONG)
                         .show()
                 }
@@ -159,8 +158,8 @@ class ProgramListFragment : Fragment() {
         }
 
         if (searchView != null) {
-            if (testViewModel.getProgramSearchQuery() != null) {
-                searchView?.setQuery(testViewModel.getProgramSearchQuery(), true)
+            if (sonyControlViewModel.getProgramSearchQuery() != null) {
+                searchView?.setQuery(sonyControlViewModel.getProgramSearchQuery(), true)
                 searchView?.isIconified = false
                 searchView?.clearFocus()
                 //searchView.setIconified(false);
@@ -174,7 +173,7 @@ class ProgramListFragment : Fragment() {
                         Log.i(TAG, "onQueryTextChange: $query")
                         //searchQuery = query
                         //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
-                        testViewModel.filterProgramList(query)
+                        sonyControlViewModel.filterProgramList(query)
                     }
                     return false
                 }
@@ -183,7 +182,7 @@ class ProgramListFragment : Fragment() {
                     Log.i(TAG, "onQueryTextSubmit: $query")
                     //searchQuery = query
                     //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
-                    testViewModel.filterProgramList(query)
+                    sonyControlViewModel.filterProgramList(query)
                     searchView?.clearFocus()
                     return false
                 }
@@ -198,17 +197,11 @@ class ProgramListFragment : Fragment() {
         when (item.itemId) {
             R.id.action_search -> return super.onOptionsItemSelected(item)
             R.id.wake_on_lan ->
-                testViewModel.wakeOnLan()
+                sonyControlViewModel.wakeOnLan()
             R.id.screen_off ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.SCREEN_ON_ACTION
-                )
+                sonyControlViewModel.setPowerSavingMode("off")
             R.id.screen_on ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.SCREEN_OFF_ACTION
-                )
+                sonyControlViewModel.setPowerSavingMode("pictureOff")
         }
         //(activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
@@ -222,7 +215,7 @@ class ProgramListFragment : Fragment() {
             SonyIPControlIntentService.GET_PLAYING_CONTENT_INFO_ACTION
         )
         (activity as MainActivity).startControlService(extras)*/
-        testViewModel.fetchPlayingContentInfo()
+        sonyControlViewModel.fetchPlayingContentInfo()
     }
 
     private fun setPlayContent(program: SonyProgram2) {
@@ -233,24 +226,24 @@ class ProgramListFragment : Fragment() {
         )
         extras.putString(SonyIPControlIntentService.URI, program.uri)
         (activity as MainActivity).startControlService(extras)*/
-        testViewModel.setPlayContent(program.uri)
-        testViewModel.updateCurrentProgram(program)
+        sonyControlViewModel.setPlayContent(program.uri)
+        sonyControlViewModel.updateCurrentProgram(program)
     }
 }
 
 class ProgramItemRecyclerViewAdapter(
     val clickListener: ProgramListener,
-    val testViewModel: TestViewModel
+    val sonyControlViewModel: SonyControlViewModel
 ) :
     RecyclerView.Adapter<ProgramItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int {
-        return testViewModel.getFilteredProgramList().value!!.size
+        return sonyControlViewModel.getFilteredProgramList().value!!.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val program = testViewModel.getFilteredProgramList().value!![position]
-        holder.bind(program, clickListener, testViewModel)
+        val program = sonyControlViewModel.getFilteredProgramList().value!![position]
+        holder.bind(program, clickListener, sonyControlViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -262,10 +255,10 @@ class ProgramItemRecyclerViewAdapter(
     class ViewHolder private constructor(val binding: ProgramItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: SonyProgram2, clickListener: ProgramListener, testViewModel: TestViewModel) {
+        fun bind(item: SonyProgram2, clickListener: ProgramListener, sonyControlViewModel: SonyControlViewModel) {
             binding.program = item
             binding.clickListener = clickListener
-            binding.testViewModel = testViewModel
+            binding.sonyControlViewModel = sonyControlViewModel
             binding.executePendingBindings()
             //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
             binding.root.setOnLongClickListener { clickListener.longClickListener(item) }

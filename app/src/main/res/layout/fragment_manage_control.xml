@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="testViewModel"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel" />
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
     </data>
 
 
@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.ip}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.ip}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 tools:text="192.168.178.27" />
 
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.nickname}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.nickname}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.devicename.replace('\n','x')}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.devicename.replace('\n','x')}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 tools:text="sample device" />
 
@@ -93,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.uuid}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.uuid}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -112,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.systemModel}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.systemModel}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{testViewModel.selectedSonyControl.systemMacAddr}"
+                android:text="@{sonyControlViewModel.selectedSonyControl.systemMacAddr}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -150,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Boolean.toString(testViewModel.selectedSonyControl.systemWolMode)}"
+                android:text="@{Boolean.toString(sonyControlViewModel.selectedSonyControl.systemWolMode)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />
@@ -169,7 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="@{Integer.toString(testViewModel.selectedSonyControl.programList.size())}"
+                android:text="@{Integer.toString(sonyControlViewModel.selectedSonyControl.programList.size())}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View style="@style/Divider" />

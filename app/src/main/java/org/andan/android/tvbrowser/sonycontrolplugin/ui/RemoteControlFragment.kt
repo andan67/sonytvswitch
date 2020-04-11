@@ -7,19 +7,16 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyIPControlIntentService
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentRemoteControlBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ControlViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
 class RemoteControlFragment : Fragment() {
     private val TAG = RemoteControlFragment::class.java.name
-    private val testViewModel: TestViewModel by activityViewModels()
+    private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +35,7 @@ class RemoteControlFragment : Fragment() {
         val view = binding.root
 
 
-        if (testViewModel.selectedSonyControl.value == null) {
+        if (sonyControlViewModel.selectedSonyControl.value == null) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
             alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
@@ -68,27 +65,18 @@ class RemoteControlFragment : Fragment() {
         val extras = Bundle()
         when (item.itemId) {
             R.id.wake_on_lan ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.WOL_ACTION
-                )
+                sonyControlViewModel.wakeOnLan()
             R.id.screen_off ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.SCREEN_ON_ACTION
-                )
+                sonyControlViewModel.setPowerSavingMode("off")
             R.id.screen_on ->
-                extras.putInt(
-                    SonyIPControlIntentService.ACTION,
-                    SonyIPControlIntentService.SCREEN_OFF_ACTION
-                )
+                sonyControlViewModel.setPowerSavingMode("pictureOff")
         }
         //(activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
     }
 
     private fun sendCode(name:String) {
-        testViewModel.sendIRRCCByName(name)
+        sonyControlViewModel.sendIRRCCByName(name)
     }
 
     class CommandListener(val clickListener: (name: String) -> Unit) {

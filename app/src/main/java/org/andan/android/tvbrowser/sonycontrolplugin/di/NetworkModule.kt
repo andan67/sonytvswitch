@@ -22,35 +22,15 @@ class NetworkModule {
         return SonyServiceClientContext()
     }
 
-
-    /*@Singleton
-    @Provides
-    fun provideTokenStore(): TokenStore{
-        return TokenStore("auth=16f2695f210e5c7ce96f9b023d15812caf3920fe7e89be2e726b8339a564c83f")
-    }*/
-
-    /*
     @Singleton
     @Provides
-    fun provideAddTokenInterceptor(tokenRepository: TokenRepository): AddTokenInterceptor {
-        return AddTokenInterceptor(tokenRepository)
-    }*/
-
-    @Singleton
-    @Provides
-    fun provideHttpLoggingInterceptor(tokenStore: ControlPreferenceStore): HttpLoggingInterceptor {
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-   /* @Singleton
-    @Provides
-    fun provideTokenAuthenticator(serviceHolder: SonyServiceHolder, tokenRepository: TokenRepository): Authenticator {
-        return TokenAuthenticator(serviceHolder, tokenRepository)
-    }*/
-
     @Singleton
     @Provides
-    fun provideOkHttpClient(tokenInterceptor: AddTokenInterceptor, loggingInterceptor: HttpLoggingInterceptor, serviceClientContext: SonyServiceClientContext, tokenStore: TokenStore,
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, serviceClientContext: SonyServiceClientContext, tokenStore: TokenStore,
                             authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()

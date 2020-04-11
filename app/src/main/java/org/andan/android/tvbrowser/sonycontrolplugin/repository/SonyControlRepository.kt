@@ -8,7 +8,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -19,19 +18,14 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
-import org.andan.av.sony.network.SonyJsonRpcResponse
 import retrofit2.Response
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-class SonyRepository @Inject constructor(val client: OkHttpClient, val api: SonyService, val preferenceStore: ControlPreferenceStore) {
-    private val TAG = SonyRepository::class.java.name
-
-    //var sonyControls = SonyControls()
-    //var selectedSonyControl : SonyControl? = null
-    //var selectedIndex = -1
+class SonyControlRepository @Inject constructor(val client: OkHttpClient, val api: SonyService, val preferenceStore: ControlPreferenceStore) {
+    private val TAG = SonyControlRepository::class.java.name
 
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
@@ -105,6 +99,14 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
             _responseMessage.postValue(resource.message)
         }
     }
+
+    suspend fun setPowerSavingMode(mode: String) {
+        val resource = systemService<Any>(JsonRpcRequest.setPowerSavingMode(mode))
+        if(resource.status==Status.ERROR) {
+            _responseMessage.postValue(resource.message)
+        }
+    }
+
 
     suspend fun fetchRemoteControllerInfo() {
         val resource = systemService<Array<RemoteControllerInfoItemResponse>>(JsonRpcRequest.getRemoteControllerInfo())
@@ -185,7 +187,6 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         if (!getSelectedControl()!!.sourceList.isNullOrEmpty()) {
             for (sonySource in getSelectedControl()!!.sourceList) {
                 // get programs in pages
-                var response: SonyJsonRpcResponse
                 var stidx = 0
                 var count = 0
                 while(fetchTvContentList(sonySource, stidx, SonyControl.PAGE_SIZE, programList).let {
@@ -312,7 +313,7 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
         Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
     }
 
-    suspend inline fun <reified T> apiCall(call: suspend () -> Response<JsonRpcResponse>): Resource<T> {
+    suspend inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Resource<T> {
         //val response: Response<T>
         return try {
             val response = call.invoke()
@@ -338,10 +339,10 @@ class SonyRepository @Inject constructor(val client: OkHttpClient, val api: Sony
                                         jsonRpcResponse.result.asJsonArray?.get(1)
                                     }
                                     else -> {
-                                        when (jsonRpcResponse?.result?.asJsonArray?.get(0)) {
+                                        when (jsonRpcResponse.result.asJsonArray?.get(0)) {
                                             is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
                                             is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
-                                            else -> jsonRpcResponse?.result!!.asJsonArray.get(0).asJsonObject
+                                            else -> jsonRpcResponse.result.asJsonArray.get(0).asJsonObject
                                         }
                                     }
                                 }, T::class.java

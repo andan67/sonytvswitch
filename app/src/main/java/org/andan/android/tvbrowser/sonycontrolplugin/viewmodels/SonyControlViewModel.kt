@@ -5,18 +5,18 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.ProgramFuzzyMatch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
-import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
-import org.andan.av.sony.ProgramFuzzyMatch
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import java.util.LinkedHashSet
 
-class TestViewModel : ViewModel() {
+class SonyControlViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-    private val TAG = TestViewModel::class.java.name
+    private val TAG = SonyControlViewModel::class.java.name
     // repository for control data
-    private val repository: SonyRepository = SonyControlApplication.get().appComponent.sonyRepository()
+    private val sonyControlRepository: SonyControlRepository = SonyControlApplication.get().appComponent.sonyRepository()
     // val sampleText = "This is a sample text"
 
     /*val powerStatus : LiveData<String> = liveData(Dispatchers.IO) {
@@ -30,7 +30,7 @@ class TestViewModel : ViewModel() {
         emit(repository.getCurrentTime())
     }*/
 
-    val requestErrorMessage = repository.responseMessage
+    val requestErrorMessage = sonyControlRepository.responseMessage
 
     var isCreated: Boolean = false
 
@@ -71,8 +71,8 @@ class TestViewModel : ViewModel() {
     init {
 
         Log.d(TAG, "init")
-        _sonyControls = repository.sonyControls
-        _selectedSonyControl = repository.selectedSonyControl
+        _sonyControls = sonyControlRepository.sonyControls
+        _selectedSonyControl = sonyControlRepository.selectedSonyControl
         onSelectedIndexChange()
         //filterChannelNameList("")
     }
@@ -88,17 +88,17 @@ class TestViewModel : ViewModel() {
 
     fun addControl(control: SonyControl) {
         Log.d(TAG, "addControl(): $control")
-        Log.d(TAG, "testViewModel: $this")
-        repository.addControl(control)
+        Log.d(TAG, "sonyControlViewModel: $this")
+        sonyControlRepository.addControl(control)
     }
 
     fun deleteSelectedControl() {
-        if(repository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
+        if(sonyControlRepository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
     }
 
     fun setSelectedControlIndex(index: Int) {
         Log.d(TAG,"setSelectedControlIndex(index: $index)")
-        if(repository.setSelectedControlIndex(index)) onSelectedIndexChange()
+        if(sonyControlRepository.setSelectedControlIndex(index)) onSelectedIndexChange()
     }
 
     fun onSelectedIndexChange() {
@@ -174,17 +174,12 @@ class TestViewModel : ViewModel() {
 
     fun filterChannelNameList(query: String?) {
         Log.d(TAG, "filter channel name list query='$query' ")
-        if(channelNameList != null) {
-            channelNameSearchQuery = query
-            filteredChannelNameList.value = channelNameList.filter { c ->
-                channelNameSearchQuery.isNullOrEmpty() || c.contains(
-                    channelNameSearchQuery!!,
-                    true
-                )
-            }
-        }
-        else {
-            filteredChannelNameList.value = ArrayList()
+        channelNameSearchQuery = query
+        filteredChannelNameList.value = channelNameList.filter { c ->
+            channelNameSearchQuery.isNullOrEmpty() || c.contains(
+                channelNameSearchQuery!!,
+                true
+            )
         }
     }
 
@@ -192,11 +187,10 @@ class TestViewModel : ViewModel() {
         Log.d(TAG, "createProgramUriMatchList()")
         val programUriMatchList: ArrayList<String> = ArrayList()
         if (programTitleList.isNotEmpty()) {
-            var matchTopSet: MutableSet<Int>? = null
+            var matchTopSet: MutableSet<Int> = LinkedHashSet()
             if (query == null || query.isEmpty()) {
-                matchTopSet = ProgramFuzzyMatch.matchTop(channelName, programTitleList, 30, true)
+                matchTopSet.addAll(ProgramFuzzyMatch.matchTop(channelName!!, programTitleList, 30, true))
             } else {
-                matchTopSet = LinkedHashSet()
                 for (i in programTitleList.indices) {
                     val programTitle = programTitleList[i]
                     if (programTitle.toLowerCase().contains(query.toLowerCase())) {
@@ -205,25 +199,25 @@ class TestViewModel : ViewModel() {
                     }
                 }
             }
-            if (matchTopSet != null && !getSelectedControl()?.programList.isNullOrEmpty()) {
+            if (!getSelectedControl()?.programList.isNullOrEmpty()) {
                 matchTopSet.forEach {programUriMatchList.add(getSelectedControl()!!.programList[it].uri)}
             }
-            repository.saveControls()
+            sonyControlRepository.saveControls()
         }
         return programUriMatchList
     }
 
-    val playingContentInfo = repository.playingContentInfo
+    val playingContentInfo = sonyControlRepository.playingContentInfo
     fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
-        repository.getPlayingContentInfo()
+        sonyControlRepository.getPlayingContentInfo()
     }
 
     fun fetchProgramList() = viewModelScope.launch(Dispatchers.IO) {
-        repository.fetchProgramList()
+        sonyControlRepository.fetchProgramList()
     }
 
     fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
-        repository.setPlayContent(uri)
+        sonyControlRepository.setPlayContent(uri)
     }
 
     fun registerControl() {
@@ -231,17 +225,21 @@ class TestViewModel : ViewModel() {
     }
 
     fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
-        repository.wakeOnLan()
+        sonyControlRepository.wakeOnLan()
     }
 
 
     fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
-        repository.registerControl(challenge)
-        repository.fetchRemoteControllerInfo()
-        repository.fetchSourceList()
-        repository.setWolMode(true)
-        repository.fetchWolMode()
-        repository.fetchSystemInformation()
+        sonyControlRepository.registerControl(challenge)
+        sonyControlRepository.fetchRemoteControllerInfo()
+        sonyControlRepository.fetchSourceList()
+        sonyControlRepository.setWolMode(true)
+        sonyControlRepository.fetchWolMode()
+        sonyControlRepository.fetchSystemInformation()
+    }
+
+    fun setPowerSavingMode(mode: String) = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.setPowerSavingMode(mode)
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
@@ -249,11 +247,11 @@ class TestViewModel : ViewModel() {
         selectedChannelMapProgramUri.value = programUri
         getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
         refreshDerivedVariablesForSelectedControl()
-        repository.saveControls()
+        sonyControlRepository.saveControls()
     }
 
     fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
-        repository.sendIRCC(getSelectedControl()!!.commandList[name]!!)
+        sonyControlRepository.sendIRCC(getSelectedControl()!!.commandList[name]!!)
     }
 
     internal fun performFuzzyMatchForChannelList() {
@@ -266,7 +264,7 @@ class TestViewModel : ViewModel() {
                     getSelectedControl()!!.channelProgramMap[channelName]= programUri
                 }
             }
-            repository.saveControls()
+            sonyControlRepository.saveControls()
         }
     }
 
@@ -276,7 +274,7 @@ class TestViewModel : ViewModel() {
             for (channelName in channelNameList) {
                 getSelectedControl()!!.channelProgramMap[channelName]=""
             }
-            repository.saveControls()
+            sonyControlRepository.saveControls()
         }
     }
 }

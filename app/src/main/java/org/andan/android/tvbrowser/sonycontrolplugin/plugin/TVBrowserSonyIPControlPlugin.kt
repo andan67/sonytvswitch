@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
-import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyRepository
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.tvbrowser.devplugin.*
 import java.io.ByteArrayOutputStream
 
@@ -28,7 +28,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
     private val TAG = TVBrowserSonyIPControlPlugin::class.java.name
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
-    private val repository: SonyRepository =
+    private val sonyControlRepository: SonyControlRepository =
         SonyControlApplication.get().appComponent.sonyRepository()
 
     private val getBinder: Plugin.Stub =
@@ -82,9 +82,9 @@ class TVBrowserSonyIPControlPlugin : Service() {
                     )
                     try {
                         val programUri =
-                            repository.selectedSonyControl.value!!.channelProgramMap[program.channel.channelName]
+                            sonyControlRepository.selectedSonyControl.value!!.channelProgramMap[program.channel.channelName]
                         GlobalScope.launch(Dispatchers.IO) {
-                            repository.setPlayContent(programUri!!)
+                            sonyControlRepository.setPlayContent(programUri!!)
                             Log.i(TAG, "Switched to program uri:$programUri")
                         }
                     } catch (ex: java.lang.Exception) {
@@ -203,7 +203,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
             channelNameList.add(channel.channelName)
         }
         Log.d(TAG,"updateChannelProgramMap: ${channelNameList.size}")
-        repository.updateChannelMapsFromChannelNameList(channelNameList)
+        sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
     }
 
 

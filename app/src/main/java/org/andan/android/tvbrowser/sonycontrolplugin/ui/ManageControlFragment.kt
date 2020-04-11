@@ -10,15 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.findNavController
-import androidx.navigation.fragment.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 class ManageControlFragment : Fragment() {
     private val TAG = ManageControlFragment::class.java.name
-    private val testViewModel: TestViewModel by activityViewModels()
+    private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,16 +32,16 @@ class ManageControlFragment : Fragment() {
             R.layout.fragment_manage_control, container, false
         )
         binding.lifecycleOwner = this
-        binding.testViewModel = testViewModel
+        binding.sonyControlViewModel = sonyControlViewModel
 
-        Log.d(TAG, "sonyControls: ${testViewModel.sonyControls.value!!.controls.size}")
-        Log.d(TAG, "testViewModel: $testViewModel")
+        Log.d(TAG, "sonyControls: ${sonyControlViewModel.sonyControls.value!!.controls.size}")
+        Log.d(TAG, "sonyControlViewModel: $sonyControlViewModel")
 
-        testViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observed change ${testViewModel.selectedSonyControl.value}")
+        sonyControlViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observed change ${sonyControlViewModel.selectedSonyControl.value}")
         })
 
-        testViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
+        sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed requestError")
             if(it == "Unauthorized") {
                 binding.root.findNavController().navigate(R.id.nav_enter_challenge)
@@ -68,7 +66,7 @@ class ManageControlFragment : Fragment() {
                 builder.setMessage("Do you want to delete this control?").setTitle("Confirm delete")
                 builder.setPositiveButton("Yes") { dialog, id ->
                     Log.d(TAG, "deleteControl")
-                    testViewModel.deleteSelectedControl()
+                    sonyControlViewModel.deleteSelectedControl()
                 }
                 builder.setNegativeButton(
                     "No"
@@ -77,10 +75,10 @@ class ManageControlFragment : Fragment() {
                 dialog.show()
             }
             R.id.register_control -> {
-                testViewModel.registerControl()
+                sonyControlViewModel.registerControl()
             }
             R.id.get_program_list -> {
-                testViewModel.fetchProgramList()
+                sonyControlViewModel.fetchProgramList()
             }
             R.id.enable_wol -> {
 

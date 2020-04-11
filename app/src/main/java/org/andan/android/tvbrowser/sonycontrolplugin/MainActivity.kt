@@ -19,7 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,9 +37,9 @@ class MainActivity : AppCompatActivity() {
         val selectActiveControlSpinner = navView.getHeaderView(0).findViewById<Spinner>(R.id.channelMapSelectControlSpinner)
         val navController = findNavController(R.id.nav_host_fragment)
 
-        val testViewModel: TestViewModel by viewModels()
+        val sonyControlViewModel: SonyControlViewModel by viewModels()
 
-        if (!testViewModel.isCreated) {
+        if (!sonyControlViewModel.isCreated) {
             val graph = navController.navInflater.inflate(R.navigation.navigation)
             when (PreferenceManager.getDefaultSharedPreferences(this).getString(
                 "pref_start_screen",
@@ -60,18 +60,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_program_list,
                 R.id.nav_channel_list,
                 R.id.nav_help,
-                R.id.nav_settings,
-                R.id.nav_test
+                R.id.nav_settings
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         controlListAdapter =
-            ArrayAdapter(this, R.layout.control_spinner_item, testViewModel.sonyControls.value!!.controls)
+            ArrayAdapter(this, R.layout.control_spinner_item, sonyControlViewModel.sonyControls.value!!.controls)
 
         selectActiveControlSpinner.adapter = controlListAdapter
-        selectActiveControlSpinner.setSelection(testViewModel.sonyControls.value!!.selected)
+        selectActiveControlSpinner.setSelection(sonyControlViewModel.sonyControls.value!!.selected)
 
         selectActiveControlSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -83,8 +82,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 Log.i(TAG, "onItemSelected position:$position")
                 // check if new position/control index is set
-                if (testViewModel.sonyControls.value!!.selected != position) {
-                    testViewModel.setSelectedControlIndex(position)
+                if (sonyControlViewModel.sonyControls.value!!.selected != position) {
+                    sonyControlViewModel.setSelectedControlIndex(position)
                     Log.d(TAG, "onItemSelected setSelectedControlIndex")
                 }
             }
@@ -94,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        testViewModel.selectedSonyControl.observe(this, Observer {
+        sonyControlViewModel.selectedSonyControl.observe(this, Observer {
             controlListAdapter.notifyDataSetChanged()
         })
 
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             //controlViewModel.setChannelNameListFromPreference()
             navController.navigate(R.id.nav_channel_list)
         }
-        testViewModel.isCreated = true
+        sonyControlViewModel.isCreated = true
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -5,7 +5,6 @@ import android.util.Log
 import org.andan.android.tvbrowser.sonycontrolplugin.di.DaggerApplicationComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.di.AppModule
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationComponent
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 
 class SonyControlApplication : Application() {
     private val TAG = SonyControlApplication::class.java.name

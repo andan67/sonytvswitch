@@ -97,7 +97,7 @@ data class JsonRpcRequest(
             return JsonRpcRequest(50, "getPowerStatus", params)
         }
 
-        fun setPowerSavingMode(mode: Boolean): JsonRpcRequest {
+        fun setPowerSavingMode(mode: String): JsonRpcRequest {
             val params = ArrayList<Any>()
             params.add(hashMapOf("mode" to mode))
             return JsonRpcRequest(52, "setPowerSavingMode", params)

@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -19,7 +19,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.TestViewModel
 class EnterChallengeDialogFragment : DialogFragment() {
 
     private val TAG = EnterChallengeDialogFragment::class.java.name
-    private val testViewModel: TestViewModel by activityViewModels()
+    private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogBuilder = AlertDialog.Builder(context!!)
@@ -36,7 +36,7 @@ class EnterChallengeDialogFragment : DialogFragment() {
 
             val challengeCode = challengeCodeEditText.text.toString()
             Log.i(TAG, "Enter Challenge & Register:$challengeCode")
-            testViewModel.registerControl(challengeCode)
+            sonyControlViewModel.registerControl(challengeCode)
             dialog.dismiss()
         }
         dialogBuilder.setNeutralButton(R.string.dialog_cancel)

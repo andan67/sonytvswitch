@@ -31,9 +31,6 @@
                 <action android:name="org.tvbrowser.intent.action.PLUGIN" />
             </intent-filter>
         </service>
-        <service
-            android:name=".network.SonyIPControlIntentService"
-            android:exported="false" />
     </application>
 
 </manifest>

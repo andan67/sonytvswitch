@@ -92,8 +92,8 @@ object ProgramFuzzyMatch {
         matchList2: List<BoundExtractedResult<*>>?,
         size: Int
     ): List<BoundExtractedResult<*>> {
-        val mergedList: MutableList<BoundExtractedResult<*>> =
-            ArrayList(matchList1)
+        val mergedList: MutableList<BoundExtractedResult<*>> = mutableListOf()
+        mergedList.addAll(matchList1!!)
         mergedList.addAll(matchList2!!)
         Collections.sort(mergedList, Collections.reverseOrder())
         val indexSet = HashSet<Int>()
