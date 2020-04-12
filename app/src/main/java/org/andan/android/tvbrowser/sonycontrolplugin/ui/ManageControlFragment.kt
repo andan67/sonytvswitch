@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.observeEvent
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 class ManageControlFragment : Fragment() {
@@ -41,14 +43,18 @@ class ManageControlFragment : Fragment() {
             Log.d(TAG, "observed change ${sonyControlViewModel.selectedSonyControl.value}")
         })
 
-        sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observed requestError")
-            if(it == "Unauthorized") {
-                binding.root.findNavController().navigate(R.id.nav_enter_challenge)
-            } else if(!it.isNullOrEmpty()) {
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
+            EventObserver<String> {
+                Log.d(TAG, "observed requestError")
+
+                if(it == "Unauthorized") {
+                    binding.root.findNavController().navigate(R.id.nav_enter_challenge)
+                } else if(it.isNotEmpty()) {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
+
             }
-        })
+        )
 
         return binding.root
     }

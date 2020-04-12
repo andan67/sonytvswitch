@@ -253,7 +253,7 @@ class TokenAuthenticator @Inject constructor(
         Log.d(TAG,"authenticate(): ${serviceClientContext.nickname}")
         val request = response.request
         //bypass authenticator for registration endpoint
-        return if(request.url.toString().endsWith(SONY_ACCESS_CONTROL_ENDPOINT)) {
+        return if(serviceClientContext.password.isEmpty() && request.url.toString().endsWith(SONY_ACCESS_CONTROL_ENDPOINT)) {
             //request.newBuilder().build()
             null
         } else {

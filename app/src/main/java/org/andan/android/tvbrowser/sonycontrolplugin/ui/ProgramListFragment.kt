@@ -21,6 +21,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
+import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
@@ -118,18 +119,19 @@ class ProgramListFragment : Fragment() {
                 fetchPlayingContentInfo()
             })
 
-            sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed requestError")
-                if (!it.isNullOrEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            })
+            sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
+                EventObserver<String> {
+                    Log.d(TAG, it)
+                    if (it.isNotEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
+            )
 
             sonyControlViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
                 Log.d(TAG, "observed change playingContentInfo")
                 binding.activeProgram.activeProgram = sonyControlViewModel.playingContentInfo.value
                 if (sonyControlViewModel.uriProgramMap.containsKey(sonyControlViewModel.playingContentInfo.value!!.uri)) {
                     sonyControlViewModel.updateCurrentProgram(sonyControlViewModel.uriProgramMap[sonyControlViewModel.playingContentInfo.value!!.uri]!!)
-                    Toast.makeText(context, "Refreshed playing content info", Toast.LENGTH_LONG)
-                        .show()
+                    //Toast.makeText(context, "Refreshed playing content info", Toast.LENGTH_LONG).show()
                 }
 
             })
@@ -193,11 +195,11 @@ class ProgramListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val extras = Bundle()
         when (item.itemId) {
             R.id.action_search -> return super.onOptionsItemSelected(item)
-            R.id.wake_on_lan ->
+            R.id.wake_on_lan -> {
                 sonyControlViewModel.wakeOnLan()
+            }
             R.id.screen_off ->
                 sonyControlViewModel.setPowerSavingMode("off")
             R.id.screen_on ->
@@ -209,25 +211,14 @@ class ProgramListFragment : Fragment() {
 
     private fun fetchPlayingContentInfo() {
         Log.d(TAG, "getPlayingInfo")
-        /*val extras = Bundle()
-        extras.putInt(
-            SonyIPControlIntentService.ACTION,
-            SonyIPControlIntentService.GET_PLAYING_CONTENT_INFO_ACTION
-        )
-        (activity as MainActivity).startControlService(extras)*/
         sonyControlViewModel.fetchPlayingContentInfo()
     }
 
     private fun setPlayContent(program: SonyProgram2) {
-        /*val extras = Bundle()
-        extras.putInt(
-            SonyIPControlIntentService.ACTION,
-            SonyIPControlIntentService.SET_AND_GET_PLAY_CONTENT_ACTION
-        )
-        extras.putString(SonyIPControlIntentService.URI, program.uri)
-        (activity as MainActivity).startControlService(extras)*/
-        sonyControlViewModel.setPlayContent(program.uri)
-        sonyControlViewModel.updateCurrentProgram(program)
+        //sonyControlViewModel.setPlayContent(program.uri)
+        sonyControlViewModel.setAndFetchPlayContent(program.uri)
+        //sonyControlViewModel.updateCurrentProgram(program)
+        //sonyControlViewModel.fetchPlayingContentInfo()
     }
 }
 

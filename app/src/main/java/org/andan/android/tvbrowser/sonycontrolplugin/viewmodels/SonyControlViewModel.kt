@@ -1,7 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
@@ -10,7 +13,19 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
-import java.util.LinkedHashSet
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
+import kotlin.collections.MutableSet
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.indices
+import kotlin.collections.isNotEmpty
+import kotlin.collections.isNullOrEmpty
+import kotlin.collections.set
 
 class SonyControlViewModel : ViewModel() {
     // TODO: Implement the ViewModel
@@ -218,6 +233,12 @@ class SonyControlViewModel : ViewModel() {
 
     fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.setPlayContent(uri)
+    }
+
+    fun setAndFetchPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.setPlayContent(uri)
+        sonyControlRepository.getPlayingContentInfo()
+        //sonyControlRepository.setAndFetchPlayContent(uri)
     }
 
     fun registerControl() {

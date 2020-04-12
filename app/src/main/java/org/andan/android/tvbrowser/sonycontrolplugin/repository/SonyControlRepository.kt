@@ -1,8 +1,12 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
+import android.content.Intent
+import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -31,8 +35,12 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
     var selectedSonyControl = MutableLiveData<SonyControl>()
     val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
-    private val _responseMessage = MutableLiveData("")
-    val responseMessage: LiveData<String> = _responseMessage
+    //private val _responseMessage = MutableLiveData("")
+    //val responseMessage: LiveData<String> = _responseMessage
+
+    private val _responseMessage = MutableLiveData<Event<String>>()
+    val responseMessage: LiveData<Event<String>>
+        get() = _responseMessage
 
     val gson = GsonBuilder().create()
     init {
@@ -86,7 +94,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
     suspend fun setWolMode(enabled: Boolean) {
         val resource = systemService<Any>(JsonRpcRequest.setWolMode(enabled))
         if(resource.status==Status.ERROR) {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
@@ -96,14 +104,14 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             getSelectedControl()!!.systemWolMode = resource.data!!.enabled
             saveControls(true)
         } else {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
     suspend fun setPowerSavingMode(mode: String) {
         val resource = systemService<Any>(JsonRpcRequest.setPowerSavingMode(mode))
         if(resource.status==Status.ERROR) {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
@@ -118,7 +126,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             }
             saveControls(true)
         } else {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
@@ -132,7 +140,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             getSelectedControl()!!.systemMacAddr = resource.data!!.macAddr
             saveControls(true)
         } else {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
@@ -140,7 +148,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         withContext(Dispatchers.IO) {
             val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
             if(resource.status == Status.ERROR) {
-                _responseMessage.postValue(resource.message)
+                _responseMessage.postValue(Event(resource.message))
                 _playingContentInfo.postValue(PlayingContentInfoResponse.notAvailableValue)
             } else {
                 _playingContentInfo.postValue(resource.data)
@@ -153,7 +161,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         withContext(Dispatchers.IO) {
             val resource = avContentService<Unit>(JsonRpcRequest.setPlayContent(uri))
             if(resource.status == Status.ERROR) {
-                _responseMessage.postValue(resource.message)
+                _responseMessage.postValue(Event(resource.message))
             }
         }
     }
@@ -173,7 +181,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             }
             saveControls(true)
         } else {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
         }
     }
 
@@ -200,7 +208,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             getSelectedControl()!!.programList.clear()
             getSelectedControl()!!.programList.addAll(programList)
             saveControls(true)
-            _responseMessage.postValue("Fetched ${getSelectedControl()!!.programList.size} programs from TV")
+            _responseMessage.postValue(Event("Fetched ${getSelectedControl()!!.programList.size} programs from TV"))
             Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.programList.size}")
         }
     }
@@ -223,7 +231,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             }
             resource.data!!.size
         } else {
-            _responseMessage.postValue(resource.message)
+            _responseMessage.postValue(Event(resource.message))
             -1
         }
     }
@@ -243,7 +251,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
                     if (response.isSuccessful) {
                         val jsonRpcResponse = response.body()
                         if (jsonRpcResponse?.error != null) {
-                            _responseMessage.postValue(jsonRpcResponse.error.asJsonArray.get(1).asString)
+                            _responseMessage.postValue(Event(jsonRpcResponse.error.asJsonArray.get(1).asString))
                         } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                             // get token from set cookie and store
                             val cookieString: String? = response.headers()["Set-Cookie"]
@@ -256,14 +264,14 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
                     } else {
                         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             // Navigate to enter challenge code view
-                            _responseMessage.postValue(response.message())
+                            _responseMessage.postValue(Event(response.message()))
                         } else {
-                            _responseMessage.postValue(response.message())
+                            _responseMessage.postValue(Event(response.message()))
                         }
                     }
                 } catch (se: SocketTimeoutException) {
                     Log.e(TAG, "Error: ${se.message}")
-                    _responseMessage.postValue(se.message)
+                    _responseMessage.postValue(Event(se.message?: "Unknown exception in registerControl"))
                 }
                 sonyServiceContext.password=""
             }
@@ -278,10 +286,10 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
 
                 val requestBody: RequestBody =
                     requestBodyText.toRequestBody("text/xml".toMediaTypeOrNull())
-                Log.d(TAG, "sendIRCC: ${requestBodyText}")
+                Log.d(TAG, "sendIRCC: $requestBodyText")
                 val response = api.sendIRCC("http://" + it.ip + SONY_IRCC_ENDPOINT, requestBody)
                 if (!response.isSuccessful) {
-                    _responseMessage.postValue(response.message())
+                    _responseMessage.postValue(Event(response.message()))
                 }
             }
         }
@@ -358,7 +366,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d("apiCall", "evaluate exception ${e.message}")
-            return Resource.Error(e.message!!, 0)
+            return Resource.Error(e.message ?: "Unknown apiCall exception", 0)
         }
     }
 
@@ -410,4 +418,37 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         }
         return false
     }
+}
+
+open class Event<out T>(private val content: T? = null) {
+
+    var hasBeenHandled = false
+        private set // Allow external read but not write
+
+    /**
+     * Returns the content and prevents its use again.
+     */
+    fun getContentIfNotHandled(): T? = if (hasBeenHandled) {
+        null
+    } else {
+        hasBeenHandled = true
+        content
+    }
+
+    /**
+     * Returns the content, even if it's already been handled.
+     */
+    fun peekContent(): T? = content
+}
+
+class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
+    override fun onChanged(event: Event<T>?) {
+        event?.getContentIfNotHandled()?.let { value ->
+            onEventUnhandledContent(value)
+        }
+    }
+}
+
+fun <T> LiveData<out Event<T>>.observeEvent(owner: LifecycleOwner, onEventUnhandled: (T) -> Unit) {
+    observe(owner, Observer { it?.getContentIfNotHandled()?.let(onEventUnhandled) })
 }

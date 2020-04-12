@@ -34,6 +34,7 @@ class NetworkModule {
                             authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
             .connectTimeout(2,TimeUnit.SECONDS)
             .addInterceptor(AddTokenInterceptor(serviceClientContext, tokenStore))
         if (BuildConfig.DEBUG) {

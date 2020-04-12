@@ -25,8 +25,6 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
         const val PAGE_SIZE = 25
     }
 
-    private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
-
     var programList= mutableListOf<SonyProgram2>()
     set(value) {
         _programUriMap=null
@@ -42,6 +40,9 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     var systemWolMode = true
     var commandList = LinkedHashMap<String,String>()
     //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
+
+    @Transient
+    private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
 
     @Transient
     val programUriMap : LinkedHashMap<String, SonyProgram2>? = null
