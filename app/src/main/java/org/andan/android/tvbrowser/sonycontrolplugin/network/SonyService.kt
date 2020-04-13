@@ -5,7 +5,7 @@ import com.google.gson.JsonElement
 import okhttp3.*
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -208,8 +208,8 @@ fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo{
 
 data class ContentListItemResponse(val dispNum: String, val index : Int, val programMediaType: String, val title: String, val uri: String )
 
-fun ContentListItemResponse.asDomainModel() : SonyProgram2{
-    return SonyProgram2("", dispNum, index, programMediaType, title, uri)
+fun ContentListItemResponse.asDomainModel() : SonyProgram{
+    return SonyProgram("", dispNum, index, programMediaType, title, uri)
 }
 
 data class SourceListItemResponse(val source: String)

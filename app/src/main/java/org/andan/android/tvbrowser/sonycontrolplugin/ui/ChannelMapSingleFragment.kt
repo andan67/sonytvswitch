@@ -19,7 +19,7 @@ import androidx.lifecycle.Observer
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelSingleBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import java.util.*
 
@@ -70,7 +70,7 @@ class ChannelMapSingleFragment : Fragment() {
         sonyControlViewModel.selectedChannelMapProgramUri.observe(viewLifecycleOwner, Observer {
             val selectedProgramUri = sonyControlViewModel.selectedChannelMapProgramUri.value
             if (!selectedProgramUri.isNullOrEmpty()) {
-                val program: SonyProgram2? = sonyControlViewModel.selectedSonyControl.value!!.programUriMap!![selectedProgramUri]
+                val program: SonyProgram? = sonyControlViewModel.selectedSonyControl.value!!.programUriMap!![selectedProgramUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else
@@ -205,12 +205,12 @@ class ChannelMapSingleFragment : Fragment() {
     }
 }
 
-class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram2>) :
+class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: ArrayList<String>,  programUriMap: MutableMap<String,SonyProgram>) :
     BaseAdapter() {
 
 
     private var ctx: Context? = null
-    private var programUriMap: MutableMap<String, SonyProgram2>? = null
+    private var programUriMap: MutableMap<String, SonyProgram>? = null
     private var programUriMatchList: ArrayList<String>? = null
 
     private var mInflater: LayoutInflater? = null
@@ -239,7 +239,7 @@ class ChannelMapProgramListAdapter(context: Context?, programUriMatchList: Array
     override fun getView(position: Int, convertView: View?, arg2: ViewGroup): View {
         var convertView = convertView
 
-        val program: SonyProgram2? = programUriMap!![programUriMatchList!![position]]
+        val program: SonyProgram? = programUriMap!![programUriMatchList!![position]]
 
         val holder: ViewHolder
 

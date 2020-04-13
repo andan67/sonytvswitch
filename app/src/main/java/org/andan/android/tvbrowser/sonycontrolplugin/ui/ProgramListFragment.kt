@@ -19,7 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
@@ -32,11 +32,10 @@ class ProgramListFragment : Fragment() {
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
-    private lateinit var playingContentInfo: PlayingContentInfoResponse
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
     }
 
     override fun onCreateView(
@@ -49,13 +48,13 @@ class ProgramListFragment : Fragment() {
             R.layout.fragment_program_list, container, false
         )
         val view = binding.root
+        binding.lifecycleOwner = this
+
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
         fab.setOnClickListener { view ->
-            if (sonyControlViewModel.lastProgram != null) {
-                // Toast.makeText(context, "Switched to ${controlViewModel.lastProgram?.title}", Toast.LENGTH_LONG).show()
-                setPlayContent(sonyControlViewModel.lastProgram!!)
+            if (sonyControlViewModel.lastProgramUri.isNotEmpty()) {
+                sonyControlViewModel.setAndFetchPlayContent(sonyControlViewModel.lastProgramUri)
             }
-
         }
 
         if (sonyControlViewModel.getFilteredProgramList().value.isNullOrEmpty()) {
@@ -74,34 +73,32 @@ class ProgramListFragment : Fragment() {
             ) { dialog, _ -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
-            playingContentInfo = PlayingContentInfoResponse.notAvailableValue
-
             binding.sonyControlViewModel = sonyControlViewModel
-            binding.activeProgram.activeProgram = playingContentInfo
             binding.activeProgram.sonyControlViewModel = sonyControlViewModel
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
-                if (playingContentInfo == PlayingContentInfoResponse.notAvailableValue) {
+                if (sonyControlViewModel.playingContentInfo.value == PlayingContentInfoResponse.notAvailableValue) {
                     Toast.makeText(context, "No current program", Toast.LENGTH_LONG).show()
                 } else {
                     view.findNavController()
                         .navigate(R.id.action_nav_program_list_to_activeProgramDetailsFragment)
                 }
             }
+
             binding.activeProgram.activeProgramView.setOnLongClickListener {
-                fetchPlayingContentInfo()
+                sonyControlViewModel.fetchPlayingContentInfo()
                 true
             }
 
             val adapter =
                 ProgramItemRecyclerViewAdapter(
                     ProgramListener(
-                        { program: SonyProgram2 ->
+                        { program: SonyProgram ->
                             //Toast.makeText(context, "Switched to ${program.title}", Toast.LENGTH_LONG).show()
-                            setPlayContent(program)
+                            sonyControlViewModel.setAndFetchPlayContent(program.uri)
                         },
-                        { _ : SonyProgram2 ->
+                        { _: SonyProgram ->
                             true
                             // Toast.makeText(context, "Long clicked  ${program.title}", Toast.LENGTH_LONG) .show()
                             //sonyControlViewModel.onProgramLongClicked(program)
@@ -116,7 +113,6 @@ class ProgramListFragment : Fragment() {
                     "observed change filtered program list with filter ${sonyControlViewModel.getProgramSearchQuery()}"
                 )
                 adapter.notifyDataSetChanged()
-                fetchPlayingContentInfo()
             })
 
             sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
@@ -126,22 +122,16 @@ class ProgramListFragment : Fragment() {
                 }
             )
 
-            sonyControlViewModel.playingContentInfo.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change playingContentInfo")
-                binding.activeProgram.activeProgram = sonyControlViewModel.playingContentInfo.value
-                if (sonyControlViewModel.uriProgramMap.containsKey(sonyControlViewModel.playingContentInfo.value!!.uri)) {
-                    sonyControlViewModel.updateCurrentProgram(sonyControlViewModel.uriProgramMap[sonyControlViewModel.playingContentInfo.value!!.uri]!!)
-                    //Toast.makeText(context, "Refreshed playing content info", Toast.LENGTH_LONG).show()
-                }
-
-            })
-
-            //val manager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)
             val manager = GridLayoutManager(activity, 1)
             binding.listProgram.layoutManager = manager
             binding.listProgram.adapter?.notifyDataSetChanged()
         }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sonyControlViewModel.fetchPlayingContentInfo()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -201,24 +191,11 @@ class ProgramListFragment : Fragment() {
                 sonyControlViewModel.wakeOnLan()
             }
             R.id.screen_off ->
-                sonyControlViewModel.setPowerSavingMode("off")
-            R.id.screen_on ->
                 sonyControlViewModel.setPowerSavingMode("pictureOff")
+            R.id.screen_on ->
+                sonyControlViewModel.setPowerSavingMode("off")
         }
-        //(activity as MainActivity).startControlService(extras)
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun fetchPlayingContentInfo() {
-        Log.d(TAG, "getPlayingInfo")
-        sonyControlViewModel.fetchPlayingContentInfo()
-    }
-
-    private fun setPlayContent(program: SonyProgram2) {
-        //sonyControlViewModel.setPlayContent(program.uri)
-        sonyControlViewModel.setAndFetchPlayContent(program.uri)
-        //sonyControlViewModel.updateCurrentProgram(program)
-        //sonyControlViewModel.fetchPlayingContentInfo()
     }
 }
 
@@ -246,7 +223,11 @@ class ProgramItemRecyclerViewAdapter(
     class ViewHolder private constructor(val binding: ProgramItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: SonyProgram2, clickListener: ProgramListener, sonyControlViewModel: SonyControlViewModel) {
+        fun bind(
+            item: SonyProgram,
+            clickListener: ProgramListener,
+            sonyControlViewModel: SonyControlViewModel
+        ) {
             binding.program = item
             binding.clickListener = clickListener
             binding.sonyControlViewModel = sonyControlViewModel
@@ -269,8 +250,8 @@ class ProgramItemRecyclerViewAdapter(
 }
 
 class ProgramListener(
-    val clickListener: (program: SonyProgram2) -> Unit,
-    val longClickListener: (program: SonyProgram2) -> Boolean
+    val clickListener: (program: SonyProgram) -> Unit,
+    val longClickListener: (program: SonyProgram) -> Boolean
 ) {
-    fun onClick(program: SonyProgram2) = clickListener(program)
+    fun onClick(program: SonyProgram) = clickListener(program)
 }

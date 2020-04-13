@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.andan.android.tvbrowser.sonycontrolplugin.*
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
@@ -242,7 +242,7 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
             binding.channelPosition = adapterPosition+1
             val programUri: String? = sonyControlViewModel.selectedSonyControl.value!!.channelProgramMap[item]
             if (!programUri.isNullOrEmpty()) {
-                val program: SonyProgram2? = sonyControlViewModel.selectedSonyControl.value!!.programUriMap!![programUri]
+                val program: SonyProgram? = sonyControlViewModel.selectedSonyControl.value!!.programUriMap!![programUri]
                 binding.programTitle = program?.title
                 binding.programSourceWithType = program?.sourceWithType
             } else

@@ -5,10 +5,9 @@ import com.google.gson.GsonBuilder
 import junit.framework.Assert.assertEquals
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.junit.Before
 import org.junit.Test
-import retrofit2.http.Url
 import java.io.BufferedReader
 import java.io.File
 import java.net.URL
@@ -38,9 +37,9 @@ class JsonSerDeTests {
         sonyControl = SonyControl("192.168.178.27","android","Sony TV", "6c034f06-fa84-4032-9b31-b714f2c20b9c")
         sonyControl.channelProgramMap["Das Erste (ARD)"] = "tv:dvbs?trip=1.1019.10301&srvName=Das%20Erste%20HD"
         sonyControl.channelProgramMap["ZDF"] = "tv:dvbs?trip=1.1011.11110&srvName=ZDF%20HD"
-        val sonyProgram1 = SonyProgram2("dvbs","0001",0,"TV","Das Erste", "uri1")
-        val sonyProgram2 = SonyProgram2("dvbs","0002",0,"TV","ZDF", "uri2")
-        val plist = mutableListOf<SonyProgram2>()
+        val sonyProgram1 = SonyProgram("dvbs","0001",0,"TV","Das Erste", "uri1")
+        val sonyProgram2 = SonyProgram("dvbs","0002",0,"TV","ZDF", "uri2")
+        val plist = mutableListOf<SonyProgram>()
         plist.add(sonyProgram1)
         plist.add(sonyProgram2)
         sonyControl.programList = plist

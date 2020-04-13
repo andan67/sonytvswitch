@@ -7,7 +7,7 @@
         <import type="android.view.View"/>
         <variable
             name="program"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2" />
+            type="org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram" />
 
         <variable
             name="sonyControlViewModel"

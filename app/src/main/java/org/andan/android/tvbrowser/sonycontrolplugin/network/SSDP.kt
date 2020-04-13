@@ -21,24 +21,23 @@ object SSDP {
     fun main(args: Array<String>) {
         val responseList = getSsdpResponses()
         //responseList.forEach { println(it) }
-        getSonyIpAndModelNames().forEach {
-            println(it.key)
-            println(it.value)
+        getSonyIpAndDeviceList().forEach {
+            println(it)
         }
     }
 
-    fun getSonyIpAndModelNames(): HashMap<String,String> {
-        val sonyIpAndModelNameMap = linkedMapOf<String, String>()
+    fun getSonyIpAndDeviceList(): List<IpDeviceItem> {
+        val sonyIpDeviceList = mutableListOf<IpDeviceItem>()
         val responseList = getSsdpResponses()
         // seach for Sony Model
         val sonyPattern = Pattern.compile("X-AV-Server-Info:.*mn=\"(.*)\"; ")
         val ipPattern = Pattern.compile("LOCATION: http://(.*?)[:|/]")
         responseList.forEach {
-            println(it)
+            //println(it)
             var matcher = sonyPattern.matcher(it)
             var model :String? = null
             var ip: String? = null
-            println(matcher)
+            //println(matcher)
             if (matcher.find()) {
                 model = matcher.group(1)
             }
@@ -48,10 +47,10 @@ object SSDP {
                 //println("ip: $ip")
             }
             if(!model.isNullOrEmpty() && !ip.isNullOrEmpty()) {
-                sonyIpAndModelNameMap[ip]=model
+                sonyIpDeviceList.add(IpDeviceItem(ip, model))
             }
         }
-        return sonyIpAndModelNameMap
+        return sonyIpDeviceList
     }
 
     fun getSsdpResponses(): List<String> {
@@ -74,7 +73,6 @@ object SSDP {
             while (true) {
                 val datagramPacket =
                     DatagramPacket(ByteArray(1024), 1024)
-                //DatagramPacket(ByteArray(2048), 2048)
                 try {
                     socket.receive(datagramPacket)
                 } catch (e: SocketTimeoutException) {
@@ -98,4 +96,6 @@ object SSDP {
         }
         return responseList
     }
+
+    data class IpDeviceItem(val ip: String, val device: String)
 }

@@ -152,6 +152,7 @@
     <string name="active_program_mediaType">Media type</string>
     <string name="active_program_fragment_label">Current program</string>
     <string name="active_program_end_time">End time</string>
+    <string name="simple_service_discovery">Discover Sony devices</string>
 
 
 </resources>

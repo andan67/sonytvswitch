@@ -56,7 +56,8 @@
             android:layout_marginBottom="@dimen/fab_margin"
             android:tint="@android:color/white"
             app:backgroundTint="#616161"
-            app:srcCompat="@drawable/ic_loop" />
+            app:srcCompat="@drawable/ic_loop"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

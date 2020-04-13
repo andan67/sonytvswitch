@@ -6,10 +6,6 @@
     <data>
         <import type="android.view.View"/>
         <variable
-            name="activeProgram"
-            type="org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse" />
-
-        <variable
             name="sonyControlViewModel"
             type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
     </data>
@@ -28,7 +24,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:gravity="end"
-            android:text="@{activeProgram.dispNum}"
+            android:text="@{sonyControlViewModel.playingContentInfo.dispNum}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +39,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
-            android:text="@{activeProgram.title}"
+            android:text="@{sonyControlViewModel.playingContentInfo.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             app:layout_constrainedWidth="true"
@@ -73,7 +69,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
-            android:text="@{activeProgram.programTitle}"
+            android:text="@{sonyControlViewModel.playingContentInfo.programTitle}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"
@@ -100,7 +96,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
-            android:text="@{activeProgram.startEndTimeFormatted}"
+            android:text="@{sonyControlViewModel.playingContentInfo.startEndTimeFormatted}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
@@ -125,7 +121,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
-            android:text="@{activeProgram.source}"
+            android:text="@{sonyControlViewModel.playingContentInfo.source}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
@@ -140,7 +136,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="4dp"
             android:tint="@android:color/holo_blue_dark"
-            android:visibility="@{(sonyControlViewModel.getChannelForProgramUri(activeProgram.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
+            android:visibility="@{(sonyControlViewModel.getChannelForProgramUri(sonyControlViewModel.playingContentInfo.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintStart_toEndOf="@+id/active_program_source"
             app:layout_constraintTop_toTopOf="@+id/active_program_mapped_name"
             app:srcCompat="@drawable/ic_widget_simple" />
@@ -154,7 +150,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:text="@{sonyControlViewModel.getChannelForProgramUri(activeProgram.uri)}"
+            android:text="@{sonyControlViewModel.getChannelForProgramUri(sonyControlViewModel.playingContentInfo.uri)}"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@android:color/holo_blue_dark"
             app:layout_constrainedWidth="true"

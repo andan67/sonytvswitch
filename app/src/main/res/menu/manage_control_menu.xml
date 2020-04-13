@@ -22,4 +22,9 @@
         android:orderInCategory="10"
         android:title="@string/enable_wol_action" />
 
+    <item
+        android:id="@+id/ssd"
+        android:orderInCategory="10"
+        android:title="@string/simple_service_discovery" />
+
 </menu>

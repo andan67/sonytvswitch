@@ -1,10 +1,7 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
-import org.andan.android.tvbrowser.sonycontrolplugin.network.RemoteControllerInfoItemResponse
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), var selected: Int = -1) {
@@ -25,7 +22,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
         const val PAGE_SIZE = 25
     }
 
-    var programList= mutableListOf<SonyProgram2>()
+    var programList= mutableListOf<SonyProgram>()
     set(value) {
         _programUriMap=null
         field = value
@@ -42,14 +39,14 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
     //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
 
     @Transient
-    private var _programUriMap : LinkedHashMap<String, SonyProgram2>? = null
+    private var _programUriMap : LinkedHashMap<String, SonyProgram>? = null
 
     @Transient
-    val programUriMap : LinkedHashMap<String, SonyProgram2>? = null
+    val programUriMap : LinkedHashMap<String, SonyProgram>? = null
     get() {
         // lazy construction
         if(_programUriMap == null) {
-            _programUriMap = LinkedHashMap<String, SonyProgram2>()
+            _programUriMap = LinkedHashMap<String, SonyProgram>()
             for(program in programList) {
                 _programUriMap!![program.uri] = program
             }
@@ -67,7 +64,7 @@ data class SonyControl(val ip: String, val nickname: String, val devicename: Str
 
 }
 
-data class SonyProgram2(var source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
+data class SonyProgram(var source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
 
     val shortSource: String
         get() {

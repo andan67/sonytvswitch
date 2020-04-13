@@ -87,7 +87,10 @@ class ManageControlFragment : Fragment() {
                 sonyControlViewModel.fetchProgramList()
             }
             R.id.enable_wol -> {
-
+                sonyControlViewModel.wakeOnLan()
+            }
+            R.id.ssd -> {
+                sonyControlViewModel.ssd()
             }
         }
         return super.onOptionsItemSelected(item)

@@ -1,7 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
-import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -20,7 +18,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram2
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import retrofit2.Response
 import java.net.HttpURLConnection
@@ -35,14 +33,11 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
     var selectedSonyControl = MutableLiveData<SonyControl>()
     val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
-    //private val _responseMessage = MutableLiveData("")
-    //val responseMessage: LiveData<String> = _responseMessage
+    companion object {
+        const val SUCCESS_CODE = 0
+        const val ERROR_CODE = -1
+    }
 
-    private val _responseMessage = MutableLiveData<Event<String>>()
-    val responseMessage: LiveData<Event<String>>
-        get() = _responseMessage
-
-    val gson = GsonBuilder().create()
     init {
         Log.d(TAG, "init")
         sonyControls.value = preferenceStore.loadControls()
@@ -50,6 +45,12 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         selectedSonyControl.value = getSelectedControl()
         onSonyControlsChange()
     }
+
+    private val _responseMessage = MutableLiveData<Event<String>>()
+    val responseMessage: LiveData<Event<String>>
+        get() = _responseMessage
+
+    val gson = GsonBuilder().create()
 
     private fun onSonyControlsChange() {
         sonyServiceContext.sonyService = api
@@ -76,8 +77,10 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         } else null
     }
 
-    private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
+   /* private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
     val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
+
+    var playingContentInfo2 : PlayingContentInfoResponse = PlayingContentInfoResponse.notAvailableValue*/
 
     suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
         return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
@@ -144,26 +147,24 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         }
     }
 
-    suspend fun getPlayingContentInfo() {
-        withContext(Dispatchers.IO) {
-            val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
-            if(resource.status == Status.ERROR) {
-                _responseMessage.postValue(Event(resource.message))
-                _playingContentInfo.postValue(PlayingContentInfoResponse.notAvailableValue)
-            } else {
-                _playingContentInfo.postValue(resource.data)
-            }
-            //Log.d(TAG, resource.data!!.title)
+    suspend fun getPlayingContentInfo(): PlayingContentInfoResponse {
+        val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
+        PlayingContentInfoResponse.notAvailableValue
+        return if (resource.status == Status.ERROR) {
+            _responseMessage.postValue(Event(resource.message))
+            PlayingContentInfoResponse.notAvailableValue
+        } else {
+            resource.data!!
         }
     }
 
-    suspend fun setPlayContent(uri: String) {
-        withContext(Dispatchers.IO) {
-            val resource = avContentService<Unit>(JsonRpcRequest.setPlayContent(uri))
-            if(resource.status == Status.ERROR) {
-                _responseMessage.postValue(Event(resource.message))
-            }
+    suspend fun setPlayContent(uri: String): Int {
+        val resource = avContentService<Unit>(JsonRpcRequest.setPlayContent(uri))
+        if (resource.status == Status.ERROR) {
+            _responseMessage.postValue(Event(resource.message))
+            return ERROR_CODE
         }
+        return SUCCESS_CODE
     }
 
     suspend fun fetchSourceList() {
@@ -191,7 +192,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
             fetchSourceList()
         }
         getSelectedControl()!!.programList.clear()
-        val programList = mutableListOf<SonyProgram2>()
+        val programList = mutableListOf<SonyProgram>()
         if (!getSelectedControl()!!.sourceList.isNullOrEmpty()) {
             for (sonySource in getSelectedControl()!!.sourceList) {
                 // get programs in pages
@@ -213,7 +214,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         }
     }
 
-    private suspend fun fetchTvContentList(sourceType: String, stIdx: Int, cnt: Int, plist: MutableList<SonyProgram2>): Int {
+    private suspend fun fetchTvContentList(sourceType: String, stIdx: Int, cnt: Int, plist: MutableList<SonyProgram>): Int {
         val sourceSplit = sourceType.split("#").toTypedArray()
         val source = sourceSplit[0]
         var type = ""
@@ -299,6 +300,16 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
                 WakeOnLan.wakeOnLan(getSelectedControl()!!.ip, getSelectedControl()!!.systemMacAddr)
+            }
+        }
+    }
+
+    suspend fun ssd() {
+        withContext(Dispatchers.IO) {
+            selectedSonyControl.value?.let {
+                val ipAndDeviceList = SSDP.getSonyIpAndDeviceList()
+                Log.d(TAG, "ssd() $ipAndDeviceList")
+                //WakeOnLan.wakeOnLan(getSelectedControl()!!.ip, getSelectedControl()!!.systemMacAddr)
             }
         }
     }
