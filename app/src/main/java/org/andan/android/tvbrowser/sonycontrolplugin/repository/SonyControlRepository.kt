@@ -86,10 +86,6 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
     }
 
-    suspend inline fun <reified T> accessControlService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_ACCESS_CONTROL_ENDPOINT, jsonRpcRequest) })
-    }
-
     suspend inline fun <reified T> systemService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
         return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_SYSTEM_ENDPOINT, jsonRpcRequest) })
     }
