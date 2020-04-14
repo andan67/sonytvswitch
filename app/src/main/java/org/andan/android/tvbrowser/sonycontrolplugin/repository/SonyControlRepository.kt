@@ -1,13 +1,9 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -16,11 +12,12 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
-import retrofit2.Response
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
@@ -31,7 +28,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
 
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
-    val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
+    private val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
     companion object {
         const val SUCCESS_CODE = 0
@@ -49,8 +46,6 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
     private val _responseMessage = MutableLiveData<Event<String>>()
     val responseMessage: LiveData<Event<String>>
         get() = _responseMessage
-
-    val gson = GsonBuilder().create()
 
     private fun onSonyControlsChange() {
         sonyServiceContext.sonyService = api
@@ -75,19 +70,6 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         return if(sonyControls.value!!.selected >= 0 && sonyControls.value!!.selected <= sonyControls.value!!.controls.size-1) {
             sonyControls.value!!.controls[sonyControls.value!!.selected]
         } else null
-    }
-
-   /* private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
-    val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
-
-    var playingContentInfo2 : PlayingContentInfoResponse = PlayingContentInfoResponse.notAvailableValue*/
-
-    suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) })
-    }
-
-    suspend inline fun <reified T> systemService(jsonRpcRequest: JsonRpcRequest): Resource<T> {
-        return apiCall(call = { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SONY_SYSTEM_ENDPOINT, jsonRpcRequest) })
     }
 
     suspend fun setWolMode(enabled: Boolean) {
@@ -143,14 +125,14 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         }
     }
 
-    suspend fun getPlayingContentInfo(): PlayingContentInfoResponse {
+    suspend fun getPlayingContentInfo(): PlayingContentInfo {
         val resource = avContentService<PlayingContentInfoResponse>(JsonRpcRequest.getPlayingContentInfo())
-        PlayingContentInfoResponse.notAvailableValue
+        PlayingContentInfo.notAvailableValue
         return if (resource.status == Status.ERROR) {
             _responseMessage.postValue(Event(resource.message))
-            PlayingContentInfoResponse.notAvailableValue
+            PlayingContentInfo.notAvailableValue
         } else {
-            resource.data!!
+            resource.data?.asDomainModel() ?: PlayingContentInfo.notAvailableValue
         }
     }
 
@@ -164,8 +146,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
     }
 
     suspend fun fetchSourceList() {
-        val resource = avContentService<Array<SourceListItemResponse>>(
-            JsonRpcRequest.getSourceList("tv"))
+        val resource = avContentService<Array<SourceListItemResponse>>(JsonRpcRequest.getSourceList("tv"))
         if(resource.status==Status.SUCCESS) {
             getSelectedControl()!!.sourceList = mutableListOf()
             for(sourceItem in resource.data!!) {
@@ -242,7 +223,7 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
                 }
                 try {
                     val response = api.sonyRpcService(
-                        "http://" + it.ip + SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegister(it.nickname, it.devicename, it.uuid)
+                        "http://" + it.ip + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT, JsonRpcRequest.actRegister(it.nickname, it.devicename, it.uuid)
                     )
                     // update token
                     if (response.isSuccessful) {
@@ -279,12 +260,12 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
                 val requestBodyText =
-                    SONY_IRCC_REQUEST_TEMPLATE.replace("<IRCCCode>", "<IRCCCode>$code")
+                    SonyServiceUtil.SONY_IRCC_REQUEST_TEMPLATE.replace("<IRCCCode>", "<IRCCCode>$code")
 
                 val requestBody: RequestBody =
                     requestBodyText.toRequestBody("text/xml".toMediaTypeOrNull())
                 Log.d(TAG, "sendIRCC: $requestBodyText")
-                val response = api.sendIRCC("http://" + it.ip + SONY_IRCC_ENDPOINT, requestBody)
+                val response = api.sendIRCC("http://" + it.ip + SonyServiceUtil.SONY_IRCC_ENDPOINT, requestBody)
                 if (!response.isSuccessful) {
                     _responseMessage.postValue(Event(response.message()))
                 }
@@ -328,60 +309,11 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
     }
 
-    suspend inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Resource<T> {
-        //val response: Response<T>
-        return try {
-            val response = call.invoke()
-            if (response.isSuccessful) {
-                val jsonRpcResponse = response.body()
-                when {
-                    jsonRpcResponse?.error != null -> {
-                        Log.d("apiCall", "evaluate error")
-                        Resource.Error(
-                            jsonRpcResponse.error.asJsonArray.get(1).asString, response.code()
-                        )
-                    }
-                    else -> {
-                        Log.d("apiCall", "evaluate result")
-                        Resource.Success(
-                            response.code(),
-                            gson.fromJson(
-                                when {
-                                    jsonRpcResponse?.result?.asJsonArray?.size() == 0 -> {
-                                        JsonObject()
-                                    }
-                                    jsonRpcResponse?.result?.asJsonArray?.size()!! > 1 -> {
-                                        jsonRpcResponse.result.asJsonArray?.get(1)
-                                    }
-                                    else -> {
-                                        when (jsonRpcResponse.result.asJsonArray?.get(0)) {
-                                            is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonObject
-                                            is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(0)!!.asJsonArray
-                                            else -> jsonRpcResponse.result.asJsonArray.get(0).asJsonObject
-                                        }
-                                    }
-                                }, T::class.java
-                            )
-                        )
-                    }
-                }
-            } else {
-                Log.d("apiCall", "evaluate response unsuccessful")
-                Resource.Error(response.message(), response.code())
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d("apiCall", "evaluate exception ${e.message}")
-            return Resource.Error(e.message ?: "Unknown apiCall exception", 0)
-        }
-    }
-
     fun saveControls() {
         saveControls(false)
     }
 
-    fun saveControls(fromBackground: Boolean) {
+    private fun saveControls(fromBackground: Boolean) {
         preferenceStore.storeControls(sonyControls.value!!)
         if(fromBackground) {
             sonyControls.notifyObserverBackground()
@@ -425,6 +357,12 @@ class SonyControlRepository @Inject constructor(val client: OkHttpClient, val ap
         }
         return false
     }
+
+    private suspend inline fun <reified T> avContentService(jsonRpcRequest: JsonRpcRequest): Resource<T> =
+        apiCall { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SonyServiceUtil.SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest) }
+
+    private suspend inline fun <reified T> systemService(jsonRpcRequest: JsonRpcRequest): Resource<T> =
+        apiCall { api.sonyRpcService("http://" + selectedSonyControl.value?.ip + SonyServiceUtil.SONY_SYSTEM_ENDPOINT, jsonRpcRequest) }
 }
 
 open class Event<out T>(private val content: T? = null) {
@@ -454,8 +392,4 @@ class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Obser
             onEventUnhandledContent(value)
         }
     }
-}
-
-fun <T> LiveData<out Event<T>>.observeEvent(owner: LifecycleOwner, onEventUnhandled: (T) -> Unit) {
-    observe(owner, Observer { it?.getContentIfNotHandled()?.let(onEventUnhandled) })
 }

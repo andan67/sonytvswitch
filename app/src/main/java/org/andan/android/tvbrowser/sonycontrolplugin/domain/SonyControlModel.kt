@@ -1,6 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
+import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 
@@ -94,5 +98,47 @@ data class PlayingContentInfo(
     val uri: String = "",
     val programTitle: String = "N/A",
     val startDateTime: String = "",
-    val durationSec: Long = 0
-)
+    val durationSec: Long = 0) {
+
+    companion object {
+        private val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ")
+        private val DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
+        private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
+        private val cal = Calendar.getInstance()
+        val notAvailableValue = PlayingContentInfo("","----","","Not available","","","",0)
+    }
+
+    fun getStartDateTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            DateTimeFormat.format(date)
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    fun getEndDateTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            cal.time = date
+            cal.add(Calendar.SECOND, durationSec.toInt())
+            DateTimeFormat.format(cal.time)
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    fun getStartEndTimeFormatted(): String? {
+        return try {
+            val date = sdfInput.parse(startDateTime)
+            val startTime = TimeFormat.format(date)
+            cal.time = date
+            cal.add(Calendar.SECOND, durationSec.toInt())
+            val endTime =
+                TimeFormat.format(cal.time)
+            "$startTime - $endTime"
+        } catch (e: Exception) {
+            ""
+        }
+    }
+}

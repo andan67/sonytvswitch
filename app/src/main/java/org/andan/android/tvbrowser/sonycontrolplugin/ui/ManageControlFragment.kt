@@ -13,7 +13,6 @@ import androidx.navigation.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
-import org.andan.android.tvbrowser.sonycontrolplugin.repository.observeEvent
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 class ManageControlFragment : Fragment() {

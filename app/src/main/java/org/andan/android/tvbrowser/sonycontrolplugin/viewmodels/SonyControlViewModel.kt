@@ -8,10 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.ProgramFuzzyMatch
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.*
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import java.util.*
@@ -70,12 +67,12 @@ class SonyControlViewModel : ViewModel() {
 
     var selectedChannelMapProgramUri = MutableLiveData<String?>()
 
-    private val _playingContentInfo = MutableLiveData<PlayingContentInfoResponse>()
-    val playingContentInfo: LiveData<PlayingContentInfoResponse> = _playingContentInfo
+    private val _playingContentInfo = MutableLiveData<PlayingContentInfo>()
+    val playingContentInfo: LiveData<PlayingContentInfo> = _playingContentInfo
 
     init {
         Log.d(TAG, "init")
-        _playingContentInfo.value = PlayingContentInfoResponse.notAvailableValue
+        _playingContentInfo.value = PlayingContentInfo.notAvailableValue
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
         onSelectedIndexChange()

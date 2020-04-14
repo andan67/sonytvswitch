@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgramListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
@@ -78,7 +79,7 @@ class ProgramListFragment : Fragment() {
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
-                if (sonyControlViewModel.playingContentInfo.value == PlayingContentInfoResponse.notAvailableValue) {
+                if (sonyControlViewModel.playingContentInfo.value == PlayingContentInfo.notAvailableValue) {
                     Toast.makeText(context, "No current program", Toast.LENGTH_LONG).show()
                 } else {
                     view.findNavController()
