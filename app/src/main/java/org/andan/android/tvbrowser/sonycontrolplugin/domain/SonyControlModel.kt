@@ -92,11 +92,11 @@ data class SonyProgram(var source: String, val dispNumber: String, val index : I
 
 data class PlayingContentInfo(
     val source: String = "",
-    val dispNum: String = "",
+    val dispNum: String = "----",
     val programMediaType: String = "",
-    val title: String = "N/A",
+    val title: String = "Not available\"",
     val uri: String = "",
-    val programTitle: String = "N/A",
+    val programTitle: String = "",
     val startDateTime: String = "",
     val durationSec: Long = 0) {
 
@@ -105,7 +105,6 @@ data class PlayingContentInfo(
         private val DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
         private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
         private val cal = Calendar.getInstance()
-        val notAvailableValue = PlayingContentInfo("","----","","Not available","","","",0)
     }
 
     fun getStartDateTimeFormatted(): String? {

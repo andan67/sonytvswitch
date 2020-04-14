@@ -17,6 +17,12 @@
         android:label="@string/menu_add_control"
         tools:layout="@layout/fragment_add_control_dialog" />
 
+    <dialog
+        android:id="@+id/nav_add_control_new"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.AddControlHostDialogFragment"
+        android:label="@string/menu_add_control"
+        tools:layout="@layout/fragment_add_control_host_dialog" />
+
     <fragment
         android:id="@+id/nav_program_list"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ProgramListFragment"
@@ -71,5 +77,6 @@
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ActiveProgramDetailsFragment"
         android:label="@string/active_program_fragment_label"
         tools:layout="@layout/fragment_active_program_details"/>
+
 
 </navigation>

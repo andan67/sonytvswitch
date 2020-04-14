@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
@@ -40,6 +41,10 @@ class ManageControlFragment : Fragment() {
 
         sonyControlViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "observed change ${sonyControlViewModel.selectedSonyControl.value}")
+        })
+
+        sonyControlViewModel.sonyIpAndDeviceList.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observed change ${sonyControlViewModel.sonyIpAndDeviceList.value}")
         })
 
         sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
@@ -89,7 +94,10 @@ class ManageControlFragment : Fragment() {
                 sonyControlViewModel.wakeOnLan()
             }
             R.id.ssd -> {
-                sonyControlViewModel.ssd()
+                sonyControlViewModel.fetchSonyIpAndDeviceList()
+                //val ipDeviceList = sonyControlViewModel.sonyIpAndDeviceList
+                //val ipDeviceList = SSDP.getSonyIpAndDeviceList()
+                //Log.d(TAG, "$ipDeviceList")
             }
         }
         return super.onOptionsItemSelected(item)

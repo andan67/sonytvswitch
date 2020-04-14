@@ -97,5 +97,13 @@ object SSDP {
         return responseList
     }
 
-    data class IpDeviceItem(val ip: String, val device: String)
+    data class IpDeviceItem(val ip: String = "", val device: String = "") {
+        override fun toString(): String {
+            return if(ip.isEmpty()) {
+                ""
+            } else {
+                "$device (ip=$ip)"
+            }
+        }
+    }
 }

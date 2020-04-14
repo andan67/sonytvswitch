@@ -79,7 +79,7 @@ class ProgramListFragment : Fragment() {
 
             binding.activeProgram.activeProgramView.setOnClickListener {
                 //Toast.makeText(context, "Click on ${activeProgram?.title}", Toast.LENGTH_LONG) .show()
-                if (sonyControlViewModel.playingContentInfo.value == PlayingContentInfo.notAvailableValue) {
+                if (sonyControlViewModel.playingContentInfo.value == PlayingContentInfo()) {
                     Toast.makeText(context, "No current program", Toast.LENGTH_LONG).show()
                 } else {
                     view.findNavController()

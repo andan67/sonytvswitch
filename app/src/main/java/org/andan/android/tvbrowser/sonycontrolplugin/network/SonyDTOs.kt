@@ -19,8 +19,10 @@ data class PlayingContentInfoResponse(
 )
 
 fun PlayingContentInfoResponse.asDomainModel() : PlayingContentInfo {
+    // Elvis operator is used here because parameters can be null as result of GSON not being null safe in the context of Kotlin!
     return PlayingContentInfo(
-        source, dispNum, programMediaType, title, uri, programTitle, startDateTime, durationSec
+        source?: "", dispNum?: "----", programMediaType?: "",
+        title?: "Not available", uri?: "", programTitle?: "", startDateTime?: "", durationSec?: 0
     )
 }
 
@@ -33,6 +35,9 @@ fun ContentListItemResponse.asDomainModel() : SonyProgram {
 data class SourceListItemResponse(val source: String)
 
 data class SystemInformationResponse(val product: String, val name: String, val model: String, val macAddr: String)
+
+data class InterfaceInformationResponse(val interfaceVersion: String ="", val modelName: String ="", val productCategory: String ="",
+                                        val productName: String ="", val serverName: String ="")
 
 data class WolModeResponse(val enabled: Boolean)
 

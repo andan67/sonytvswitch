@@ -1,15 +1,16 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.*
+import org.andan.android.tvbrowser.sonycontrolplugin.network.InterfaceInformationResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import java.util.*
 import kotlin.collections.ArrayList
@@ -43,7 +44,6 @@ class SonyControlViewModel : ViewModel() {
         get() = _sonyControls
 
 
-
     private fun getSelectedControl(): SonyControl? {
         return selectedSonyControl.value
     }
@@ -70,9 +70,16 @@ class SonyControlViewModel : ViewModel() {
     private val _playingContentInfo = MutableLiveData<PlayingContentInfo>()
     val playingContentInfo: LiveData<PlayingContentInfo> = _playingContentInfo
 
+    private val _sonyIpAndDeviceList = MutableLiveData<List<SSDP.IpDeviceItem>>()
+    val sonyIpAndDeviceList: LiveData<List<SSDP.IpDeviceItem>> = _sonyIpAndDeviceList
+
+    //private val _interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
+    //val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
+    //val interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
+
     init {
         Log.d(TAG, "init")
-        _playingContentInfo.value = PlayingContentInfo.notAvailableValue
+        _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
         onSelectedIndexChange()
@@ -80,7 +87,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun updateCurrentProgram(uri: String) {
-        if(uri.isNotEmpty() && uriProgramMap.containsKey(uri) && currentProgramUri != uri) {
+        if (uri.isNotEmpty() && uriProgramMap.containsKey(uri) && currentProgramUri != uri) {
             lastProgramUri = currentProgramUri
             currentProgramUri = uri
             //Log.d(TAG, "updateCurrentProgram ${uriProgramMap[lastProgramUri]!!.title} ${uriProgramMap[currentProgramUri]!!.title}")
@@ -94,16 +101,16 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun deleteSelectedControl() {
-        if(sonyControlRepository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
+        if (sonyControlRepository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
     }
 
     fun setSelectedControlIndex(index: Int) {
-        Log.d(TAG,"setSelectedControlIndex(index: $index)")
-        if(sonyControlRepository.setSelectedControlIndex(index)) onSelectedIndexChange()
+        Log.d(TAG, "setSelectedControlIndex(index: $index)")
+        if (sonyControlRepository.setSelectedControlIndex(index)) onSelectedIndexChange()
     }
 
     fun onSelectedIndexChange() {
-        Log.d(TAG,"onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
+        Log.d(TAG, "onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
         lastProgramUri = ""
         currentProgramUri = ""
         //activeContentInfo.value = noActiveProgram
@@ -113,7 +120,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun refreshDerivedVariablesForSelectedControl() {
-        Log.d(TAG,"refreshDerivedVariablesForSelectedControl()")
+        Log.d(TAG, "refreshDerivedVariablesForSelectedControl()")
         programTitleList.clear()
         channelNameList.clear()
         uriProgramMap.clear()
@@ -122,7 +129,10 @@ class SonyControlViewModel : ViewModel() {
                 for (mappedChannelName in getSelectedControl()?.channelProgramMap!!.keys) {
                     channelNameList.add(mappedChannelName)
                     val programUri = getSelectedControl()!!.channelProgramMap[mappedChannelName]
-                    if (programUri != null && getSelectedControl()!!.programUriMap!!.containsKey(programUri)) {
+                    if (programUri != null && getSelectedControl()!!.programUriMap!!.containsKey(
+                            programUri
+                        )
+                    ) {
                         programChannelMap[programUri] = mappedChannelName
                     }
                 }
@@ -130,7 +140,7 @@ class SonyControlViewModel : ViewModel() {
 
             for (program in getSelectedControl()!!.programList) {
                 programTitleList.add(program.title)
-                uriProgramMap[program.uri]=program
+                uriProgramMap[program.uri] = program
             }
         }
     }
@@ -142,7 +152,7 @@ class SonyControlViewModel : ViewModel() {
 
     fun filterProgramList(query: String?) {
         Log.d(TAG, "filter program list query='$query' ")
-        if(getSelectedControl()?.programList!=null) {
+        if (getSelectedControl()?.programList != null) {
             programSearchQuery = query
             filteredProgramList.value = getSelectedControl()!!.programList.filter { p ->
                 programSearchQuery.isNullOrEmpty() || p.title.contains(
@@ -167,7 +177,7 @@ class SonyControlViewModel : ViewModel() {
     fun getFilteredChannelNameList(): LiveData<List<String>> {
         //Log.d(TAG,"getFilteredChannelNameList()")
         // get list of channel names from preference
-        if(filteredChannelNameList.value==null) {
+        if (filteredChannelNameList.value == null) {
             filterChannelNameList("")
         }
         return filteredChannelNameList
@@ -184,13 +194,23 @@ class SonyControlViewModel : ViewModel() {
         }
     }
 
-    internal fun createProgramUriMatchList(channelName: String?, query: String?) : ArrayList<String> {
+    internal fun createProgramUriMatchList(
+        channelName: String?,
+        query: String?
+    ): ArrayList<String> {
         Log.d(TAG, "createProgramUriMatchList()")
         val programUriMatchList: ArrayList<String> = ArrayList()
         if (programTitleList.isNotEmpty()) {
             var matchTopSet: MutableSet<Int> = LinkedHashSet()
             if (query == null || query.isEmpty()) {
-                matchTopSet.addAll(ProgramFuzzyMatch.matchTop(channelName!!, programTitleList, 30, true))
+                matchTopSet.addAll(
+                    ProgramFuzzyMatch.matchTop(
+                        channelName!!,
+                        programTitleList,
+                        30,
+                        true
+                    )
+                )
             } else {
                 for (i in programTitleList.indices) {
                     val programTitle = programTitleList[i]
@@ -201,94 +221,103 @@ class SonyControlViewModel : ViewModel() {
                 }
             }
             if (!getSelectedControl()?.programList.isNullOrEmpty()) {
-                matchTopSet.forEach {programUriMatchList.add(getSelectedControl()!!.programList[it].uri)}
+                matchTopSet.forEach { programUriMatchList.add(getSelectedControl()!!.programList[it].uri) }
             }
             sonyControlRepository.saveControls()
         }
         return programUriMatchList
     }
 
-fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
-    val result = sonyControlRepository.getPlayingContentInfo()
-    _playingContentInfo.postValue(result)
-    updateCurrentProgram(result.uri)
-}
+    fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
+        val result = sonyControlRepository.getPlayingContentInfo()
+        _playingContentInfo.postValue(result)
+        updateCurrentProgram(result.uri)
+    }
 
-fun fetchProgramList() = viewModelScope.launch(Dispatchers.IO) {
-   sonyControlRepository.fetchProgramList()
-}
+    fun fetchProgramList() = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.fetchProgramList()
+    }
 
-fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
-   if(sonyControlRepository.setPlayContent(uri)==SonyControlRepository.SUCCESS_CODE) {
-       updateCurrentProgram(uri)
-   }
-}
+    fun setPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
+        if (sonyControlRepository.setPlayContent(uri) == SonyControlRepository.SUCCESS_CODE) {
+            updateCurrentProgram(uri)
+        }
+    }
 
-fun setAndFetchPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
-   if(sonyControlRepository.setPlayContent(uri)==SonyControlRepository.SUCCESS_CODE) {
-       fetchPlayingContentInfo()
-   }
-}
+    fun setAndFetchPlayContent(uri: String) = viewModelScope.launch(Dispatchers.IO) {
+        if (sonyControlRepository.setPlayContent(uri) == SonyControlRepository.SUCCESS_CODE) {
+            fetchPlayingContentInfo()
+        }
+    }
 
-fun registerControl() {
-   registerControl(null)
-}
+    fun registerControl() {
+        registerControl(null)
+    }
 
-fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
-   sonyControlRepository.wakeOnLan()
-}
+    fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.wakeOnLan()
+    }
 
-fun ssd() = viewModelScope.launch(Dispatchers.IO) {
-    sonyControlRepository.ssd()
-}
+    /*fun fetchInterfaceInformation(host: String) = viewModelScope.launch(Dispatchers.IO) {
+        _interfaceInformation.postValue(sonyControlRepository.getInterfaceInformation(host))
+    }*/
 
+    fun fetchInterfaceInformation(host: String) = liveData(Dispatchers.IO) {
+        emit(sonyControlRepository.getInterfaceInformation(host))
+    }
 
-fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
-   sonyControlRepository.registerControl(challenge)
-   sonyControlRepository.fetchRemoteControllerInfo()
-   sonyControlRepository.fetchSourceList()
-   sonyControlRepository.setWolMode(true)
-   sonyControlRepository.fetchWolMode()
-   sonyControlRepository.fetchSystemInformation()
-}
+    fun fetchSonyIpAndDeviceList() = viewModelScope.launch(Dispatchers.IO) {
+        val list = sonyControlRepository.getSonyIpAndDeviceList()
+        Log.d(TAG, "fetchSonyIpAndDeviceList(): $list")
+        _sonyIpAndDeviceList.postValue(list)
+    }
 
-fun setPowerSavingMode(mode: String) = viewModelScope.launch(Dispatchers.IO) {
-   sonyControlRepository.setPowerSavingMode(mode)
-}
+    fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.registerControl(challenge)
+        sonyControlRepository.fetchRemoteControllerInfo()
+        sonyControlRepository.fetchSourceList()
+        sonyControlRepository.setWolMode(true)
+        sonyControlRepository.fetchWolMode()
+        sonyControlRepository.fetchSystemInformation()
+    }
 
-fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
-   Log.d(TAG,"setSelectedChannelMapProgramUri()")
-   selectedChannelMapProgramUri.value = programUri
-   getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
-   refreshDerivedVariablesForSelectedControl()
-   sonyControlRepository.saveControls()
-}
+    fun setPowerSavingMode(mode: String) = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.setPowerSavingMode(mode)
+    }
 
-fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
-   sonyControlRepository.sendIRCC(getSelectedControl()!!.commandList[name]!!)
-}
+    fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
+        Log.d(TAG, "setSelectedChannelMapProgramUri()")
+        selectedChannelMapProgramUri.value = programUri
+        getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
+        refreshDerivedVariablesForSelectedControl()
+        sonyControlRepository.saveControls()
+    }
 
-internal fun performFuzzyMatchForChannelList() {
-   Log.d(TAG, "performFuzzyMatchForChannelList()")
-   if (channelNameList.isNotEmpty() && programTitleList.isNotEmpty() && getSelectedControl()?.programList != null ) {
-       for (channelName in channelNameList) {
-           val index1 = ProgramFuzzyMatch.matchOne(channelName, programTitleList, true)
-           if (index1 >= 0) {
-               val programUri = getSelectedControl()!!.programList[index1].uri
-               getSelectedControl()!!.channelProgramMap[channelName]= programUri
-           }
-       }
-       sonyControlRepository.saveControls()
-   }
-}
+    fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.sendIRCC(getSelectedControl()!!.commandList[name]!!)
+    }
 
-internal fun clearMapping() {
-   Log.d(TAG, "clearMapping()")
-   if (getSelectedControl()?.channelProgramMap != null) {
-       for (channelName in channelNameList) {
-           getSelectedControl()!!.channelProgramMap[channelName]=""
-       }
-       sonyControlRepository.saveControls()
-   }
-}
+    internal fun performFuzzyMatchForChannelList() {
+        Log.d(TAG, "performFuzzyMatchForChannelList()")
+        if (channelNameList.isNotEmpty() && programTitleList.isNotEmpty() && getSelectedControl()?.programList != null) {
+            for (channelName in channelNameList) {
+                val index1 = ProgramFuzzyMatch.matchOne(channelName, programTitleList, true)
+                if (index1 >= 0) {
+                    val programUri = getSelectedControl()!!.programList[index1].uri
+                    getSelectedControl()!!.channelProgramMap[channelName] = programUri
+                }
+            }
+            sonyControlRepository.saveControls()
+        }
+    }
+
+    internal fun clearMapping() {
+        Log.d(TAG, "clearMapping()")
+        if (getSelectedControl()?.channelProgramMap != null) {
+            for (channelName in channelNameList) {
+                getSelectedControl()!!.channelProgramMap[channelName] = ""
+            }
+            sonyControlRepository.saveControls()
+        }
+    }
 }

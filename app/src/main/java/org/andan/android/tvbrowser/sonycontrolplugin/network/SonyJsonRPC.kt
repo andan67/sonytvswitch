@@ -24,6 +24,11 @@ data class JsonRpcRequest(
 
         //system service
 
+        fun getInterfaceInformation(): JsonRpcRequest {
+            val params = ArrayList<Any>()
+            return JsonRpcRequest(33, "getInterfaceInformation", params)
+        }
+
         fun getRemoteControllerInfo(): JsonRpcRequest {
             val params = ArrayList<Any>()
             return JsonRpcRequest(10, "getRemoteControllerInfo", params)
