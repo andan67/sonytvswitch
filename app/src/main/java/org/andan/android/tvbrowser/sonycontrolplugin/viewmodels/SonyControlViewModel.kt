@@ -73,9 +73,13 @@ class SonyControlViewModel : ViewModel() {
     private val _sonyIpAndDeviceList = MutableLiveData<List<SSDP.IpDeviceItem>>()
     val sonyIpAndDeviceList: LiveData<List<SSDP.IpDeviceItem>> = _sonyIpAndDeviceList
 
-    //private val _interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
-    //val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
-    //val interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
+    private val _interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
+    val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
+
+    val addControlHost = ""
+    val addControlNickname = ""
+    val addControlDevicename = ""
+    val addControlPSK = ""
 
     init {
         Log.d(TAG, "init")
@@ -262,12 +266,15 @@ class SonyControlViewModel : ViewModel() {
         _interfaceInformation.postValue(sonyControlRepository.getInterfaceInformation(host))
     }*/
 
-    fun fetchInterfaceInformation(host: String) = liveData(Dispatchers.IO) {
-        emit(sonyControlRepository.getInterfaceInformation(host))
+    fun fetchInterfaceInformation(host: String) = viewModelScope.launch(Dispatchers.IO) {
+        _interfaceInformation.postValue(sonyControlRepository.getInterfaceInformation(host))
     }
 
     fun fetchSonyIpAndDeviceList() = viewModelScope.launch(Dispatchers.IO) {
-        val list = sonyControlRepository.getSonyIpAndDeviceList()
+        //val list = sonyControlRepository.getSonyIpAndDeviceList()
+        val list = listOf<SSDP.IpDeviceItem>(
+            SSDP.IpDeviceItem("192.168.178.27", "BRAVIA KDL-50W656A"),
+            SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))
         Log.d(TAG, "fetchSonyIpAndDeviceList(): $list")
         _sonyIpAndDeviceList.postValue(list)
     }

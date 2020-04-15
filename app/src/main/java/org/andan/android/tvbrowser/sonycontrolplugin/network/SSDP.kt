@@ -7,23 +7,28 @@ import java.util.regex.Pattern
 
 object SSDP {
     private const val DISCOVER_TIMEOUT = 1000
+    private const val DEFAULT_PORT = 1900
+    private const val DEFAULT_ADDRESS_IP4 = "239.255.255.250"
+    private const val DEFAULT_ADDRESS_IP6 = "[FF05::C]"
     private const val LINE_END = "\r\n"
-    private const val DEFAULT_QUERY = "M-SEARCH * HTTP/1.1" + LINE_END +
-            "HOST:239.255.255.250:1900" + LINE_END +
+    private const val DEFAULT_QUERY_IP4 = "M-SEARCH * HTTP/1.1" + LINE_END +
+            "HOST:" + DEFAULT_ADDRESS_IP4 + ":" + DEFAULT_PORT + LINE_END +
             "MAN: \"ssdp:discover\"" + LINE_END +
             "MX:1" + LINE_END +
             "ST:upnp:rootdevice" + LINE_END +
             LINE_END
-    private const val DEFAULT_PORT = 1900
-    private const val DEFAULT_ADDRESS = "239.255.255.250"
+    private const val DEFAULT_QUERY_IP6 = "M-SEARCH * HTTP/1.1" + LINE_END +
+            "HOST:" + DEFAULT_ADDRESS_IP6 + ":" + DEFAULT_PORT + LINE_END +
+            "MAN: \"ssdp:discover\"" + LINE_END +
+            "MX:1" + LINE_END +
+            "ST:upnp:rootdevice" + LINE_END +
+            LINE_END
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val responseList = getSsdpResponses()
+        //val responseList = getSsdpResponses()
         //responseList.forEach { println(it) }
-        getSonyIpAndDeviceList().forEach {
-            println(it)
-        }
+        getSonyIpAndDeviceList().forEach { println(it) }
     }
 
     fun getSonyIpAndDeviceList(): List<IpDeviceItem> {
@@ -57,15 +62,15 @@ object SSDP {
         var socket: DatagramSocket? = null
         val responseList = mutableListOf<String>()
         try {
-            val group: InetAddress = InetAddress.getByName(DEFAULT_ADDRESS)
+            val group: InetAddress = InetAddress.getByName(DEFAULT_ADDRESS_IP4)
             socket = DatagramSocket(null)
             socket.broadcast = true
             socket.soTimeout = DISCOVER_TIMEOUT
 
             val datagramPacketRequest =
                 DatagramPacket(
-                    DEFAULT_QUERY.toByteArray(),
-                    DEFAULT_QUERY.length,
+                    DEFAULT_QUERY_IP4.toByteArray(),
+                    DEFAULT_QUERY_IP4.length,
                     group,
                     DEFAULT_PORT
                 )

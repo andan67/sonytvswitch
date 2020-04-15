@@ -93,12 +93,7 @@
     <string name="menu_map_reset">Reset</string>
     <string name="menu_map_unmap">Unmap</string>
 
-    <string name="add_control_ip">Host address</string>
-    <string name="add_control_ip_hint">Enter host address of your TV</string>
-    <string name="add_control_nick">Nick name</string>
-    <string name="add_control_nick_hint">Enter nickname of your control</string>
-    <string name="add_control_device">Device name</string>
-    <string name="add_control_device_hint">Enter name of your device</string>
+
 
     <string name="menu_add_control">Add control</string>
     <string name="menu_manage_control">Manage control</string>
@@ -152,7 +147,58 @@
     <string name="active_program_mediaType">Media type</string>
     <string name="active_program_fragment_label">Current program</string>
     <string name="active_program_end_time">End time</string>
+   <!-- <string name="instructions_add_control_host">\u25BA Switch on Sony TV
+        \n\u25BA Get IP address from settings: [HOME] Settings >  Network Advanced settings > Network status > IP address
+        \n\u25BA Enter this address into 'Host address' text field
+        \n\u25BA Alternatively select discovered device from drop down box</string>-->
+    <string name="instructions_title">Instructions</string>
+
+    <string name="add_control_ip">Host address</string>
+    <string name="add_control_ip_hint">Enter host address of your TV</string>
+    <string name="add_control_nick">Nick name</string>
+    <string name="add_control_nick_hint">Enter nickname of your control</string>
+    <string name="add_control_device">Device name</string>
+    <string name="add_control_device_hint">Enter name of your device</string>
+
+
+    <string name="add_control_host_title">Add control: Host/IP address</string>
+    <string name="add_control_host_instructions">
+        \u25BA Switch on Sony TV
+        \n\u25BA Get IP address from settings: [HOME] Settings >  Network Advanced settings > Network status > IP address
+        \n\u25BA Enter this address into "Host address" field
+        \n\u25BA Alternatively select discovered device (if found) from drop down box
+        \n\u25BA Click next if finish and watch for error message
+    </string>
+    <string name="add_control_host_field_title">Host/IP address</string>
+    <string name="add_control_host_discovered_devices">Discovered devices</string>
+    <string name="add_control_host_neu">Test</string>
+    <string name="add_control_host_neg">Cancel</string>
+    <string name="add_control_host_pos">Next</string>
     <string name="simple_service_discovery">Discover Sony devices</string>
 
+    <string name="add_control_names_title">Add control: Define names</string>
+    <string name="add_control_names_instructions">
+        \u25BA Enter nickname for the control and a device name
+        \n\u25BA These names can be arbitrary and are used for display purposes only
+    </string>
+    <string name="add_control_names_neg">Cancel</string>
+    <string name="add_control_names_pos">Next</string>
+
+    <string name="add_control_register_title">Add control: Register</string>
+    <string name="add_control_register_instructions">
+        \u25BA Enter nickname and device names into fields
+        \n\u25BA Get IP address from settings: [HOME] Settings >  Network Advanced settings > Network status > IP address
+        \n\u25BA Click next if finish and watch for error message
+    </string>
+    <string name="add_control_register_neu">Test</string>
+    <string name="add_control_register_neg">Cancel</string>
+    <string name="add_control_register_pos">Next</string>
+
+    <string name="add_control_preparation_instructions">
+    \u25BA Enable remote start on your TV: [Settings] → [Network] → [Home Network Setup] → [Remote Start] → [On]
+    \n\u25BA Enable pre-shared key on your TV (if possible): [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Authentication] → [Normal and Pre-Shared Key]
+    \n\u25BA Set pre-shared key on your TV: [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Pre-Shared Key] → [sony]
+    \n\u25BA Give your TV a static IP address, or make a DHCP reservation for a specific IP address in your router.
+    </string>
 
 </resources>

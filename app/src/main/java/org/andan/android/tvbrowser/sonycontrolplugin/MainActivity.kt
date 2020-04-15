@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_add_control,
-                R.id.nav_add_control_new,
+                R.id.nav_add_control_host,
                 R.id.nav_manage_control,
                 R.id.nav_remote_control,
                 R.id.nav_program_list,
