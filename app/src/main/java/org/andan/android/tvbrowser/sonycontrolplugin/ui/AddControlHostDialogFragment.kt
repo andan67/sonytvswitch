@@ -5,10 +5,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
@@ -16,12 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import kotlinx.android.synthetic.main.fragment_add_control_host_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.network.InterfaceInformationResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
@@ -34,10 +31,15 @@ class AddControlHostDialogFragment : DialogFragment() {
     private lateinit var sonyIpAndDeviceListAdapter: ArrayAdapter<SSDP.IpDeviceItem>
     private val deviceList = mutableListOf<SSDP.IpDeviceItem>()
     private var dialog: AlertDialog? = null
-    private var dialogView: View? = null
-    private var messageTextView: TextView? = null
     private var host: String = ""
     private var testMode = 0
+
+
+    private val containerView by lazy {
+        this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false) as ViewGroup
+    }
+
+    override fun getView() = containerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,16 +81,11 @@ class AddControlHostDialogFragment : DialogFragment() {
             }
             testMode = 0
         })
-
-
-
-
-        return dialogView
+        return containerView
     }
 
     override fun onDestroyView() {
         // avoid leak
-        dialogView = null
         super.onDestroyView()
     }
 
@@ -96,21 +93,22 @@ class AddControlHostDialogFragment : DialogFragment() {
         Log.d(TAG, "onCreateDialog")
         val dialogBuilder = AlertDialog.Builder(context!!)
         dialogBuilder.setMessage(R.string.add_control_host_title)
-        dialogView = this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false)
+        dialogBuilder.setView(containerView)
+        Log.d(TAG, " dialogBuilder.setView(dialogView)")
+        dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
+        dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
+        dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
+
+        dialog = dialogBuilder.create()
+
         // fill device spinner
         deviceList.add(SSDP.IpDeviceItem())
         sonyControlViewModel.fetchSonyIpAndDeviceList()
         var hasSelected = false
 
-        //var hostValue = ""
-        val hostEditTest = dialogView!!.findViewById(R.id.addControlIPEditText) as EditText
         sonyIpAndDeviceListAdapter =
             ArrayAdapter(context!!, R.layout.control_spinner_item, deviceList)
 
-        messageTextView = dialogView!!.findViewById(R.id.messageTextView) as TextView
-
-        val deviceSpinner = dialogView!!.findViewById<Spinner>(R.id.deviceSpinner)
-2
         deviceSpinner.adapter = sonyIpAndDeviceListAdapter
 
         deviceSpinner.onItemSelectedListener = object :
@@ -125,7 +123,7 @@ class AddControlHostDialogFragment : DialogFragment() {
                     Log.d(TAG, "onItemSelected $position")
                     host = deviceList[position].ip
                     hasSelected = true
-                    hostEditTest.setText(host)
+                    addControlIPEditText.setText(host)
                 }
                 //deviceSpinner.performItemClick(view, position, id)
             }
@@ -134,22 +132,14 @@ class AddControlHostDialogFragment : DialogFragment() {
             }
         }
 
-        hostEditTest.doAfterTextChanged {
+        addControlIPEditText.doAfterTextChanged {
             Log.d(TAG,"doAfterTextChanged: ${deviceSpinner.selectedItemPosition} $hasSelected")
             if(!hasSelected) {
                 deviceSpinner.setSelection(0)
-                host = hostEditTest.text.toString()
+                host = addControlIPEditText.text.toString()
             }
             hasSelected = false
         }
-
-        dialogBuilder.setView(dialogView)
-        Log.d(TAG, " dialogBuilder.setView(dialogView)")
-        dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
-        dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
-        dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
-
-        dialog = dialogBuilder.create()
 
         dialog!!.setOnShowListener {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)

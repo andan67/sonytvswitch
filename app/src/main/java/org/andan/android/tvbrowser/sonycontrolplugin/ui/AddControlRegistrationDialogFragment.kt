@@ -2,12 +2,13 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.RenderProcessGoneDetail
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
@@ -15,12 +16,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import kotlinx.android.synthetic.main.fragment_add_control_register_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.network.InterfaceInformationResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 /**
@@ -30,42 +28,27 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
     private val TAG = AddControlRegistrationDialogFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
-    private lateinit var sonyIpAndDeviceListAdapter: ArrayAdapter<SSDP.IpDeviceItem>
-    private val deviceList = mutableListOf<SSDP.IpDeviceItem>()
     private var dialog: AlertDialog? = null
-    private var dialogView: View? = null
-    private var messageTextView: TextView? = null
-    private var host: String = ""
-    private var testMode = 0
+
+    private val containerView by lazy {
+        this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_register_dialog, null, false) as ViewGroup
+    }
+
+    override fun getView() = containerView
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        sonyControlViewModel.interfaceInformation.observe(viewLifecycleOwner, Observer {
-            //if(it.data != null && it.status==Status.SUCCESS) {
-            if(testMode > 0 && host == "192.168.178.27") {
-                //Log.d(TAG, "Product ${it.data.productName}")
-                Log.d(TAG, "Test succussful")
-                messageTextView!!.setTextColor(Color.GREEN)
-                messageTextView!!.text = "Test successful"
-                if(testMode == 2) dialog!!.dismiss()
-            }
-            else if (testMode > 0){
-                Log.d(TAG, "Test unsuccussful")
-                messageTextView!!.setTextColor(Color.RED)
-                messageTextView!!.text = "Test of host/ip unsuccessful. Try again!"
-            }
-            testMode = 0
-        })
-        return dialogView
+        addControlChallengeCodeTextView.visibility = View.GONE
+        addControlChallengeCodeEditView.visibility = View.GONE
+        return containerView
     }
 
     override fun onDestroyView() {
         // avoid leak
-        dialogView = null
         super.onDestroyView()
     }
 
@@ -73,54 +56,10 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         Log.d(TAG, "onCreateDialog")
         val dialogBuilder = AlertDialog.Builder(context!!)
         dialogBuilder.setMessage(R.string.add_control_register_title)
-        dialogView = this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false)
-        // fill device spinner
-        deviceList.add(SSDP.IpDeviceItem())
-        //sonyControlViewModel.fetchSonyIpAndDeviceList()
-        var hasSelected = false
 
         //var hostValue = ""
-        val hostEditTest = dialogView!!.findViewById(R.id.addControlIPEditText) as EditText
-        sonyIpAndDeviceListAdapter =
-            ArrayAdapter(context!!, R.layout.control_spinner_item, deviceList)
 
-        messageTextView = dialogView!!.findViewById(R.id.messageTextView) as TextView
-
-        val deviceSpinner = dialogView!!.findViewById<Spinner>(R.id.deviceSpinner)
-2
-        deviceSpinner.adapter = sonyIpAndDeviceListAdapter
-
-        deviceSpinner.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                adapterView: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if(position > 0) {
-                    Log.d(TAG, "onItemSelected $position")
-                    host = deviceList[position].ip
-                    hasSelected = true
-                    hostEditTest.setText(host)
-                }
-                //deviceSpinner.performItemClick(view, position, id)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-            }
-        }
-
-        hostEditTest.doAfterTextChanged {
-            Log.d(TAG,"doAfterTextChanged: ${deviceSpinner.selectedItemPosition} $hasSelected")
-            if(!hasSelected) {
-                deviceSpinner.setSelection(0)
-                host = hostEditTest.text.toString()
-            }
-            hasSelected = false
-        }
-
-        dialogBuilder.setView(dialogView)
+        dialogBuilder.setView(containerView)
         Log.d(TAG, " dialogBuilder.setView(dialogView)")
         dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
@@ -132,18 +71,16 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)
             neutralButton.setOnClickListener {
                 // dialog won't close by default
-                Log.d(TAG, "Test host=$host")
-                testMode = 1
-                sonyControlViewModel.fetchInterfaceInformation(host)
+                //Log.d(TAG, "Test host=$host")
             }
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                Log.d(TAG, "Test host=$host")
-                testMode = 2
-                sonyControlViewModel.fetchInterfaceInformation(host)
+                //Log.d(TAG, "Test host=$host")
             }
 
         }
+
+
 
         return dialog!!
     }

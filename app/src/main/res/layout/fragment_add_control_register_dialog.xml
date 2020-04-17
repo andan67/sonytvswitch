@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="400dp"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -14,47 +14,87 @@
         android:id="@+id/textView8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_control_host_instructions"
+        android:text="@string/add_control_register_instructions"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        tools:text="@string/add_control_host_instructions" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/add_control_host_field_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textStyle="bold" />
-
-<EditText
-    android:id="@+id/addControlIPEditText"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="end"
-    android:hint="@string/add_control_ip_hint"
-    android:inputType="text"
-    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        tools:text="@string/add_control_register_instructions" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="@string/add_control_host_discovered_devices"
+        android:text="@string/add_control_nick"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textStyle="bold" />
 
-    <Spinner
-        android:id="@+id/deviceSpinner"
+    <EditText
+        android:id="@+id/addControlNicknameEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/add_control_nick_hint"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:id="@+id/messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="@string/add_control_device"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/addControlDevicenameEditView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/add_control_device_hint"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+    <TextView
+        android:id="@+id/addControlPSKTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="@string/add_control_psk"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/addControlPSKEditView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/add_control_psk_hint"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+    <TextView
+        android:id="@+id/addControlChallengeCodeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="@string/add_control_challenge"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/addControlChallengeCodeEditView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:hint="@string/add_control_challenge_hint"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+    <TextView
+        android:id="@+id/messageTextView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text=""
         android:textColor="#C62828"
-        tools:text="Error"/>
+        tools:text="Error" />
 
 
 </LinearLayout>
