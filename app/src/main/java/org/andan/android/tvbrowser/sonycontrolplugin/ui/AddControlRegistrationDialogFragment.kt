@@ -76,6 +76,9 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 //Log.d(TAG, "Test host=$host")
+                sonyControlViewModel.addedControlParameter!!.nickname = addControlNicknameEditText.text.toString()
+                sonyControlViewModel.addedControlParameter!!.devicename = addControlDevicenameEditText.text.toString()
+                sonyControlViewModel.addedControlParameter!!.preSharedKey = addControlPSKEditText.text.toString()
             }
 
         }

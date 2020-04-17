@@ -44,7 +44,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/addControlDevicenameEditView"
+        android:id="@+id/addControlDevicenameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end"
@@ -62,7 +62,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/addControlPSKEditView"
+        android:id="@+id/addControlPSKEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end"

@@ -18,7 +18,7 @@ data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), va
     }
 }
 
-data class SonyControl(val ip: String, val nickname: String, val devicename: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
+data class SonyControl(val ip: String, val nickname: String, val devicename: String, val preSharedKey: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
 
     companion object {
         private val gson = Gson()

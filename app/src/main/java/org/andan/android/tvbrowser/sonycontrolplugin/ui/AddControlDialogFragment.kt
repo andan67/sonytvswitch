@@ -34,9 +34,9 @@ class AddControlDialogFragment : DialogFragment() {
             val devicename = (dialogView.findViewById(R.id.addControlDevicenameEditView) as EditText).text.toString()
             val sonyControl =
                 when {
-                    nickname.contains("#android", true) -> SonyControl("192.168.178.27", "android", "sony")
+                    nickname.contains("#android", true) -> SonyControl("192.168.178.27", "android", "sony", "")
                     nickname.contains("sample", true) -> SonyControl.fromJson(context!!.assets.open("SonyControl_sample.json").bufferedReader().use { it.readText() })
-                    else -> SonyControl(ip, nickname, devicename)
+                    else -> SonyControl(ip, nickname, devicename, "")
                 }
             sonyControlViewModel.addControl(sonyControl)
             val navController = activity!!.findNavController(R.id.nav_host_fragment)

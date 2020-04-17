@@ -43,6 +43,9 @@ class SonyControlViewModel : ViewModel() {
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
 
+    data class SonyControlParameter (var host: String = "", var nickname: String = "", var devicename: String = "", var preSharedKey: String = "")
+    //var addedControlParameter = SonyControlParameter()
+    var addedControlParameter: SonyControlParameter? = null
 
     private fun getSelectedControl(): SonyControl? {
         return selectedSonyControl.value
@@ -75,11 +78,6 @@ class SonyControlViewModel : ViewModel() {
 
     private val _interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
     val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
-
-    val addControlHost = ""
-    val addControlNickname = ""
-    val addControlDevicename = ""
-    val addControlPSK = ""
 
     init {
         Log.d(TAG, "init")
