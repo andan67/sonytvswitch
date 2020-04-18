@@ -132,7 +132,7 @@ class ProgramListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        sonyControlViewModel.fetchPlayingContentInfo()
+        if(sonyControlViewModel.selectedSonyControl.value!= null) sonyControlViewModel.fetchPlayingContentInfo()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
