@@ -18,7 +18,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_add_control_host_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
@@ -59,7 +58,7 @@ class AddControlHostDialogFragment : DialogFragment() {
 
         sonyControlViewModel.interfaceInformation.observe(viewLifecycleOwner, Observer {
             //if(it.data != null && it.status==Status.SUCCESS) {
-            if(testMode > 0 && sonyControlViewModel.addedControlParameter!!.host == "192.168.178.27") {
+            if(testMode > 0 && sonyControlViewModel.addedControlHostAddress == "192.168.178.27") {
                 //Log.d(TAG, "Product ${it.data.productName}")
                 Log.d(TAG, "Test succussful")
                 messageTextView!!.setTextColor(Color.GREEN)
@@ -112,7 +111,7 @@ class AddControlHostDialogFragment : DialogFragment() {
 
         deviceSpinner.adapter = sonyIpAndDeviceListAdapter
 
-        sonyControlViewModel.addedControlParameter = SonyControlViewModel.SonyControlParameter()
+        sonyControlViewModel.addedControlHostAddress = ""
 
         deviceSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -124,9 +123,9 @@ class AddControlHostDialogFragment : DialogFragment() {
             ) {
                 if(position > 0) {
                     Log.d(TAG, "onItemSelected $position")
-                    sonyControlViewModel.addedControlParameter!!.host = deviceList[position].ip
+                    sonyControlViewModel.addedControlHostAddress = deviceList[position].ip
                     hasSelected = true
-                    addControlIPEditText.setText(sonyControlViewModel.addedControlParameter!!.host)
+                    addControlIPEditText.setText(sonyControlViewModel.addedControlHostAddress)
                 }
                 //deviceSpinner.performItemClick(view, position, id)
             }
@@ -139,7 +138,7 @@ class AddControlHostDialogFragment : DialogFragment() {
             Log.d(TAG,"doAfterTextChanged: ${deviceSpinner.selectedItemPosition} $hasSelected")
             if(!hasSelected) {
                 deviceSpinner.setSelection(0)
-                sonyControlViewModel.addedControlParameter!!.host = addControlIPEditText.text.toString()
+                sonyControlViewModel.addedControlHostAddress = addControlIPEditText.text.toString()
             }
             hasSelected = false
         }
@@ -150,13 +149,13 @@ class AddControlHostDialogFragment : DialogFragment() {
                 // dialog won't close by default
                 Log.d(TAG, "Test host=$host")
                 testMode = 1
-                sonyControlViewModel.fetchInterfaceInformation(sonyControlViewModel.addedControlParameter!!.host)
+                sonyControlViewModel.fetchInterfaceInformation(sonyControlViewModel.addedControlHostAddress)
             }
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 Log.d(TAG, "Test host=$host")
                 testMode = 2
-                sonyControlViewModel.fetchInterfaceInformation(sonyControlViewModel.addedControlParameter!!.host)
+                sonyControlViewModel.fetchInterfaceInformation(sonyControlViewModel.addedControlHostAddress)
             }
 
         }

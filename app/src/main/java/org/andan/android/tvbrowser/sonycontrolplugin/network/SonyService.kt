@@ -75,7 +75,6 @@ class TokenAuthenticator @Inject constructor(
         return if (serviceClientContext.password.isEmpty() && request.url.toString()
                 .endsWith(SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT)
         ) {
-            //request.newBuilder().build()
             null
         } else {
             val updatedToken = getNewToken()
@@ -163,6 +162,11 @@ object SonyServiceUtil {
             "        </u:X_SendIRCC>\n" +
             "    </s:Body>\n" +
             "</s:Envelope>"
+    const val REGISTRATION_SUCCESSFUL = 0
+    const val REGISTRATION_REQUIRES_CHALLENGE_CODE = 1
+    const val REGISTRATION_UNAUTHORIZED = 2
+    const val REGISTRATION_FAILED = 3
+
     val gson = GsonBuilder().create()
 
     inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Resource<T> {

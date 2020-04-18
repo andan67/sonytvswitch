@@ -32,6 +32,7 @@ class SonyControlViewModel : ViewModel() {
     private val sonyControlRepository: SonyControlRepository = SonyControlApplication.get().appComponent.sonyRepository()
 
     val requestErrorMessage = sonyControlRepository.responseMessage
+    val registrationResult = sonyControlRepository.registrationResult
 
     var isCreated: Boolean = false
 
@@ -43,9 +44,7 @@ class SonyControlViewModel : ViewModel() {
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
 
-    data class SonyControlParameter (var host: String = "", var nickname: String = "", var devicename: String = "", var preSharedKey: String = "")
-    //var addedControlParameter = SonyControlParameter()
-    var addedControlParameter: SonyControlParameter? = null
+    var addedControlHostAddress: String =""
 
     private fun getSelectedControl(): SonyControl? {
         return selectedSonyControl.value
@@ -252,10 +251,6 @@ class SonyControlViewModel : ViewModel() {
         }
     }
 
-    fun registerControl() {
-        registerControl(null)
-    }
-
     fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.wakeOnLan()
     }
@@ -277,13 +272,21 @@ class SonyControlViewModel : ViewModel() {
         _sonyIpAndDeviceList.postValue(list)
     }
 
+    fun registerControl() {
+        registerControl(null)
+    }
+
     fun registerControl(challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.registerControl(challenge)
+    }
+
+    fun postRegistrationFetches() = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.fetchRemoteControllerInfo()
         sonyControlRepository.fetchSourceList()
         sonyControlRepository.setWolMode(true)
         sonyControlRepository.fetchWolMode()
         sonyControlRepository.fetchSystemInformation()
+        sonyControlRepository.fetchProgramList()
     }
 
     fun setPowerSavingMode(mode: String) = viewModelScope.launch(Dispatchers.IO) {

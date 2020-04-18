@@ -17,6 +17,10 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.REGISTRATION_FAILED
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.REGISTRATION_REQUIRES_CHALLENGE_CODE
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.REGISTRATION_SUCCESSFUL
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.gson
 import java.net.HttpURLConnection
@@ -51,6 +55,10 @@ class SonyControlRepository @Inject constructor(
     private val _responseMessage = MutableLiveData<Event<String>>()
     val responseMessage: LiveData<Event<String>>
         get() = _responseMessage
+
+    private val _registrationResult = MutableLiveData<Event<Int>>()
+    val registrationResult: LiveData<Event<Int>>
+        get() = _registrationResult
 
     private fun onSonyControlsChange() {
         sonyServiceContext.sonyService = api
@@ -259,6 +267,7 @@ class SonyControlRepository @Inject constructor(
                 if (challenge != null) {
                     sonyServiceContext.password = challenge
                 }
+                sonyServiceContext.preSharedKey = it.preSharedKey
                 try {
                     val response = api.sonyRpcService(
                         "http://" + it.ip + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT,
@@ -278,21 +287,21 @@ class SonyControlRepository @Inject constructor(
                                 preferenceStore.storeToken(it.uuid, "auth=" + matcher.group(1))
                             }
                         }
+                        _registrationResult.postValue(Event(REGISTRATION_SUCCESSFUL))
                     } else {
                         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             // Navigate to enter challenge code view
-                            _responseMessage.postValue(Event(response.message()))
+                            if(getSelectedControl()!!.preSharedKey.isNullOrEmpty()) {
+                                _registrationResult.postValue(Event(REGISTRATION_REQUIRES_CHALLENGE_CODE))
+                                }
+                            else _registrationResult.postValue(Event(REGISTRATION_UNAUTHORIZED))
                         } else {
-                            _responseMessage.postValue(Event(response.message()))
+                            _registrationResult.postValue(Event(REGISTRATION_FAILED))
                         }
                     }
                 } catch (se: SocketTimeoutException) {
                     Log.e(TAG, "Error: ${se.message}")
-                    _responseMessage.postValue(
-                        Event(
-                            se.message ?: "Unknown exception in registerControl"
-                        )
-                    )
+                    _registrationResult.postValue(Event(REGISTRATION_FAILED))
                 }
                 sonyServiceContext.password = ""
             }
