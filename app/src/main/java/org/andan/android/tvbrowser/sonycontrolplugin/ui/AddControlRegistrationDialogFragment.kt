@@ -20,8 +20,11 @@ import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.fragment_add_control_register_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_FAILED
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_REQUIRES_CHALLENGE_CODE
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_SUCCESSFUL
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
@@ -52,11 +55,11 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         addControlChallengeCodeEditView.visibility = View.GONE
 
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
-            EventObserver<Int> {
+            EventObserver<RegistrationStatus> {
                 Log.d(TAG, "observed requestError")
 
-                when (it) {
-                    SonyServiceUtil.REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
+                when (it.code) {
+                    REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
                         addControlPSKTextView.visibility = View.GONE
                         addControlPSKEditText.visibility = View.GONE
                         addControlChallengeCodeTextView.visibility = View.VISIBLE
@@ -66,16 +69,17 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         messageTextView.text = getString(R.string.dialog_enter_challenge_code_title)
                         mode = 1
                     }
-                    SonyServiceUtil.REGISTRATION_UNAUTHORIZED -> {
+                    REGISTRATION_UNAUTHORIZED -> {
                         messageTextView.text = getString(R.string.add_control_register_unauthorized_challenge_message)
                         mode = 2
                     }
-                    SonyServiceUtil.REGISTRATION_FAILED -> {
-                        messageTextView.text = getString(R.string.add_control_register_failed_message)
+                    REGISTRATION_FAILED -> {
+                        //messageTextView.text = getString(R.string.add_control_register_failed_message)
+                        messageTextView.text = it.message
                         dialog!!.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                         mode = 3
                     }
-                    SonyServiceUtil.REGISTRATION_SUCCESSFUL -> {
+                    REGISTRATION_SUCCESSFUL -> {
                         sonyControlViewModel.postRegistrationFetches()
                         dialog!!.dismiss()
                     }
@@ -99,7 +103,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         dialogBuilder.setView(containerView)
         Log.d(TAG, " dialogBuilder.setView(dialogView)")
-        dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
+        dialogBuilder.setPositiveButton(R.string.add_control_register_pos, null)
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ ->
             sonyControlViewModel.deleteSelectedControl()
             dialog.cancel() }

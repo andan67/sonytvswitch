@@ -191,9 +191,11 @@
     </string>
     <string name="add_control_register_unauthorized_challenge_message">Registration error. Please retry.</string>
     <string name="add_control_register_unauthorized_psk_message">Registration error. Please retry.</string>
-    <string name="add_control_register_failed_message">Registration failed for unknown reasons. Close this dialog to cancel action.</string>
+    <string name="add_control_register_failed_message">Registration failed:</string>
     <string name="add_control_register_neg">Cancel</string>
-    <string name="add_control_gesiter_pos">Finish</string>
+    <string name="add_control_register_pos">Finish</string>
+
+
 
 
 </resources>

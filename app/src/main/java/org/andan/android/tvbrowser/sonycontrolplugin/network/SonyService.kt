@@ -147,6 +147,15 @@ class SonyServiceClientContext(
     var preSharedKey: String = ""
 )
 
+data class RegistrationStatus(val code: Int, val message: String) {
+    companion object {
+        const val REGISTRATION_SUCCESSFUL = 0
+        const val REGISTRATION_REQUIRES_CHALLENGE_CODE = 1
+        const val REGISTRATION_UNAUTHORIZED = 2
+        const val REGISTRATION_FAILED = 3
+    }
+}
+
 object SonyServiceUtil {
     const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
     const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
@@ -162,10 +171,6 @@ object SonyServiceUtil {
             "        </u:X_SendIRCC>\n" +
             "    </s:Body>\n" +
             "</s:Envelope>"
-    const val REGISTRATION_SUCCESSFUL = 0
-    const val REGISTRATION_REQUIRES_CHALLENGE_CODE = 1
-    const val REGISTRATION_UNAUTHORIZED = 2
-    const val REGISTRATION_FAILED = 3
 
     val gson = GsonBuilder().create()
 
