@@ -1,27 +1,22 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
-import android.graphics.Color
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.RenderProcessGoneDetail
-import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.fragment_add_control_register_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
-import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_FAILED
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_FATAL
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_NON_FATAL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_REQUIRES_CHALLENGE_CODE
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_SUCCESSFUL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
@@ -56,7 +51,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
             EventObserver<RegistrationStatus> {
-                Log.d(TAG, "observed requestError")
+                Log.d(TAG, "observed $it")
 
                 when (it.code) {
                     REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
@@ -73,7 +68,12 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         messageTextView.text = getString(R.string.add_control_register_unauthorized_challenge_message)
                         mode = 2
                     }
-                    REGISTRATION_FAILED -> {
+                    REGISTRATION_ERROR_NON_FATAL -> {
+                        //messageTextView.text = getString(R.string.add_control_register_failed_message)
+                        messageTextView.text = it.message
+                        mode = 2
+                    }
+                    REGISTRATION_ERROR_FATAL -> {
                         //messageTextView.text = getString(R.string.add_control_register_failed_message)
                         messageTextView.text = it.message
                         dialog!!.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
@@ -81,6 +81,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                     }
                     REGISTRATION_SUCCESSFUL -> {
                         sonyControlViewModel.postRegistrationFetches()
+                        val navController = activity!!.findNavController(R.id.nav_host_fragment)
+                        navController.navigate(R.id.nav_manage_control)
                         dialog!!.dismiss()
                     }
                 }
@@ -107,7 +109,6 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ ->
             sonyControlViewModel.deleteSelectedControl()
             dialog.cancel() }
-        dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
 
         dialog = dialogBuilder.create()
 
@@ -137,7 +138,11 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
                     }
                     2 -> {
-                        sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
+                        if(!addControlPSKEditText!!.text!!.toString().isNullOrEmpty()) {
+                            sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
+                            sonyControlViewModel.registerControl()
+                        }
+                        else sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
                     }
                 }
             }

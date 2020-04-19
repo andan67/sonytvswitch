@@ -17,7 +17,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
-import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_FAILED
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_FATAL
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_NON_FATAL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_REQUIRES_CHALLENGE_CODE
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_SUCCESSFUL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
@@ -276,7 +277,8 @@ class SonyControlRepository @Inject constructor(
                     if (response.isSuccessful) {
                         val jsonRpcResponse = response.body()
                         if (jsonRpcResponse?.error != null) {
-                            _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_FAILED, jsonRpcResponse.error.asJsonArray.get(1).asString)))
+                            _registrationResult.postValue(Event(RegistrationStatus(
+                                REGISTRATION_ERROR_NON_FATAL, jsonRpcResponse.error.asJsonArray.get(1).asString)))
                         } else if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
                             // get token from set cookie and store
                             val cookieString: String? = response.headers()["Set-Cookie"]
@@ -285,8 +287,8 @@ class SonyControlRepository @Inject constructor(
                             if (matcher.find()) {
                                 preferenceStore.storeToken(it.uuid, "auth=" + matcher.group(1))
                             }
+                            _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, "" )))
                         }
-                        _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, "" )))
                     } else {
                         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             // Navigate to enter challenge code view
@@ -295,12 +297,13 @@ class SonyControlRepository @Inject constructor(
                                 }
                             else _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message())))
                         } else {
-                            _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_FAILED, response.message())))
+                            _registrationResult.postValue(Event(RegistrationStatus(
+                                REGISTRATION_ERROR_NON_FATAL, response.message())))
                         }
                     }
                 } catch (se: SocketTimeoutException) {
                     Log.e(TAG, "Error: ${se.message}")
-                    _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_FAILED, se.message?: "Unknown failure")))
+                    _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_ERROR_FATAL, se.message?: "Unknown failure")))
                 }
                 sonyServiceContext.password = ""
             }

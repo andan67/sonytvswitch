@@ -72,6 +72,9 @@ class TokenAuthenticator @Inject constructor(
         Log.d(TAG, "authenticate(): ${serviceClientContext.nickname}")
         val request = response.request
         //bypass authenticator for registration endpoint
+        if (response.request.header("Authorization") != null) {
+            return null // Give up, we've already attempted to authenticate.
+        }
         return if (serviceClientContext.password.isEmpty() && request.url.toString()
                 .endsWith(SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT)
         ) {
@@ -152,7 +155,8 @@ data class RegistrationStatus(val code: Int, val message: String) {
         const val REGISTRATION_SUCCESSFUL = 0
         const val REGISTRATION_REQUIRES_CHALLENGE_CODE = 1
         const val REGISTRATION_UNAUTHORIZED = 2
-        const val REGISTRATION_FAILED = 3
+        const val REGISTRATION_ERROR_NON_FATAL = 3
+        const val REGISTRATION_ERROR_FATAL = 4
     }
 }
 
