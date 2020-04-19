@@ -7,6 +7,9 @@
     - Navigate to enter challenge code view
     - Enter challenge code
     - Send request with nickname, devicename, no token, entered challenge code
+    - If challenge code was wrong
+      - Registration canceled
+      - New registration required with new challenge code
 - Result OK
   - Response contains auth token in Set-Cookie header
   - Any further request can be performed using nickname, devicename, token

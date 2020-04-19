@@ -79,7 +79,7 @@ class SonyControlRepository @Inject constructor(
         this.postValue(this.value)
     }
 
-    private fun getSelectedControl(): SonyControl? {
+    fun getSelectedControl(): SonyControl? {
         return if (sonyControls.value!!.selected >= 0 && sonyControls.value!!.selected <= sonyControls.value!!.controls.size - 1) {
             sonyControls.value!!.controls[sonyControls.value!!.selected]
         } else null
@@ -292,7 +292,7 @@ class SonyControlRepository @Inject constructor(
                     } else {
                         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             // Navigate to enter challenge code view
-                            if(getSelectedControl()!!.preSharedKey.isNullOrEmpty()) {
+                            if(getSelectedControl()!!.preSharedKey.isNullOrEmpty() && challenge.isNullOrEmpty()) {
                                 _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_REQUIRES_CHALLENGE_CODE, response.message())))
                                 }
                             else _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message())))

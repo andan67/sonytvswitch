@@ -81,11 +81,15 @@ class TVBrowserSonyIPControlPlugin : Service() {
                             .channelName
                     )
                     try {
-                        val programUri =
-                            sonyControlRepository.selectedSonyControl.value!!.channelProgramMap[program.channel.channelName]
-                        GlobalScope.launch(Dispatchers.IO) {
-                            sonyControlRepository.setPlayContent(programUri!!)
-                            Log.i(TAG, "Switched to program uri:$programUri")
+                        if(sonyControlRepository.getSelectedControl()!=null) {
+                            val programUri =
+                                sonyControlRepository.getSelectedControl()!!.channelProgramMap[program.channel.channelName]
+                            if (!programUri.isNullOrEmpty()) {
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    sonyControlRepository.setPlayContent(programUri!!)
+                                    Log.i(TAG, "Switched to program uri:$programUri")
+                                }
+                            }
                         }
                     } catch (ex: java.lang.Exception) {
                         Log.e(TAG, ex.message)

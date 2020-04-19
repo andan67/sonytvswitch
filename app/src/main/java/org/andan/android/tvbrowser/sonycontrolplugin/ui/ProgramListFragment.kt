@@ -50,6 +50,7 @@ class ProgramListFragment : Fragment() {
         )
         val view = binding.root
         binding.lifecycleOwner = this
+        sonyControlViewModel.onSelectedIndexChange()
 
         val fab: FloatingActionButton = view.findViewById(R.id.listProgramFab)
         fab.setOnClickListener { view ->

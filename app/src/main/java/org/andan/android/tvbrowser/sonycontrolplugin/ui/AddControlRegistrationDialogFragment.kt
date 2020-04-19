@@ -40,14 +40,21 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
     override fun getView() = containerView
 
+    private fun initView() {
+        addControlPSKTextView.visibility = View.VISIBLE
+        addControlPSKEditText.visibility = View.VISIBLE
+        addControlPSKEditText.text.clear()
+        addControlChallengeCodeTextView.visibility = View.GONE
+        addControlChallengeCodeEditView.visibility = View.GONE
+        addControlChallengeCodeEditView.text.clear()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        addControlChallengeCodeTextView.visibility = View.GONE
-        addControlChallengeCodeEditView.visibility = View.GONE
+        initView()
 
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
             EventObserver<RegistrationStatus> {
@@ -55,6 +62,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
                 when (it.code) {
                     REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
+                        // original request without pre-shared key
                         addControlPSKTextView.visibility = View.GONE
                         addControlPSKEditText.visibility = View.GONE
                         addControlChallengeCodeTextView.visibility = View.VISIBLE
@@ -112,6 +120,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         dialog = dialogBuilder.create()
 
+        addControlChallengeCodeEditView.validate("Enter 4 digits") { s -> "d{4}".toRegex().matches(s)}
+        addControlPSKEditText.validate("Enter non emtpy string") { s -> s.isNotEmpty()}
         mode = 0
         dialog!!.setOnShowListener {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)
@@ -138,6 +148,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
                     }
                     2 -> {
+                        mode = 0
                         if(!addControlPSKEditText!!.text!!.toString().isNullOrEmpty()) {
                             sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
                             sonyControlViewModel.registerControl()

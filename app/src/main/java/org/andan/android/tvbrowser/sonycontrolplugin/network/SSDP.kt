@@ -26,9 +26,9 @@ object SSDP {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        //val responseList = getSsdpResponses()
-        //responseList.forEach { println(it) }
-        getSonyIpAndDeviceList().forEach { println(it) }
+        val responseList = getSsdpResponses()
+        responseList.forEach { println(it) }
+        //getSonyIpAndDeviceList().forEach { println(it) }
     }
 
     fun getSonyIpAndDeviceList(): List<IpDeviceItem> {
