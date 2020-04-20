@@ -3,21 +3,15 @@ package org.andan.android.tvbrowser.sonycontrolplugin.network
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import okhttp3.*
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
 import java.net.HttpURLConnection.HTTP_OK
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 

@@ -264,10 +264,10 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun fetchSonyIpAndDeviceList() = viewModelScope.launch(Dispatchers.IO) {
-        //val list = sonyControlRepository.getSonyIpAndDeviceList()
-        val list = listOf<SSDP.IpDeviceItem>(
+        val list = sonyControlRepository.getSonyIpAndDeviceList()
+       /* val list = listOf<SSDP.IpDeviceItem>(
             SSDP.IpDeviceItem("192.168.178.27", "BRAVIA KDL-50W656A"),
-            SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))
+            SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))*/
         Log.d(TAG, "fetchSonyIpAndDeviceList(): $list")
         _sonyIpAndDeviceList.postValue(list)
     }
