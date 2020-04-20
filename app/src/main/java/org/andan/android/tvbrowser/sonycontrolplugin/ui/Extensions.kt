@@ -17,12 +17,18 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
     })
 }
 
-fun EditText.validate(message: String, validator: (String) -> Boolean) {
+fun EditText.validate(message: String, validator: (String) -> Boolean): Boolean {
 
-    this.afterTextChanged {
+    /*this.afterTextChanged {
         this.error = if (validator(it) || !this.hasFocus()) null else message
+    }*/
+    return if (validator(this.text.toString())) {
+        this.error = null
+        true
+    } else {
+        this.error=message
+        false
     }
-    //this.error = if (validator(this.text.toString()) || !this.hasFocus() ) null else message
 }
 
 fun String.isValidEmail(): Boolean

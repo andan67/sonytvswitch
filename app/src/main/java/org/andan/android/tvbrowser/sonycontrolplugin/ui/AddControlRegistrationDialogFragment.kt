@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -49,6 +50,12 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         addControlChallengeCodeEditView.text.clear()
     }
 
+    private fun isInputValid() : Boolean {
+        return (addControlNicknameEditText.validate("Enter non empty string ") { s -> s.isNotEmpty() }
+                .and(addControlDevicenameEditText.validate("Enter non empty string ") { s -> s.isNotEmpty() })
+                .and((mode != 1).or(addControlChallengeCodeEditView.validate("Enter 4 digits") { s -> "\\d{4}".toRegex().matches(s) })))
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,6 +74,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         addControlPSKEditText.visibility = View.GONE
                         addControlChallengeCodeTextView.visibility = View.VISIBLE
                         addControlChallengeCodeEditView.visibility = View.VISIBLE
+                        addControlChallengeCodeEditView.requestFocus()
                         addControlNicknameEditText.isEnabled = false
                         addControlDevicenameEditText.isEnabled = false
                         messageTextView.text = getString(R.string.dialog_enter_challenge_code_title)
@@ -74,11 +82,13 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                     }
                     REGISTRATION_UNAUTHORIZED -> {
                         messageTextView.text = getString(R.string.add_control_register_unauthorized_challenge_message)
+                        initView()
                         mode = 2
                     }
                     REGISTRATION_ERROR_NON_FATAL -> {
                         //messageTextView.text = getString(R.string.add_control_register_failed_message)
                         messageTextView.text = it.message
+                        initView()
                         mode = 2
                     }
                     REGISTRATION_ERROR_FATAL -> {
@@ -120,8 +130,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         dialog = dialogBuilder.create()
 
-        addControlChallengeCodeEditView.validate("Enter 4 digits") { s -> "d{4}".toRegex().matches(s)}
-        addControlPSKEditText.validate("Enter non emtpy string") { s -> s.isNotEmpty()}
+        //addControlChallengeCodeEditView.validate("Enter 4 digits") { s -> "d{4}".toRegex().matches(s)}
+        //addControlPSKEditText.validate("Enter non emtpy string") { s -> s.isNotEmpty()}
         mode = 0
         dialog!!.setOnShowListener {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)
@@ -132,28 +142,32 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 //Log.d(TAG, "Test host=$host")
-                when (mode) {
-                    0 -> {
-                        addedControl = SonyControl(
-                            sonyControlViewModel.addedControlHostAddress,
-                            addControlNicknameEditText.text.toString(),
-                            addControlDevicenameEditText.text.toString(),
-                            addControlPSKEditText.text.toString()
-                        )
-                        sonyControlViewModel.addControl(addedControl!!)
-                        // call registration
-                        sonyControlViewModel.registerControl()
-                    }
-                    1 -> {
-                        sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
-                    }
-                    2 -> {
-                        mode = 0
-                        if(!addControlPSKEditText!!.text!!.toString().isNullOrEmpty()) {
-                            sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
+                // validate
+                if(isInputValid()) {
+                    when (mode) {
+                        0 -> {
+                            addedControl = SonyControl(
+                                sonyControlViewModel.addedControlHostAddress,
+                                addControlNicknameEditText.text.toString(),
+                                addControlDevicenameEditText.text.toString(),
+                                addControlPSKEditText.text.toString()
+                            )
+                            sonyControlViewModel.addControl(addedControl!!)
+                            // call registration
                             sonyControlViewModel.registerControl()
                         }
-                        else sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
+                        1 -> {
+                            sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
+                        }
+                        2 -> {
+                            mode = 0
+                            if (!addControlPSKEditText!!.text!!.toString().isNullOrEmpty()) {
+                                sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
+                                sonyControlViewModel.registerControl()
+                            } else sonyControlViewModel.registerControl(
+                                addControlChallengeCodeEditView.text.toString()
+                            )
+                        }
                     }
                 }
             }
