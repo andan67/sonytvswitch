@@ -1,0 +1,201 @@
+<resources>
+    <string name="app_name_title">Application name</string>
+    <string name="app_name">Sony TV Switch</string>
+    <string name="nav_header_title">Sony TV Switch</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+
+    <string name="pref_app_version_title">Version</string>
+    <string name="service_sonycontrol_name">Switch for Sony TV</string>
+    <string name="service_sonycontrol_description">Switch to Sony TV channel from program menu.</string>
+    <string name="service_sonycontrol_context_menu">Switch to channel</string>
+
+    <string name="service_sonycontrol_pref_title">Sony Switch Plugin Preferences</string>
+
+    <string name="sonycontrol_title">Sony IP Control Settings</string>
+    <string name="sonycontrol_details_title">Sony IP Control Details</string>
+
+    <string name="channel_mapping_dialog_set_active_control">Use control:</string>
+    <string name="channel_mapping_dialog_help_text">Short click on item to map channel, long click to switch TV to mapped channel</string>
+
+
+    <string name="pref_control_file_key">SONYIPCONTROL_PREFERENCES</string>
+    <string name="pref_new_control_file_key">NEW_SONYIPCONTROL_PREFERENCES</string>
+    <string name="pref_channel_switch_file_key">CHANNEL_SWITCH_PREFERENCES</string>
+
+    <string name="pref_remote_cat">Control Device Settings</string>
+    <string name="pref_remote_title">Sony IP Remote Control</string>
+    <string name="pref_remote_summary">Set remote control for Sony TV </string>
+
+    <string name="pref_channel_switch_cat">Channel Switch Settings</string>
+
+    <string name="pref_map_channel_title">Select control and map channel</string>
+    <string name="pref_map_channel_summary">Select control and map TV Browser channels to TV channel number</string>
+    <string name="pref_map_channel_key">channel_map_key</string>
+
+    <string name="pref_basic_preferences">About</string>
+
+    <string name="pref_copyright_title">Copyright</string>
+    <string name="pref_copyright">&#169; 2019 by andan</string>
+
+    <string name="pref_app_license_title">License</string>
+    <string name="pref_app_license_summary">Show license information</string>
+
+    <string name="license"><![CDATA[<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+  and associated documentation files (the "Software"), to use, copy, modify or merge the Software,
+  furthermore to publish and distribute the Software free of charge without modifications and to permit persons
+  to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+  <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+  <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<p>]]></string>
+    <string name="pref_channel_switch_category">CHANNEL_SWITCH_CATEGORY</string>
+
+    <string name="manage_control_host_name">Host address</string>
+    <string name="manage_control_nick_name">Nick name</string>
+    <string name="manage_control_device_name">Device name</string>
+    <string name="manage_control_uuid">UUID</string>
+    <string name="manage_control_cookie">Cookie</string>
+    <string name="manage_control_cookie_expire">Cookie expiry date</string>
+    <string name="manage_control_number_programs">Number of TV programs</string>
+    <string name="manage_control_model">Model</string>
+    <string name="manage_control_mac">MAC address</string>
+    <string name="manage_control_wol_mode">Wake on LAN enabled</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="register_control_action">Register control</string>
+    <string name="delete_control_action">Delete control</string>
+    <string name="wol_action">Wake on LAN</string>
+    <string name="screen_off_action">Power saving - screen off</string>
+    <string name="screen_on_action">Power saving - off</string>
+    <string name="get_tv_program_list_action">Request program list</string>
+    <string name="enable_wol_action">Enable Wake-on-LAN</string>
+    <string name="channel_map_select_program_text">Best matches, click item to change mapping</string>
+    <string name="channel_map_select_program_id_text">Or set program id from program list</string>
+    <string name="channel_map_select_code_text">Code:</string>
+    <string name="channel_map_select_code_hint">Enter channel code</string>
+    <string name="control_challenge_code">4 digit challenge code</string>
+    <string name="dialog_set">Set</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_match_programs">Match with programs</string>
+    <string name="menu_clear_mappings">Clear all mappings</string>
+    <string name="menu_map_reset">Reset</string>
+    <string name="menu_map_unmap">Unmap</string>
+
+
+
+    <string name="menu_add_control">Add control</string>
+    <string name="menu_manage_control">Manage control</string>
+    <string name="menu_send_command">Control commands</string>
+    <string name="menu_show_programs">TV program list</string>
+    <string name="menu_channel_map">TV Browser channel map</string>
+    <string name="menu_channel_map_fragment_label">TV Browser channel map</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About</string>
+    <string name="menu_test">Test</string>
+
+
+    <string name="channel_map_display_number">#%1$s</string>
+    <string name="channel_map_code_number">#%1$d</string>
+    <string name="channel_map_empty"></string>
+    <string name="channel_map_unmapped">Unmapped</string>
+
+    <string name="not_applicable">n/a</string>
+    <string name="no_mapping">no mapping</string>
+    <string name="app_title">Sony TV Switch</string>
+
+    <string name="alert_no_active_control_title">No active control!</string>
+    <string name="alert_no_active_control_message">Control must be added first</string>
+
+    <string name="alert_no_channels_title">No channels!</string>
+    <string name="alert_no_channels_message">Channels must be get from TV Browser first by opening the plugin settings</string>
+
+    <string name="alert_no_programs_title">No programs!</string>
+    <string name="alert_no_programs_message">Programs must be requested from TV first using the Manage Control menu entry</string>
+
+    <string name="dialog_enter_challenge_code_title">Enter challenge code from TV screen</string>
+
+    <string name="toast_program_list_received">Received TV program list</string>
+
+    <string name="toast_channel_map_matched">Channels matched</string>
+    <string name="toast_channel_map_program_cleared">Program id mappings cleared</string>
+    <string name="toast_channel_map_code_cleared">Code mappings cleared</string>
+    <string name="menu_remote_control">Remote control</string>
+    <string name="channel_map_label">Map channel</string>
+    <string name="pref_about">About</string>
+    <string name="pref_basic">Usage</string>
+    <string name="pref_start_screen_title">Start screen</string>
+    <string name="toast_control_registered">Registered control</string>
+    <string name="active_program_title">Title</string>
+    <string name="active_program_dispNumber">Display number</string>
+    <string name="active_program_program_title">Program title</string>
+    <string name="active_program_start_time">Start time</string>
+    <string name="active_program_duration">Duration (min)</string>
+    <string name="active_program_source">Source</string>
+    <string name="active_program_mediaType">Media type</string>
+    <string name="active_program_fragment_label">Current program</string>
+    <string name="active_program_end_time">End time</string>
+
+
+    <string name="instructions_title">Instructions</string>
+
+    <string name="add_control_ip">Host address</string>
+    <string name="add_control_ip_hint">Enter host address of your TV</string>
+
+    <string name="add_control_nick">Nick name</string>
+    <string name="add_control_nick_hint">Enter nickname of your control</string>
+
+    <string name="add_control_device">Device name</string>
+    <string name="add_control_device_hint">Enter name of your device</string>
+
+    <string name="add_control_psk">Pre-shared key (optional)</string>
+    <string name="add_control_psk_hint">Enter pre-shared of TV key if defined</string>
+
+    <string name="add_control_challenge">Challenge code as displayed on TV screen</string>
+    <string name="add_control_challenge_hint">4 digit challenge code</string>
+
+    <string name="add_control_host_title">Define Host/IP address</string>
+    <string name="add_control_host_instructions">
+        \u25BA Switch on TV
+        \n\u25BA Enter host/IP address of TV or
+        \n\u25BA Select discovered device (if found) from drop down box
+        \n\u25BA Click next
+        \n\u25BA See [Help] menu for more information
+    </string>
+    <string name="add_control_host_field_title">Host/IP address</string>
+    <string name="add_control_host_discovered_devices">Discovered devices</string>
+    <string name="add_control_host_neu">Test</string>
+    <string name="add_control_host_neg">Cancel</string>
+    <string name="add_control_host_pos">Next</string>
+    <string name="simple_service_discovery">Discover Sony devices</string>
+
+    <string name="add_control_register_title">Register control</string>
+    <string name="add_control_register_instructions">
+        \u25BA Enter nickname for the control and a device name
+        \n\u25BA Enter pre-shared key as defined for your TV (optional)
+        \n\u25BA Click finish
+        \n\u25BA Possibly enter challenge code and click finish
+        \n\u25BA See [Help] menu for more information
+    </string>
+    <string name="add_control_register_unauthorized_challenge_message">Registration error. Please retry.</string>
+    <string name="add_control_register_unauthorized_psk_message">Registration error. Please retry.</string>
+    <string name="add_control_register_failed_message">Registration failed:</string>
+    <string name="add_control_register_neg">Cancel</string>
+    <string name="add_control_register_pos">Finish</string>
+
+
+
+
+</resources>

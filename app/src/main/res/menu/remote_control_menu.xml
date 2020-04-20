@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.andan.android.tvbrowser.sonycontrolplugin.MainActivity">
+
+    <item
+        android:id="@+id/wake_on_lan"
+        android:orderInCategory="10"
+        android:title="@string/wol_action" />
+
+    <item
+        android:id="@+id/screen_off"
+        android:orderInCategory="10"
+        android:title="@string/screen_off_action" />
+
+    <item
+        android:id="@+id/screen_on"
+        android:orderInCategory="10"
+        android:title="@string/screen_on_action" />
+
+</menu>

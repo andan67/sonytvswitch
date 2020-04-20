@@ -1,0 +1,50 @@
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/pref_basic">
+
+        <ListPreference
+            android:key="pref_start_screen"
+            android:title="@string/pref_start_screen_title"
+            android:defaultValue="@string/pref_start_screen_value_programs"
+            android:entries="@array/pref_start_screen_labels"
+            android:entryValues="@array/pref_start_screen_values"
+            android:summary="%s"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="@string/pref_about">
+
+        <Preference
+            android:key="pref_app_name"
+            android:selectable="false"
+            android:title="@string/app_name_title"
+            android:summary="@string/app_name"/>
+
+        <Preference
+            android:key="pref_app_version"
+            android:selectable="false"
+            android:title="@string/pref_app_version_title"
+            android:summary="@string/app_version"/>
+
+        <Preference
+            android:key="copyright"
+            android:selectable="false"
+            android:title="@string/pref_copyright_title"
+            android:summary="@string/pref_copyright"/>
+
+        <Preference
+            android:key="license"
+            android:selectable="true"
+            android:title="@string/pref_app_license_title"
+            android:summary="@string/pref_app_license_summary"/>
+
+
+    </PreferenceCategory>
+
+
+</androidx.preference.PreferenceScreen>

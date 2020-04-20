@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
+    </data>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey_900">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_control_host_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailIPValueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.ip}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="192.168.178.27" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_nick_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailNicknameValueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.nickname}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_device_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailDevicenameValueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.devicename.replace('\n','x')}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="sample device" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_uuid"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailUuidValueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.uuid}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_model"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailSystemModel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.systemModel}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_mac"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailSystemMacAddr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.selectedSonyControl.systemMacAddr}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_wol_mode"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailSystemWolMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{Boolean.toString(sonyControlViewModel.selectedSonyControl.systemWolMode)}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/manage_control_number_programs"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/controlDetailNumberOfProgramsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{Integer.toString(sonyControlViewModel.selectedSonyControl.programList.size())}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

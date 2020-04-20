@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey_900">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <TextView
+                android:id="@+id/currentProgramTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/active_program_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramTitleValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="@{sonyControlViewModel.playingContentInfo.title}" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramTitleDispNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_dispNumber"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramTitleDispNumberValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.dispNum}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramTitleDispProgram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_program_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramTitleDispProgramValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.programTitle}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_start_time"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramStartValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.startDateTimeFormatted}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_end_time"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramEndValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.endDateTimeFormatted}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_duration"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramDurationValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{Long.toString(sonyControlViewModel.playingContentInfo.durationSec/60)}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramSource"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_source"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramSourceValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.source}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+            <TextView
+                android:id="@+id/currentProgramMediaType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="@string/active_program_mediaType"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentProgramMediaTypeValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@{sonyControlViewModel.playingContentInfo.programMediaType}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <View style="@style/Divider"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

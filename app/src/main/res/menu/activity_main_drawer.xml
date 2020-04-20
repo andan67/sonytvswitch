@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <group
+        android:id="@+id/menu_control"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_remote_control"
+            android:icon="@drawable/ic_settings_remote"
+            android:title="@string/menu_remote_control" />
+        <item
+            android:id="@+id/nav_program_list"
+            android:icon="@drawable/ic_action_tv"
+            android:title="@string/menu_show_programs" />
+    </group>
+    <group
+        android:id="@+id/menu_manage"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_add_control"
+            android:icon="@drawable/ic_action_add"
+            android:title="@string/menu_add_control" />
+        <item
+            android:id="@+id/nav_add_control_host"
+            android:icon="@drawable/ic_action_add"
+            android:title="Add control new" />
+        <item
+            android:id="@+id/nav_manage_control"
+            android:icon="@drawable/ic_action_edit"
+            android:title="@string/menu_manage_control" />
+        <item
+            android:id="@+id/nav_channel_list"
+            android:icon="@drawable/ic_widget_simple"
+            android:title="@string/menu_channel_map" />
+    </group>
+    <group
+        android:id="@+id/menu_misc"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help_outline"
+            android:title="@string/menu_help" />
+    </group>
+</menu>
