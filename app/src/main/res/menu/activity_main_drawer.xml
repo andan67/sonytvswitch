@@ -18,13 +18,9 @@
         android:id="@+id/menu_manage"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_add_control"
-            android:icon="@drawable/ic_action_add"
-            android:title="@string/menu_add_control" />
-        <item
             android:id="@+id/nav_add_control_host"
             android:icon="@drawable/ic_action_add"
-            android:title="Add control new" />
+            android:title="@string/menu_add_control" />
         <item
             android:id="@+id/nav_manage_control"
             android:icon="@drawable/ic_action_edit"
