@@ -15,7 +15,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewM
  * A simple [Fragment] subclass.
  */
 class ActiveProgramDetailsFragment : Fragment() {
-    private val TAG = ActiveProgramDetailsFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

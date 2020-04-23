@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -10,12 +9,12 @@ import androidx.fragment.app.activityViewModels
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentRemoteControlBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class RemoteControlFragment : Fragment() {
-    private val TAG = RemoteControlFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +38,7 @@ class RemoteControlFragment : Fragment() {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
             alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
-            Log.d(TAG,"No active control")
+            Timber.d("No active control")
             alertDialogBuilder.setPositiveButton(
                 resources.getString(R.string.dialog_ok)
             ) { dialog, arg1 -> dialog.dismiss() }

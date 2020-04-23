@@ -2,12 +2,10 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -23,13 +21,12 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class AddControlRegistrationDialogFragment : DialogFragment() {
-
-    private val TAG = AddControlRegistrationDialogFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var dialog: AlertDialog? = null
     private var addedControl: SonyControl? = null
@@ -65,7 +62,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
             EventObserver<RegistrationStatus> {
-                Log.d(TAG, "observed $it")
+                Timber.d("observed $it")
 
                 when (it.code) {
                     REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
@@ -115,14 +112,14 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.d(TAG, "onCreateDialog")
+        Timber.d("onCreateDialog")
         val dialogBuilder = AlertDialog.Builder(context!!)
         dialogBuilder.setMessage(R.string.add_control_register_title)
 
         //var hostValue = ""
 
         dialogBuilder.setView(containerView)
-        Log.d(TAG, " dialogBuilder.setView(dialogView)")
+        Timber.d(" dialogBuilder.setView(dialogView)")
         dialogBuilder.setPositiveButton(R.string.add_control_register_pos, null)
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ ->
             sonyControlViewModel.deleteSelectedControl()
@@ -137,11 +134,11 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)
             neutralButton.setOnClickListener {
                 // dialog won't close by default
-                //Log.d(TAG, "Test host=$host")
+                //Timber.d("Test host=$host")
             }
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                //Log.d(TAG, "Test host=$host")
+                //Timber.d("Test host=$host")
                 // validate
                 if(isInputValid()) {
                     when (mode) {

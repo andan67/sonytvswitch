@@ -2,9 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.network
 
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 data class PlayingContentInfoResponse(

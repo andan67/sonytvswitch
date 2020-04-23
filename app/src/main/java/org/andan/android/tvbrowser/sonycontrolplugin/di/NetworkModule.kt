@@ -5,9 +5,11 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
-import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
-import org.andan.android.tvbrowser.sonycontrolplugin.network.*
+import org.andan.android.tvbrowser.sonycontrolplugin.network.AddTokenInterceptor
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyService
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceClientContext
+import org.andan.android.tvbrowser.sonycontrolplugin.network.TokenAuthenticator
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit

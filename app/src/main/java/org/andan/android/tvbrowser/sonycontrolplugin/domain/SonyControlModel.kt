@@ -1,7 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*

@@ -1,7 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
 import java.io.IOException
-import java.net.*
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 
 

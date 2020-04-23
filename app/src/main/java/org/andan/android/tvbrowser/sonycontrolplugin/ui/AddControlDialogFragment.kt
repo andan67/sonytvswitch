@@ -17,8 +17,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewM
  * A simple [Fragment] subclass.
  */
 class AddControlDialogFragment : DialogFragment() {
-
-    private val TAG = AddControlDialogFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
-import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -11,6 +10,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
+import timber.log.Timber
 import java.net.HttpURLConnection.HTTP_OK
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -59,11 +59,10 @@ class TokenAuthenticator @Inject constructor(
     private val serviceClientContext: SonyServiceClientContext,
     private val tokenStore: TokenStore
 ) : Authenticator {
-    val TAG = TokenAuthenticator::class.java.name
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         // This is a synchronous call
-        Log.d(TAG, "authenticate(): ${serviceClientContext.nickname}")
+        Timber.d("authenticate(): ${serviceClientContext.nickname}")
         val request = response.request
         //bypass authenticator for registration endpoint
         if (response.request.header("Authorization") != null) {
@@ -180,13 +179,13 @@ object SonyServiceUtil {
                 val jsonRpcResponse = response.body()
                 when {
                     jsonRpcResponse?.error != null -> {
-                        Log.d("apiCall", "evaluate error")
+                        Timber.d("evaluate error")
                         Resource.Error(
                             jsonRpcResponse.error.asJsonArray.get(1).asString, response.code()
                         )
                     }
                     else -> {
-                        Log.d("apiCall", "evaluate result")
+                        Timber.d("evaluate result")
                         Resource.Success(
                             response.code(),
                             gson.fromJson(
@@ -214,13 +213,13 @@ object SonyServiceUtil {
                     }
                 }
             } else {
-                Log.d("apiCall", "evaluate response unsuccessful")
+                Timber.d("evaluate response unsuccessful")
                 Resource.Error(response.message(), response.code())
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.d("apiCall", "evaluate exception ${e.message}")
+            Timber.d("evaluate exception ${e.message}")
             return Resource.Error(e.message ?: "Unknown apiCall exception", 0)
         }
     }

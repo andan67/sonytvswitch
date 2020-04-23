@@ -1,34 +1,25 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.*
 import org.andan.android.tvbrowser.sonycontrolplugin.network.InterfaceInformationResponse
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
-import kotlin.collections.MutableSet
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.indices
-import kotlin.collections.isNotEmpty
-import kotlin.collections.isNullOrEmpty
 import kotlin.collections.set
 
 class SonyControlViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-    private val TAG = SonyControlViewModel::class.java.name
     private val sonyControlRepository: SonyControlRepository = SonyControlApplication.get().appComponent.sonyRepository()
 
     val requestErrorMessage = sonyControlRepository.responseMessage
@@ -79,7 +70,7 @@ class SonyControlViewModel : ViewModel() {
     val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
 
     init {
-        Log.d(TAG, "init")
+        Timber.d("init")
         _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
@@ -91,13 +82,13 @@ class SonyControlViewModel : ViewModel() {
         if (uri.isNotEmpty() && uriProgramMap.containsKey(uri) && currentProgramUri != uri) {
             lastProgramUri = currentProgramUri
             currentProgramUri = uri
-            //Log.d(TAG, "updateCurrentProgram ${uriProgramMap[lastProgramUri]!!.title} ${uriProgramMap[currentProgramUri]!!.title}")
+            //Timber.d("updateCurrentProgram ${uriProgramMap[lastProgramUri]!!.title} ${uriProgramMap[currentProgramUri]!!.title}")
         }
     }
 
     fun addControl(control: SonyControl) {
-        Log.d(TAG, "addControl(): $control")
-        Log.d(TAG, "sonyControlViewModel: $this")
+        Timber.d("addControl(): $control")
+        Timber.d("sonyControlViewModel: $this")
         sonyControlRepository.addControl(control)
     }
 
@@ -106,12 +97,12 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun setSelectedControlIndex(index: Int) {
-        Log.d(TAG, "setSelectedControlIndex(index: $index)")
+        Timber.d("setSelectedControlIndex(index: $index)")
         if (sonyControlRepository.setSelectedControlIndex(index)) onSelectedIndexChange()
     }
 
     fun onSelectedIndexChange() {
-        Log.d(TAG, "onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
+        Timber.d("onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
         lastProgramUri = ""
         currentProgramUri = ""
         //activeContentInfo.value = noActiveProgram
@@ -121,7 +112,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun refreshDerivedVariablesForSelectedControl() {
-        Log.d(TAG, "refreshDerivedVariablesForSelectedControl()")
+        Timber.d("refreshDerivedVariablesForSelectedControl()")
         programTitleList.clear()
         channelNameList.clear()
         uriProgramMap.clear()
@@ -152,7 +143,7 @@ class SonyControlViewModel : ViewModel() {
 
 
     fun filterProgramList(query: String?) {
-        Log.d(TAG, "filter program list query='$query' ")
+        Timber.d("filter program list query='$query' ")
         if (getSelectedControl()?.programList != null) {
             programSearchQuery = query
             filteredProgramList.value = getSelectedControl()!!.programList.filter { p ->
@@ -171,12 +162,10 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun getChannelForProgramUri(uri: String): String {
-        //Log.d(TAG,"getChannelForProgramUri(uri: String)")
         return programChannelMap[uri] ?: ""
     }
 
     fun getFilteredChannelNameList(): LiveData<List<String>> {
-        //Log.d(TAG,"getFilteredChannelNameList()")
         // get list of channel names from preference
         if (filteredChannelNameList.value == null) {
             filterChannelNameList("")
@@ -185,7 +174,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun filterChannelNameList(query: String?) {
-        Log.d(TAG, "filter channel name list query='$query' ")
+        Timber.d("filter channel name list query='$query' ")
         channelNameSearchQuery = query
         filteredChannelNameList.value = channelNameList.filter { c ->
             channelNameSearchQuery.isNullOrEmpty() || c.contains(
@@ -199,7 +188,7 @@ class SonyControlViewModel : ViewModel() {
         channelName: String?,
         query: String?
     ): ArrayList<String> {
-        Log.d(TAG, "createProgramUriMatchList()")
+        Timber.d("createProgramUriMatchList()")
         val programUriMatchList: ArrayList<String> = ArrayList()
         if (programTitleList.isNotEmpty()) {
             var matchTopSet: MutableSet<Int> = LinkedHashSet()
@@ -268,7 +257,7 @@ class SonyControlViewModel : ViewModel() {
        /* val list = listOf<SSDP.IpDeviceItem>(
             SSDP.IpDeviceItem("192.168.178.27", "BRAVIA KDL-50W656A"),
             SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))*/
-        Log.d(TAG, "fetchSonyIpAndDeviceList(): $list")
+        Timber.d("fetchSonyIpAndDeviceList(): $list")
         _sonyIpAndDeviceList.postValue(list)
     }
 
@@ -294,7 +283,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun setSelectedChannelMapProgramUri(channelName: String?, programUri: String?) {
-        Log.d(TAG, "setSelectedChannelMapProgramUri()")
+        Timber.d("setSelectedChannelMapProgramUri()")
         selectedChannelMapProgramUri.value = programUri
         getSelectedControl()!!.channelProgramMap[channelName!!] = programUri!!
         refreshDerivedVariablesForSelectedControl()
@@ -306,7 +295,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     internal fun performFuzzyMatchForChannelList() {
-        Log.d(TAG, "performFuzzyMatchForChannelList()")
+        Timber.d("performFuzzyMatchForChannelList()")
         if (channelNameList.isNotEmpty() && programTitleList.isNotEmpty() && getSelectedControl()?.programList != null) {
             for (channelName in channelNameList) {
                 val index1 = ProgramFuzzyMatch.matchOne(channelName, programTitleList, true)
@@ -320,7 +309,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     internal fun clearMapping() {
-        Log.d(TAG, "clearMapping()")
+        Timber.d("clearMapping()")
         if (getSelectedControl()?.channelProgramMap != null) {
             for (channelName in channelNameList) {
                 getSelectedControl()!!.channelProgramMap[channelName] = ""

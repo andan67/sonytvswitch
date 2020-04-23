@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -16,17 +15,17 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.andan.android.tvbrowser.sonycontrolplugin.*
+import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.MapChannnelItemBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class ChannelMapFragment : Fragment() {
-    private val TAG = ChannelMapFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
@@ -50,14 +49,14 @@ class ChannelMapFragment : Fragment() {
         val view = binding.root
         sonyControlViewModel.onSelectedIndexChange()
         binding.sonyControlViewModel = sonyControlViewModel
-        Log.d(TAG, "onCreateView: ${sonyControlViewModel.channelNameList.size}")
+        Timber.d("onCreateView: ${sonyControlViewModel.channelNameList.size}")
         if (sonyControlViewModel.selectedSonyControl.value == null || sonyControlViewModel.channelNameList.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
             if (sonyControlViewModel.selectedSonyControl.value == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
-                Log.d(TAG, "No active control")
+                Timber.d("No active control")
             } else if (sonyControlViewModel.channelNameList.isNullOrEmpty()) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_channels_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_channels_message))
@@ -74,7 +73,7 @@ class ChannelMapFragment : Fragment() {
                                 alertNoPrograms()
                             } else {
                                 sonyControlViewModel.selectedChannelName = channelName
-                                Log.d(TAG, "selectedChannelName: $channelName")
+                                Timber.d("selectedChannelName: $channelName")
                                 view2.findNavController()
                                     .navigate(R.id.action_nav_channel_list_to_channelMapSingleFragment)
                             }
@@ -96,18 +95,15 @@ class ChannelMapFragment : Fragment() {
                 )
 
             binding.listChannelMap.adapter = adapter
-            Log.d(
-                TAG,
-                "controlViewModel.channelList.size ${sonyControlViewModel.getFilteredChannelNameList().value?.size}"
-            )
+            Timber.d("controlViewModel.channelList.size ${sonyControlViewModel.getFilteredChannelNameList().value?.size}")
 
             sonyControlViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change getControls")
+                Timber.d("observed change getControls")
                 adapter.notifyDataSetChanged()
             })
 
             sonyControlViewModel.getFilteredChannelNameList().observe(viewLifecycleOwner, Observer {
-                Log.d(TAG, "observed change filtered Channel")
+                Timber.d("observed change filtered Channel")
                 adapter.notifyDataSetChanged()
             })
 
@@ -152,7 +148,7 @@ class ChannelMapFragment : Fragment() {
                     // Cause?: Frequency of changes vs reflection of changes in adapter?
                     //if(query.isNullOrEmpty() || query.length > 1) {
                     if (query.isNullOrEmpty()) {
-                        Log.i(TAG, "onQueryTextChange: $query")
+                        Timber.d("onQueryTextChange: $query")
                         //searchQuery = query
                         sonyControlViewModel.filterChannelNameList(query)
                     }
@@ -160,7 +156,7 @@ class ChannelMapFragment : Fragment() {
                 }
 
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    Log.i(TAG, "onQueryTextSubmit: $query")
+                    Timber.d("onQueryTextSubmit: $query")
                     //searchQuery = query
                     sonyControlViewModel.filterChannelNameList(query)
                     searchView?.clearFocus()
