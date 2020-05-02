@@ -9,6 +9,7 @@ This app allows the easy control and program switching via network for many Sony
 It can also be used as plugin for the 
 <a href="https:/play.google.com/store/apps/details?id=org.tvbrowser.tvbrowser.play">*TV Browser*</a> app 
 to switch to programs from an electronic program guide (EPG).
+
 ### Key features
 
 - Supports many 'smart' Sony TV models
@@ -19,21 +20,33 @@ to switch to programs from an electronic program guide (EPG).
 - As&nbsp;<a href="https://play.google.com/store/apps/details?id=org.tvbrowser.tvbrowser.play">*TV Browser*</a> plugin: 
 Switch to a TV program directly from the program guide (EPG)
 
-## Installation and basic set-up steps
+### TV preparation
+
+- Switch on TV
+- Enable remote start on your TV:<br>
+[HOME] → [Settings] → [Network] → [Home Network Setup] → [Remote Start] → [On]
+- If applicable set pre-shared key (i.e. arbitrary string XXXX) for your your TV:<br>
+[HOME] → [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Pre-Shared Key] → [XXXX]
+- Enable pre-shared key on your TV if menu entry exists:<br>
+[HOME] → [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Authentication] → [Normal and Pre-Shared Key]
+- Give your TV a static IP address, or make a DHCP reservation for a specific IP address in your router
+- Get/check IP address of your TV:<br>
+[HOME] → [Settings] → [Network] → [Advanced settings] → [IP address]
+
+### Quick installation and set-up guide
 
 - Install <a href="https://play.google.com/store/apps/details?id=org.andan.android.tvbrowser.sonycontrolplugin">*Sony TV Switch*</a>
 - Open app
-- Add new control from navigation menu
-- From 'Manage control' screen menu    
-    - Register control at the TV
-    - Request program list from TV
+- Add new control for TV from main menu
 - For use as <a href="https://play.google.com/store/apps/details?id=org.tvbrowser.tvbrowser.play">*TV Browser*</a> plugin
     - Install *TV Browser* 
     - Open *TV Browser*
     - Activate this app as *TV Browser* plugin
     - Open plugin settings within *TV Browser*
     - Map *TV Browser* channel names to TV programs (mostly automated)
-    
+
+The following sections provide more detailed descriptions of the set-up steps and other functions.
+
 ## Main function and screens
 
 ### Navigation menu
@@ -41,7 +54,8 @@ Switch to a TV program directly from the program guide (EPG)
 - Select active control from drop-down list in header
 - If empty, select 'Add control' item to add control
 
-### Remote control and program switch functions
+
+### Use of control functions
 
 #### Remote control
 <img src="images/remote_control.png" width="300"/>
@@ -72,14 +86,36 @@ Switch to a TV program directly from the program guide (EPG)
 <img src="images/current_program.png" width="300"/>
 - Shows details of current program as received from TV
 
-### Manage functions
+### Add and manage control functions
 
 #### Add control
-<img src="images/add_control.png" width="300"/>
-- Adds new control by providing basic settings
-- The nick and device names are used as display names in the remote control settings of your Sony TV
-- Host address can be either IP address or host name
-- After control is added, the 'Manage control' screen opens to perform further actions
+Adds and registers a new control in two steps. This is a pre-requisite to use any or the remote control functions of this app.
+
+**1. Define IP/host address**
+
+<img src="images/add_control_ip.png" width="300"/>
+- Enter IP (or host name) of your Sony TV
+- Alternatively, select your TV from the 'Discovered devices' drop down box (if listed) to set the IP/host address field
+- Click on 'FINISH' will proceed to the next step if the entered or discovered IP/host address is valid (this is checked when button is clicked)
+- Otherwise, the dialog is kept open showing an error message
+
+**2. Define Names and pre-shared key (optional)**
+
+<img src="images/add_control_names_psk.png" width="300"/>
+- Enter (non-empty) nick- and device names that are used as display names
+- Enter the pre-shared key if set for your TV
+- Click on 'FINISH' to try to register the control on your TV
+- If the registration is successful:
+    - The dialog will be closed and the 'Manage control' screen will be opened
+    - Additional system information and the TV program list will be fetched from the TV
+    - Control is ready for use in the app for all functions
+- Otherwise a message will be displayed to indicate the reason of the failure:
+    - If no pre-shared key is defined you will be asked to enter a challenge key that is displayed on the TV screen
+    - The 'not register anymore' message indicates that the maximum number of registered controls on your TV is reached.
+   In this case you have to delete another registered control on your TV first to continue
+
+<img src="images/add_control_names_challenge_code.png" width="300"/>
+<img src="images/add_control_names_not_register_any_more.png" width="300"/>
 
 #### Manage control
 <img src="images/manage_control.png" width="300"/>
@@ -87,12 +123,8 @@ Switch to a TV program directly from the program guide (EPG)
 - 3-dot menu provides actions to register or delete control, request program list from TV, and enable Wake-on-LAN
 
 ##### Register control
-- Each control needs to be registered for use with your Sony TV
-- Ensure the Sony TV is switched on and accessible via network prior registration
-- On first registration, a challenge code will be displayed on the TV screen that needs to be entered into the pop-up dialog
-- If registration has been successful, the Wake-on-LAN mode of your TV will be enabled to allow switching on the TV via network
-- Registration can be performed any time
-- In case of any problem, check the settings and any information displayed by the app or on the Sony TV screen
+- This re-registers the control on your TV with the existing settings.
+- This is normally only required in case of authentication failed errors.
 
 ##### Request program list 
 - The program list can be requested any time after successful registration

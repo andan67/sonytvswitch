@@ -20,9 +20,9 @@ class EnterChallengeDialogFragment : DialogFragment() {
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.dialog_enter_challenge_code_title)
-        val dialogView:View = this.activity!!.layoutInflater.inflate(R.layout.fragment_enter_challenge_code_dialog, null, false)
+        val dialogView:View = this.requireActivity().layoutInflater.inflate(R.layout.fragment_enter_challenge_code_dialog, null, false)
         dialogBuilder.setView(dialogView)
 
 

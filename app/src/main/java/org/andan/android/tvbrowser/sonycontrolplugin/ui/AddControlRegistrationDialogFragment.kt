@@ -33,7 +33,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
     private var mode = 0
 
     private val containerView by lazy {
-        this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_register_dialog, null, false) as ViewGroup
+        this.requireActivity().layoutInflater.inflate(R.layout.fragment_add_control_register_dialog, null, false) as ViewGroup
     }
 
     override fun getView() = containerView
@@ -96,7 +96,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                     }
                     REGISTRATION_SUCCESSFUL -> {
                         sonyControlViewModel.postRegistrationFetches()
-                        val navController = activity!!.findNavController(R.id.nav_host_fragment)
+                        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                         navController.navigate(R.id.nav_manage_control)
                         dialog!!.dismiss()
                     }
@@ -113,7 +113,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         Timber.d("onCreateDialog")
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.add_control_register_title)
 
         //var hostValue = ""

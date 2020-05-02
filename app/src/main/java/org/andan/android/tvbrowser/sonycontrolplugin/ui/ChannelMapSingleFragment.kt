@@ -123,10 +123,10 @@ class ChannelMapSingleFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.channel_map_single_menu, menu)
 
-        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
-            setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+            setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         }
 
         val searchItem = menu.findItem(R.id.action_search)

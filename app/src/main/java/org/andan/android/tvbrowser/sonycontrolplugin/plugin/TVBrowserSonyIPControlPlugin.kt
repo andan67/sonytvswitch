@@ -84,7 +84,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
                             }
                         }
                     } catch (ex: java.lang.Exception) {
-                        Timber.e(ex.message)
+                        Timber.e(ex)
                     }
                 }
                 return result

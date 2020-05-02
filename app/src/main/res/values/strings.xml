@@ -163,7 +163,7 @@
     <string name="add_control_psk">Pre-shared key (optional)</string>
     <string name="add_control_psk_hint">Enter pre-shared of TV key if defined</string>
 
-    <string name="add_control_challenge">Challenge code on displayed on TV screen</string>
+    <string name="add_control_challenge">Challenge code yx displayed on TV screen</string>
     <string name="add_control_challenge_hint">4 digit challenge code</string>
 
     <string name="add_control_host_title">Define Host/IP address</string>
@@ -180,6 +180,7 @@
     <string name="add_control_host_neg">Cancel</string>
     <string name="add_control_host_pos">Next</string>
     <string name="simple_service_discovery">Discover Sony devices</string>
+    <string name="add_control_host_failed_msg">Test of host/ip unsuccessful. Try again!</string>
 
     <string name="add_control_register_title">Register control</string>
     <string name="add_control_register_instructions">

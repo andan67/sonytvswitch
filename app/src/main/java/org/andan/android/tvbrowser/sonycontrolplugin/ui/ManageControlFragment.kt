@@ -70,7 +70,7 @@ class ManageControlFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.delete_control -> {
-                val builder = AlertDialog.Builder(context!!)
+                val builder = AlertDialog.Builder(requireContext())
                 builder.setMessage("Do you want to delete this control?").setTitle("Confirm delete")
                 builder.setPositiveButton("Yes") { dialog, id ->
                     Timber.d("deleteControl")

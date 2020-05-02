@@ -17,7 +17,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_add_control_host_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
@@ -34,7 +36,7 @@ class AddControlHostDialogFragment : DialogFragment() {
 
 
     private val containerView by lazy {
-        this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false) as ViewGroup
+        this.requireActivity().layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false) as ViewGroup
     }
 
     override fun getView() = containerView
@@ -55,27 +57,31 @@ class AddControlHostDialogFragment : DialogFragment() {
         })
 
         sonyControlViewModel.interfaceInformation.observe(viewLifecycleOwner, Observer {
-            //if(it.data != null && it.status==Status.SUCCESS) {
-            if(testMode > 0 && sonyControlViewModel.addedControlHostAddress == "192.168.178.27") {
-                //Timber.d("Product ${it.data.productName}")
-                Timber.d("Test succussful")
-                messageTextView!!.setTextColor(Color.GREEN)
-                messageTextView!!.text = "Test successful"
-                if(testMode == 2) {
-                    Timber.d("Navigate to registration")
-                   /* val navController = activity!!.findNavController(R.id.nav_host_fragment)
-                    navController.navigate(R.id.action_nav_add_control_host_to_nav_add_control_register)*/
-                    val addControlRegistrationDialogFragment = AddControlRegistrationDialogFragment()
-                    val transaction: FragmentTransaction =
-                        requireActivity().supportFragmentManager.beginTransaction()
-                    addControlRegistrationDialogFragment.show(transaction, "add_control_register_dialog")
-                    if (testMode == 2) dialog!!.dismiss()
+            if (it.data != null && it.status == Status.SUCCESS) {
+                if (testMode > 0 && sonyControlViewModel.addedControlHostAddress == "192.168.178.27") {
+                    //Timber.d("Product ${it.data.productName}")
+                    Timber.d("Test succussful")
+                    //messageTextView!!.setTextColor(Color.GREEN)
+                    //messageTextView!!.text = "Test successful"
+                    if (testMode == 2) {
+                        Timber.d("Navigate to registration")
+                        /* val navController = activity!!.findNavController(R.id.nav_host_fragment)
+                         navController.navigate(R.id.action_nav_add_control_host_to_nav_add_control_register)*/
+                        val addControlRegistrationDialogFragment =
+                            AddControlRegistrationDialogFragment()
+                        val transaction: FragmentTransaction =
+                            requireActivity().supportFragmentManager.beginTransaction()
+                        addControlRegistrationDialogFragment.show(
+                            transaction,
+                            "add_control_register_dialog"
+                        )
+                        if (testMode == 2) dialog!!.dismiss()
+                    }
                 }
-            }
-            else if (testMode > 0){
+            } else if (testMode > 0) {
                 Timber.d("Test unsuccussful")
                 messageTextView!!.setTextColor(Color.RED)
-                messageTextView!!.text = "Test of host/ip unsuccessful. Try again!"
+                messageTextView!!.text = getString(R.string.add_control_host_failed_msg)
             }
             testMode = 0
         })
@@ -89,13 +95,13 @@ class AddControlHostDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         Timber.d("onCreateDialog")
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.add_control_host_title)
         dialogBuilder.setView(containerView)
         Timber.d(" dialogBuilder.setView(dialogView)")
         dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
-        dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
+        //dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
 
         dialog = dialogBuilder.create()
 
@@ -105,7 +111,7 @@ class AddControlHostDialogFragment : DialogFragment() {
         var hasSelected = false
 
         sonyIpAndDeviceListAdapter =
-            ArrayAdapter(context!!, R.layout.control_spinner_item, deviceList)
+            ArrayAdapter(requireContext(), R.layout.control_spinner_item, deviceList)
 
         deviceSpinner.adapter = sonyIpAndDeviceListAdapter
 
