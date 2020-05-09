@@ -265,7 +265,7 @@ class SonyControlRepository @Inject constructor(
                 if (challenge != null) {
                     sonyServiceContext.password = challenge
                 }
-                sonyServiceContext.preSharedKey = it.preSharedKey
+                sonyServiceContext.preSharedKey = it.preSharedKey?: ""
                 try {
                     val response = api.sonyRpcService(
                         "http://" + it.ip + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT,

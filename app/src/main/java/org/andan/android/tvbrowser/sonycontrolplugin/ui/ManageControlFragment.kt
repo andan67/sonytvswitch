@@ -91,12 +91,6 @@ class ManageControlFragment : Fragment() {
             R.id.enable_wol -> {
                 sonyControlViewModel.wakeOnLan()
             }
-            R.id.ssd -> {
-                sonyControlViewModel.fetchSonyIpAndDeviceList()
-                //val ipDeviceList = sonyControlViewModel.sonyIpAndDeviceList
-                //val ipDeviceList = SSDP.getSonyIpAndDeviceList()
-                //Timber.d("$ipDeviceList")
-            }
         }
         return super.onOptionsItemSelected(item)
     }

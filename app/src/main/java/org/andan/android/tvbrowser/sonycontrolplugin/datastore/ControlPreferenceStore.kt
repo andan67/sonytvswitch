@@ -20,9 +20,13 @@ class ControlPreferenceStore @Inject constructor(context: Context): ControlsStor
         } else {
             SonyControls()
         }
-        Timber.i("#loaded controls: ${sonyControls.controls.size}, selected=${sonyControls.selected} ")
 
         reconcileTokenStore(sonyControls)
+        Timber.i("#loaded controls: ${sonyControls.controls.size}, selected=${sonyControls.selected}")
+        if (sonyControls.selected>=0) {
+            val uuid = sonyControls.controls[sonyControls.selected].uuid
+            Timber.i("Selected control token: ${loadToken(uuid)}")
+        }
         return sonyControls
     }
 
