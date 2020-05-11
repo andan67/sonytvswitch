@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.os.RemoteException
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,6 +14,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.tvbrowser.devplugin.*
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 /**
@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream
 class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
     private var mPluginManager: PluginManager? = null
-    private val TAG = TVBrowserSonyIPControlPlugin::class.java.name
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
     private val sonyControlRepository: SonyControlRepository =
@@ -70,16 +69,9 @@ class TVBrowserSonyIPControlPlugin : Service() {
                 pluginMenu: PluginMenu
             ): Boolean {
                 val result = false
-                Log.i(
-                    TAG,
-                    " onProgramContextMenuSelected:start"
-                )
+                Timber.d(" onProgramContextMenuSelected:start")
                 if (pluginMenu.id == SWITCH_TO_CHANNEL) {
-                    Log.i(
-                        TAG,
-                        " onProgramContextMenuSelected:switch to channel " + program.channel
-                            .channelName
-                    )
+                    Timber.d(" onProgramContextMenuSelected:switch to channel: $program.channel.channelName")
                     try {
                         if(sonyControlRepository.getSelectedControl()!=null) {
                             val programUri =
@@ -87,12 +79,12 @@ class TVBrowserSonyIPControlPlugin : Service() {
                             if (!programUri.isNullOrEmpty()) {
                                 GlobalScope.launch(Dispatchers.IO) {
                                     sonyControlRepository.setPlayContent(programUri!!)
-                                    Log.i(TAG, "Switched to program uri:$programUri")
+                                    Timber.d("Switched to program uri:$programUri")
                                 }
                             }
                         }
                     } catch (ex: java.lang.Exception) {
-                        Log.e(TAG, ex.message)
+                        Timber.e(ex)
                     }
                 }
                 return result
@@ -118,10 +110,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
 
             @Throws(RemoteException::class)
             override fun openPreferences(subscribedChannels: List<Channel>) {
-                Log.i(
-                    TAG,
-                    "openPreferences:start"
-                )
+                Timber.d("openPreferences:start")
                 // start main activity
                 val startPref = Intent(this@TVBrowserSonyIPControlPlugin, MainActivity::class.java)
                 startPref.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -160,7 +149,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
             override fun onActivation(pluginManager: PluginManager) {
                 mPluginManager = pluginManager
                 updateChannelProgramMap(mPluginManager!!.subscribedChannels)
-                Log.d(TAG, "onActivation")
+                Timber.d("onActivation")
             }
 
             override fun onDeactivation() {
@@ -206,7 +195,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
         for (channel in channelList) {
             channelNameList.add(channel.channelName)
         }
-        Log.d(TAG,"updateChannelProgramMap: ${channelNameList.size}")
+        Timber.d("updateChannelProgramMap: ${channelNameList.size}")
         sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
     }
 
@@ -215,7 +204,6 @@ class TVBrowserSonyIPControlPlugin : Service() {
     companion object {
         //const val CONTROL_CONFIG = "controlConfig"
         const val CHANNELS_LIST_CONFIG = "channels_list_config"
-        private val TAG = TVBrowserSonyIPControlPlugin::class.java.simpleName
 
         /* The id for the remove marking PluginMenu */
         private const val SWITCH_TO_CHANNEL = 4

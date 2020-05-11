@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,20 +21,19 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class AddControlRegistrationDialogFragment : DialogFragment() {
-
-    private val TAG = AddControlRegistrationDialogFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var dialog: AlertDialog? = null
     private var addedControl: SonyControl? = null
     private var mode = 0
 
     private val containerView by lazy {
-        this.activity!!.layoutInflater.inflate(R.layout.fragment_add_control_register_dialog, null, false) as ViewGroup
+        this.requireActivity().layoutInflater.inflate(R.layout.fragment_add_control_register_dialog, null, false) as ViewGroup
     }
 
     override fun getView() = containerView
@@ -44,17 +42,15 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         addControlPSKTextView.visibility = View.VISIBLE
         addControlPSKEditText.visibility = View.VISIBLE
         addControlPSKEditText.text.clear()
-
         addControlChallengeCodeTextView.visibility = View.GONE
-        addControlChallengeCodeEditText.visibility = View.GONE
-        addControlChallengeCodeEditText.text.clear()
-        addControlChallengeCodeEditText.error = null
+        addControlChallengeCodeEditView.visibility = View.GONE
+        addControlChallengeCodeEditView.text.clear()
     }
 
     private fun isInputValid() : Boolean {
         return (addControlNicknameEditText.validate("Enter non empty string ") { s -> s.isNotEmpty() }
                 .and(addControlDevicenameEditText.validate("Enter non empty string ") { s -> s.isNotEmpty() })
-                .and((mode != 1).or(addControlChallengeCodeEditText.validate("Enter 4 digits") { s -> "\\d{4}".toRegex().matches(s) })))
+                .and((mode != 1).or(addControlChallengeCodeEditView.validate("Enter 4 digits") { s -> "\\d{4}".toRegex().matches(s) })))
     }
 
     override fun onCreateView(
@@ -66,7 +62,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
             EventObserver<RegistrationStatus> {
-                Log.d(TAG, "observed $it")
+                Timber.d("observed $it")
 
                 when (it.code) {
                     REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
@@ -74,8 +70,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                         addControlPSKTextView.visibility = View.GONE
                         addControlPSKEditText.visibility = View.GONE
                         addControlChallengeCodeTextView.visibility = View.VISIBLE
-                        addControlChallengeCodeEditText.visibility = View.VISIBLE
-                        addControlChallengeCodeEditText.requestFocus()
+                        addControlChallengeCodeEditView.visibility = View.VISIBLE
+                        addControlChallengeCodeEditView.requestFocus()
                         addControlNicknameEditText.isEnabled = false
                         addControlDevicenameEditText.isEnabled = false
                         messageTextView.text = getString(R.string.dialog_enter_challenge_code_title)
@@ -100,7 +96,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                     }
                     REGISTRATION_SUCCESSFUL -> {
                         sonyControlViewModel.postRegistrationFetches()
-                        val navController = activity!!.findNavController(R.id.nav_host_fragment)
+                        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                         navController.navigate(R.id.nav_manage_control)
                         dialog!!.dismiss()
                     }
@@ -116,14 +112,14 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.d(TAG, "onCreateDialog")
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        Timber.d("onCreateDialog")
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.add_control_register_title)
 
         //var hostValue = ""
 
         dialogBuilder.setView(containerView)
-        Log.d(TAG, " dialogBuilder.setView(dialogView)")
+        Timber.d(" dialogBuilder.setView(dialogView)")
         dialogBuilder.setPositiveButton(R.string.add_control_register_pos, null)
         dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ ->
             sonyControlViewModel.deleteSelectedControl()
@@ -138,11 +134,11 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
             val neutralButton = dialog!!.getButton(AlertDialog.BUTTON_NEUTRAL)
             neutralButton.setOnClickListener {
                 // dialog won't close by default
-                //Log.d(TAG, "Test host=$host")
+                //Timber.d("Test host=$host")
             }
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                //Log.d(TAG, "Test host=$host")
+                //Timber.d("Test host=$host")
                 // validate
                 if(isInputValid()) {
                     when (mode) {
@@ -158,7 +154,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                             sonyControlViewModel.registerControl()
                         }
                         1 -> {
-                            sonyControlViewModel.registerControl(addControlChallengeCodeEditText.text.toString())
+                            sonyControlViewModel.registerControl(addControlChallengeCodeEditView.text.toString())
                         }
                         2 -> {
                             mode = 0
@@ -166,7 +162,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                                 sonyControlViewModel.selectedSonyControl.value!!.preSharedKey
                                 sonyControlViewModel.registerControl()
                             } else sonyControlViewModel.registerControl(
-                                addControlChallengeCodeEditText.text.toString()
+                                addControlChallengeCodeEditView.text.toString()
                             )
                         }
                     }

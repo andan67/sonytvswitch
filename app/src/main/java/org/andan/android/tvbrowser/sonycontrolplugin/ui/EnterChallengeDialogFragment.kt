@@ -3,7 +3,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -12,19 +11,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class EnterChallengeDialogFragment : DialogFragment() {
-
-    private val TAG = EnterChallengeDialogFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setMessage(R.string.dialog_enter_challenge_code_title)
-        val dialogView:View = this.activity!!.layoutInflater.inflate(R.layout.fragment_enter_challenge_code_dialog, null, false)
+        val dialogView:View = this.requireActivity().layoutInflater.inflate(R.layout.fragment_enter_challenge_code_dialog, null, false)
         dialogBuilder.setView(dialogView)
 
 
@@ -35,7 +33,7 @@ class EnterChallengeDialogFragment : DialogFragment() {
             val challengeCodeEditText : EditText = dialogView.findViewById(R.id.challengeEditText)
 
             val challengeCode = challengeCodeEditText.text.toString()
-            Log.i(TAG, "Enter Challenge & Register:$challengeCode")
+            Timber.d("Enter Challenge & Register:$challengeCode")
             sonyControlViewModel.registerControl(challengeCode)
             dialog.dismiss()
         }

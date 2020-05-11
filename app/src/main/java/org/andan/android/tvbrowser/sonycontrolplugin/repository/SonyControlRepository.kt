@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -23,6 +22,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_SUCCESSFUL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
+import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
@@ -33,8 +33,6 @@ class SonyControlRepository @Inject constructor(
     val api: SonyService,
     val preferenceStore: ControlPreferenceStore
 ) {
-    private val TAG = SonyControlRepository::class.java.name
-
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
     private val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
@@ -45,7 +43,7 @@ class SonyControlRepository @Inject constructor(
     }
 
     init {
-        Log.d(TAG, "init")
+        Timber.d("init")
         sonyControls.value = preferenceStore.loadControls()
         sonyServiceContext.sonyService = api
         selectedSonyControl.value = getSelectedControl()
@@ -63,7 +61,7 @@ class SonyControlRepository @Inject constructor(
     private fun onSonyControlsChange() {
         sonyServiceContext.sonyService = api
         if (selectedSonyControl.value != null) {
-            Log.d(TAG, "onSonyControlsChange(): ${selectedSonyControl.value}")
+            Timber.d("onSonyControlsChange(): ${selectedSonyControl.value}")
             sonyServiceContext.ip = selectedSonyControl.value!!.ip
             sonyServiceContext.uuid = selectedSonyControl.value!!.uuid
             sonyServiceContext.nickname = selectedSonyControl.value!!.nickname
@@ -112,7 +110,7 @@ class SonyControlRepository @Inject constructor(
 
     suspend fun fetchRemoteControllerInfo() {
         val resource = systemService<Array<RemoteControllerInfoItemResponse>>(getSelectedControl()!!.ip, JsonRpcRequest.getRemoteControllerInfo())
-        Log.d(TAG, "remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
+        Timber.d("remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
         if (resource.status == Status.SUCCESS) {
             getSelectedControl()!!.commandList = LinkedHashMap()
             for (remoteControllerInfoItem in resource.data!!) {
@@ -126,7 +124,7 @@ class SonyControlRepository @Inject constructor(
 
     suspend fun fetchSystemInformation() {
         val resource = systemService<SystemInformationResponse>(getSelectedControl()!!.ip, JsonRpcRequest.getSystemInformation())
-        Log.d(TAG, "remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
+        Timber.d("remoteControllerInfo(): ${getSelectedControl()!!.toString()}")
         if (resource.status == Status.SUCCESS) {
             getSelectedControl()!!.systemName = resource.data!!.name
             getSelectedControl()!!.systemProduct = resource.data!!.product
@@ -187,7 +185,7 @@ class SonyControlRepository @Inject constructor(
     }
 
     suspend fun fetchProgramList() {
-        Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.sourceList}")
+        Timber.d("fetchProgramList(): ${getSelectedControl()!!.sourceList}")
         if (getSelectedControl()!!.sourceList.isNullOrEmpty()) {
             fetchSourceList()
         }
@@ -211,14 +209,14 @@ class SonyControlRepository @Inject constructor(
                 }
                 // Break loop over source in case of error
                 if (count == -1) {
-                    Log.d(TAG, "fetchProgramList(): error")
+                    Timber.d("fetchProgramList(): error")
                 }
             }
             getSelectedControl()!!.programList.clear()
             getSelectedControl()!!.programList.addAll(programList)
             saveControls(true)
             _responseMessage.postValue(Event("Fetched ${getSelectedControl()!!.programList.size} programs from TV"))
-            Log.d(TAG, "fetchProgramList(): ${getSelectedControl()!!.programList.size}")
+            Timber.d("fetchProgramList(): ${getSelectedControl()!!.programList.size}")
         }
     }
 
@@ -263,11 +261,11 @@ class SonyControlRepository @Inject constructor(
     suspend fun registerControl(challenge: String?) {
         withContext(Dispatchers.IO) {
             selectedSonyControl.value?.let {
-                Log.d(TAG, "registerControl(): ${sonyServiceContext.nickname}")
+                Timber.d("registerControl(): ${sonyServiceContext.nickname}")
                 if (challenge != null) {
                     sonyServiceContext.password = challenge
                 }
-                sonyServiceContext.preSharedKey = it.preSharedKey
+                sonyServiceContext.preSharedKey = it.preSharedKey?: ""
                 try {
                     val response = api.sonyRpcService(
                         "http://" + it.ip + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT,
@@ -302,7 +300,7 @@ class SonyControlRepository @Inject constructor(
                         }
                     }
                 } catch (se: SocketTimeoutException) {
-                    Log.e(TAG, "Error: ${se.message}")
+                    Timber.e("Error: ${se.message}")
                     _registrationResult.postValue(Event(RegistrationStatus(REGISTRATION_ERROR_FATAL, se.message?: "Unknown failure")))
                 }
                 sonyServiceContext.password = ""
@@ -321,7 +319,7 @@ class SonyControlRepository @Inject constructor(
 
                 val requestBody: RequestBody =
                     requestBodyText.toRequestBody("text/xml".toMediaTypeOrNull())
-                Log.d(TAG, "sendIRCC: $requestBodyText")
+                Timber.d("sendIRCC: $requestBodyText")
                 val response = api.sendIRCC(
                     "http://" + it.ip + SonyServiceUtil.SONY_IRCC_ENDPOINT,
                     requestBody
@@ -350,14 +348,11 @@ class SonyControlRepository @Inject constructor(
     fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
         var isUpdated = false
         for (control in sonyControls.value!!.controls) {
-            Log.d(
-                TAG,
-                "updateChannelMapsFromChannelNameList: ${channelNameList.size} ${control.channelProgramMap.size}"
-            )
+            Timber.d("updateChannelMapsFromChannelNameList: ${channelNameList.size} ${control.channelProgramMap.size}")
             for (channelName in channelNameList) {
                 // create mapping entry for unmapped channels
                 if (!control.channelProgramMap.containsKey(channelName)) {
-                    Log.d(TAG, "updateChannelMapsFromChannelNameList: $channelName")
+                    Timber.d("updateChannelMapsFromChannelNameList: $channelName")
                     control.channelProgramMap[channelName] = ""
                     isUpdated = true
                 }
@@ -365,7 +360,7 @@ class SonyControlRepository @Inject constructor(
             }
         }
         if (isUpdated) saveControls()
-        Log.d(TAG, "updateChannelMapsFromChannelNameList: finished")
+        Timber.d("updateChannelMapsFromChannelNameList: finished")
     }
 
     fun saveControls() {
@@ -387,7 +382,7 @@ class SonyControlRepository @Inject constructor(
     fun addControl(control: SonyControl) {
         sonyControls.value!!.controls.add(control)
         sonyControls.value!!.selected = sonyControls.value!!.controls.size - 1
-        Log.d(TAG, "addControl: #${sonyControls.value!!.selected} $control")
+        Timber.d("addControl: #${sonyControls.value!!.selected} $control")
         saveControls()
     }
 

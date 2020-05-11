@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
-import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -9,7 +8,6 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 object WakeOnLan {
-    private val TAG = WakeOnLan::class.java.name
     const val PORT = 9
     private var matcher: Matcher? = null
     private const val IPADDRESS_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -102,7 +100,7 @@ object WakeOnLan {
         } catch (e: NumberFormatException) {
             throw IllegalArgumentException("Invalid hex digit in MAC address.")
         }
-        //Log.d(TAG, "getMacBytes ${bytes[4]}")
+        //Timber.d("getMacBytes ${bytes[4]}")
         return bytes
     }
 }

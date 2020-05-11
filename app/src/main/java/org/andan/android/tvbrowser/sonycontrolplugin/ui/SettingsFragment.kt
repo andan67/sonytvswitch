@@ -19,7 +19,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceScreen.findPreference<Preference>("license")!!.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 // dialog code here
-                val builder = AlertDialog.Builder(context!!,
+                val builder = AlertDialog.Builder(requireContext(),
                     R.style.Theme_AppCompat_Dialog_Alert
                 )
                 builder.setTitle(resources.getString(R.string.pref_app_license_title))

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.BaseAdapter
@@ -21,13 +20,13 @@ import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
 class ChannelMapSingleFragment : Fragment() {
-    private val TAG = ChannelMapSingleFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
@@ -56,7 +55,7 @@ class ChannelMapSingleFragment : Fragment() {
             R.layout.fragment_channel_single, container, false)
 
         selectedChannelName =  sonyControlViewModel.selectedChannelName
-        Log.d(TAG,"selectedChannelName: $selectedChannelName")
+        Timber.d("selectedChannelName: $selectedChannelName")
         val channelPosition = sonyControlViewModel.getFilteredChannelNameList().value?.indexOfFirst { it==selectedChannelName }
         binding.channelPosition = channelPosition!! +1
 
@@ -64,7 +63,7 @@ class ChannelMapSingleFragment : Fragment() {
         control=sonyControlViewModel.selectedSonyControl.value!!
 
         initialProgramUri = control!!.channelProgramMap[selectedChannelName!!]
-        Log.d(TAG,"initialProgramUri : $initialProgramUri")
+        Timber.d("initialProgramUri : $initialProgramUri")
         sonyControlViewModel.setSelectedChannelMapProgramUri(binding.channelName , initialProgramUri)
 
         sonyControlViewModel.selectedChannelMapProgramUri.observe(viewLifecycleOwner, Observer {
@@ -110,11 +109,11 @@ class ChannelMapSingleFragment : Fragment() {
             true
         }
 
-        Log.d(TAG,"currentProgramPosition=${currentProgramPosition}")
-        Log.d(TAG,"adapter.count=${arrayAdapter.count}")
+        Timber.d("currentProgramPosition=${currentProgramPosition}")
+        Timber.d("adapter.count=${arrayAdapter.count}")
 
         sonyControlViewModel.sonyControls.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observed change getControls")
+            Timber.d("observed change getControls")
 
         })
 
@@ -124,17 +123,17 @@ class ChannelMapSingleFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.channel_map_single_menu, menu)
 
-        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
-            setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+            setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         }
 
         val searchItem = menu.findItem(R.id.action_search)
 
         if (searchItem != null) {
             searchView = searchItem.actionView as SearchView
-            Log.d(TAG, "onCreateOptionsMen:$searchQuery")
+            Timber.d("onCreateOptionsMen:$searchQuery")
         }
         if (searchView != null) {
             if (searchQuery != null) {
@@ -148,7 +147,7 @@ class ChannelMapSingleFragment : Fragment() {
             queryTextListener = object : SearchView.OnQueryTextListener {
                 override fun onQueryTextChange(query: String): Boolean {
                     if(query.isNullOrEmpty() || query.length>1) {
-                        Log.i(TAG, "onQueryTextChange: $query")
+                        Timber.d("onQueryTextChange: $query")
                         createMatchIndicesListAndSetPositions(query)
                         binding.channelMapProgramListView.setSelection(currentProgramPosition)
                         binding.channelMapProgramListView.setItemChecked(
@@ -161,7 +160,7 @@ class ChannelMapSingleFragment : Fragment() {
                 }
 
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    Log.i(TAG,"onQueryTextSubmit: $query")
+                    Timber.d("onQueryTextSubmit: $query")
                     createMatchIndicesListAndSetPositions(query)
                     binding.channelMapProgramListView.setSelection(currentProgramPosition)
                     binding.channelMapProgramListView.setItemChecked(currentProgramPosition, true)

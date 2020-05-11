@@ -33,8 +33,7 @@
         android:gravity="end"
         android:hint="@string/add_control_nick_hint"
         android:inputType="text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:autofillHints="" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -51,8 +50,7 @@
         android:gravity="end"
         android:hint="@string/add_control_device_hint"
         android:inputType="text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:autofillHints="" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
         android:id="@+id/addControlPSKTextView"
@@ -70,8 +68,7 @@
         android:gravity="end"
         android:hint="@string/add_control_psk_hint"
         android:inputType="text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:autofillHints="" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
         android:id="@+id/addControlChallengeCodeTextView"
@@ -83,14 +80,13 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/addControlChallengeCodeEditText"
+        android:id="@+id/addControlChallengeCodeEditView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end"
         android:hint="@string/add_control_challenge_hint"
         android:inputType="text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:autofillHints="" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
         android:id="@+id/messageTextView"

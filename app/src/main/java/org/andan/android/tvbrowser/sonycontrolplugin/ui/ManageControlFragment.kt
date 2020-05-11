@@ -1,7 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -12,12 +11,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentManageControlBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 class ManageControlFragment : Fragment() {
-    private val TAG = ManageControlFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,20 +34,20 @@ class ManageControlFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.sonyControlViewModel = sonyControlViewModel
 
-        Log.d(TAG, "sonyControls: ${sonyControlViewModel.sonyControls.value!!.controls.size}")
-        Log.d(TAG, "sonyControlViewModel: $sonyControlViewModel")
+        Timber.d("sonyControls: ${sonyControlViewModel.sonyControls.value!!.controls.size}")
+        Timber.d("sonyControlViewModel: $sonyControlViewModel")
 
         sonyControlViewModel.selectedSonyControl.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observed change ${sonyControlViewModel.selectedSonyControl.value}")
+            Timber.d("observed change ${sonyControlViewModel.selectedSonyControl.value}")
         })
 
         sonyControlViewModel.sonyIpAndDeviceList.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observed change ${sonyControlViewModel.sonyIpAndDeviceList.value}")
+            Timber.d("observed change ${sonyControlViewModel.sonyIpAndDeviceList.value}")
         })
 
         sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
             EventObserver<String> {
-                Log.d(TAG, "observed requestError")
+                Timber.d("observed requestError")
 
                 if(it == "Unauthorized") {
                     binding.root.findNavController().navigate(R.id.nav_enter_challenge)
@@ -72,10 +70,10 @@ class ManageControlFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.delete_control -> {
-                val builder = AlertDialog.Builder(context!!)
+                val builder = AlertDialog.Builder(requireContext())
                 builder.setMessage("Do you want to delete this control?").setTitle("Confirm delete")
                 builder.setPositiveButton("Yes") { dialog, id ->
-                    Log.d(TAG, "deleteControl")
+                    Timber.d("deleteControl")
                     sonyControlViewModel.deleteSelectedControl()
                 }
                 builder.setNegativeButton(
@@ -92,12 +90,6 @@ class ManageControlFragment : Fragment() {
             }
             R.id.enable_wol -> {
                 sonyControlViewModel.wakeOnLan()
-            }
-            R.id.ssd -> {
-                sonyControlViewModel.fetchSonyIpAndDeviceList()
-                //val ipDeviceList = sonyControlViewModel.sonyIpAndDeviceList
-                //val ipDeviceList = SSDP.getSonyIpAndDeviceList()
-                //Log.d(TAG, "$ipDeviceList")
             }
         }
         return super.onOptionsItemSelected(item)

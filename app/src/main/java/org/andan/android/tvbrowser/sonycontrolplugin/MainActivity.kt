@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -20,10 +19,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = MainActivity::class.java.name
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var controlListAdapter: ArrayAdapter<SonyControl>
 
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_add_control,
+                //R.id.nav_add_control,
                 R.id.nav_add_control_host,
                 R.id.nav_manage_control,
                 R.id.nav_remote_control,
@@ -81,16 +79,16 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                Log.i(TAG, "onItemSelected position:$position")
+                Timber.i("onItemSelected position:$position")
                 // check if new position/control index is set
                 if (sonyControlViewModel.sonyControls.value!!.selected != position) {
                     sonyControlViewModel.setSelectedControlIndex(position)
-                    Log.d(TAG, "onItemSelected setSelectedControlIndex")
+                    Timber.d("onItemSelected setSelectedControlIndex")
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                Log.d(TAG, "onNothingSelected")
+                Timber.d("onNothingSelected")
             }
         }
 
@@ -101,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         // get channel list from preferences
         val startedFromTVBrowser = intent.getBooleanExtra("startedFromTVBrowser", false)
         if (startedFromTVBrowser) run {
-            Log.i(TAG, "onCreate: startedFromTVBrowser=$startedFromTVBrowser")
+            Timber.i("onCreate: startedFromTVBrowser=$startedFromTVBrowser")
             //controlViewModel.setChannelNameListFromPreference()
             navController.navigate(R.id.nav_channel_list)
         }

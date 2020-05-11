@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -21,15 +20,14 @@ import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentProgram
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ProgramItemBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyProgram
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
  */
 class ProgramListFragment : Fragment() {
-    private val TAG = ProgramListFragment::class.java.name
     private val sonyControlViewModel: SonyControlViewModel by activityViewModels()
     private var searchView: SearchView? = null
     private var queryTextListener: SearchView.OnQueryTextListener? = null
@@ -65,7 +63,7 @@ class ProgramListFragment : Fragment() {
             if (sonyControlViewModel.selectedSonyControl.value == null) {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_active_control_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_active_control_message))
-                Log.d(TAG, "No active control")
+                Timber.d("No active control")
             } else {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_programs_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_programs_message))
@@ -110,16 +108,13 @@ class ProgramListFragment : Fragment() {
             binding.listProgram.adapter = adapter
 
             sonyControlViewModel.getFilteredProgramList().observe(viewLifecycleOwner, Observer {
-                Log.d(
-                    TAG,
-                    "observed change filtered program list with filter ${sonyControlViewModel.getProgramSearchQuery()}"
-                )
+                Timber.d("observed change filtered program list with filter ${sonyControlViewModel.getProgramSearchQuery()}")
                 adapter.notifyDataSetChanged()
             })
 
             sonyControlViewModel.requestErrorMessage.observe(viewLifecycleOwner,
                 EventObserver<String> {
-                    Log.d(TAG, it)
+                    Timber.d(it)
                     if (it.isNotEmpty()) Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                 }
             )
@@ -139,10 +134,10 @@ class ProgramListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.program_list_menu, menu)
 
-        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
-            setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+            setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         }
 
         val searchItem = menu.findItem(R.id.action_search)
@@ -164,7 +159,7 @@ class ProgramListFragment : Fragment() {
 
                 override fun onQueryTextChange(query: String): Boolean {
                     if (query.isNullOrEmpty() || query.length > 1) {
-                        Log.i(TAG, "onQueryTextChange: $query")
+                        Timber.d("onQueryTextChange: $query")
                         //searchQuery = query
                         //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
                         sonyControlViewModel.filterProgramList(query)
@@ -173,7 +168,7 @@ class ProgramListFragment : Fragment() {
                 }
 
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    Log.i(TAG, "onQueryTextSubmit: $query")
+                    Timber.d("onQueryTextSubmit: $query")
                     //searchQuery = query
                     //mProgramItemRecyclerViewAdapter.getFilter().filter(query)
                     sonyControlViewModel.filterProgramList(query)

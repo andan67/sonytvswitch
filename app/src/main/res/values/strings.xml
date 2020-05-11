@@ -37,7 +37,7 @@
     <string name="pref_basic_preferences">About</string>
 
     <string name="pref_copyright_title">Copyright</string>
-    <string name="pref_copyright">&#169; 2019 by andan</string>
+    <string name="pref_copyright">&#169; 2020 by andan</string>
 
     <string name="pref_app_license_title">License</string>
     <string name="pref_app_license_summary">Show license information</string>
@@ -163,14 +163,14 @@
     <string name="add_control_psk">Pre-shared key (optional)</string>
     <string name="add_control_psk_hint">Enter pre-shared of TV key if defined</string>
 
-    <string name="add_control_challenge">Challenge code as displayed on TV screen</string>
+    <string name="add_control_challenge">Challenge code yx displayed on TV screen</string>
     <string name="add_control_challenge_hint">4 digit challenge code</string>
 
     <string name="add_control_host_title">Define Host/IP address</string>
     <string name="add_control_host_instructions">
-        \u25BA Switch on TV
-        \n\u25BA Enter host/IP address of TV or
-        \n\u25BA Select discovered device (if found) from drop down box
+        \u25BA Switch on Sony TV
+        \n\u25BA Enter IP address of the TV into "IP/Host address" field
+        \n\u25BA Alternatively select discovered device (if found) from drop down box
         \n\u25BA Click next
         \n\u25BA See [Help] menu for more information
     </string>
@@ -180,13 +180,14 @@
     <string name="add_control_host_neg">Cancel</string>
     <string name="add_control_host_pos">Next</string>
     <string name="simple_service_discovery">Discover Sony devices</string>
+    <string name="add_control_host_failed_msg">Test of host/ip unsuccessful. Try again!</string>
 
     <string name="add_control_register_title">Register control</string>
     <string name="add_control_register_instructions">
         \u25BA Enter nickname for the control and a device name
         \n\u25BA Enter pre-shared key as defined for your TV (optional)
-        \n\u25BA Click finish
-        \n\u25BA Possibly enter challenge code and click finish
+        \n\u25BA Click register
+        \n\u25BA Possibly enter challenge code if pre-shared key has not been defined
         \n\u25BA See [Help] menu for more information
     </string>
     <string name="add_control_register_unauthorized_challenge_message">Registration error. Please retry.</string>
