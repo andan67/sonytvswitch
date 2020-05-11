@@ -188,11 +188,11 @@ to the corresponding channel/program on the Sony TV as defined by the channel ma
 ### Troubleshooting
 
 #### 'Forbidden error' message
-- Re-register control in Manage Control menu as described ([here](#manage-control))
+- Re-register control in Manage Control menu as described [here](#manage-control)
 
 #### Channels cannot be switched from TV Browser app
 - Stop and and re-open TV Browser app
-- Check activation status
+- Check plugin activation status
 - Deactivate/re-activate plugin
 - Check active control in *Sony TV Switch*
 
