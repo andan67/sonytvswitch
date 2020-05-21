@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.andan.android.tvbrowser.sonycontrolplugin.MainActivity">
+
+    <item
+        android:id="@+id/register_control"
+        android:orderInCategory="10"
+        android:title="@string/register_control_action" />
+
+    <item
+        android:id="@+id/delete_control"
+        android:orderInCategory="10"
+        android:title="@string/delete_control_action" />
+
+    <item
+        android:id="@+id/get_program_list"
+        android:orderInCategory="10"
+        android:title="@string/get_tv_program_list_action" />
+
+    <item
+        android:id="@+id/enable_wol"
+        android:orderInCategory="10"
+        android:title="@string/enable_wol_action" />
+
+</menu>

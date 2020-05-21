@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="clickListener"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ui.RemoteControlFragment.CommandListener" />
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="261dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contraintLayout"
+            android:layout_width="@dimen/rc_layout_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top"
+            android:background="#313131"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteX="25dp">
+
+            <ImageButton
+                android:id="@+id/input"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Input&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_remote_dpadviewinput" />
+
+            <Button
+                android:id="@+id/guide"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;GGuide&quot;)}"
+                android:text="GUIDE"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@+id/input"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/sen"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_blue_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;SEN&quot;)}"
+                android:text="SEN"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@+id/guide"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/power"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_green_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;PowerOff&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintStart_toEndOf="@+id/sen"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_remote_dpadviewpowerbutton" />
+
+            <ImageButton
+                android:id="@+id/bdv_display"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Display&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@+id/input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_remote_bdv_display" />
+
+            <Button
+                android:id="@+id/home"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_blue_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Home&quot;)}"
+                android:text="Home"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@+id/power"
+                app:layout_constraintTop_toBottomOf="@+id/power" />
+
+            <ImageButton
+                android:id="@+id/arrow_up"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Up&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sen"
+                app:srcCompat="@drawable/ic_keyboard_arrow_up" />
+
+            <ImageButton
+                android:id="@+id/arrow_left"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginEnd="@dimen/rc_button_arrow_margin"
+                android:layout_marginRight="@dimen/rc_button_arrow_margin"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Left&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/arrow_cross"
+                app:layout_constraintEnd_toStartOf="@+id/arrow_cross"
+                app:layout_constraintTop_toTopOf="@+id/arrow_cross"
+                app:srcCompat="@drawable/ic_keyboard_arrow_left" />
+
+            <ImageButton
+                android:id="@+id/arrow_right"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginStart="@dimen/rc_button_arrow_margin"
+                android:layout_marginLeft="@dimen/rc_button_arrow_margin"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Right&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/arrow_cross"
+                app:layout_constraintStart_toEndOf="@+id/arrow_cross"
+                app:layout_constraintTop_toTopOf="@+id/arrow_cross"
+                app:srcCompat="@drawable/ic_keyboard_arrow_right" />
+
+            <ImageButton
+                android:id="@+id/arrow_down"
+                android:layout_width="@dimen/rc_button_arrow_width"
+                android:layout_height="@dimen/rc_button_arrow_height"
+                android:layout_marginTop="@dimen/rc_button_arrow_margin"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Down&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/arrow_cross"
+                app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+
+            <Button
+                android:id="@+id/arrow_cross"
+                android:layout_width="@dimen/rc_button_cross_width"
+                android:layout_height="@dimen/rc_button_cross_height"
+                android:layout_marginTop="@dimen/rc_button_arrow_margin"
+                android:background="@drawable/rc_ok_button"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Confirm&quot;)}"
+                android:text="OK"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/arrow_up" />
+
+            <Button
+                android:id="@+id/options"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Options&quot;)}"
+                android:text="Options"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/arrow_down"
+                app:layout_constraintEnd_toEndOf="@+id/home" />
+
+            <Button
+                android:id="@+id/back"
+                android:layout_width="@dimen/rc_button_mid_width"
+                android:layout_height="@dimen/rc_button_mid_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Return&quot;)}"
+                android:text="Return"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/arrow_down"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageButton
+                android:id="@+id/mute"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Mute&quot;)}"
+                android:scrollbarAlwaysDrawHorizontalTrack="false"
+                android:tint="@android:color/white"
+                app:layout_constraintStart_toStartOf="@+id/back"
+                app:layout_constraintTop_toBottomOf="@+id/back"
+                app:srcCompat="@drawable/ic_remote_bdv_mute" />
+
+            <ImageButton
+                android:id="@+id/vol_down"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;VolumeDown&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/vol_up"
+                app:layout_constraintEnd_toStartOf="@+id/vol_up"
+                app:srcCompat="@drawable/ic_remove" />
+
+            <ImageButton
+                android:id="@+id/vol_up"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;VolumeUp&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/prg_up"
+                app:layout_constraintStart_toStartOf="@+id/arrow_down"
+                app:srcCompat="@drawable/ic_add" />
+
+            <ImageButton
+                android:id="@+id/prg_down"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;ChannelDown&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/prg_up"
+                app:layout_constraintEnd_toStartOf="@+id/prg_up"
+                app:srcCompat="@drawable/ic_remove" />
+
+            <ImageButton
+                android:id="@+id/prg_up"
+                android:layout_width="@dimen/rc_button_small_width"
+                android:layout_height="@dimen/rc_button_small_height"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;ChannelUp&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/mute"
+                app:layout_constraintEnd_toEndOf="@+id/options"
+                app:srcCompat="@drawable/ic_add" />
+
+            <TextView
+                android:id="@+id/textViewProg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="PROG"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/prg_down"
+                app:layout_constraintEnd_toEndOf="@+id/prg_up"
+                app:layout_constraintStart_toStartOf="@+id/prg_down" />
+
+            <TextView
+                android:id="@+id/textViewVol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="VOLUME"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/vol_down"
+                app:layout_constraintEnd_toEndOf="@+id/vol_up"
+                app:layout_constraintStart_toStartOf="@+id/vol_down" />
+
+            <Button
+                android:id="@+id/syncMenu"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;SyncMenu&quot;)}"
+                android:text="Sync\nMenu"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mute" />
+
+            <Button
+                android:id="@+id/analogDigital"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Digital&quot;)}"
+                android:text="Anolag\nDigital"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/syncMenu"
+                app:layout_constraintStart_toEndOf="@+id/syncMenu" />
+
+            <Button
+                android:id="@+id/exit"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Exit&quot;)}"
+                android:text="EXIT"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/analogDigital"
+                app:layout_constraintStart_toEndOf="@+id/analogDigital" />
+
+            <Button
+                android:id="@+id/radioTV"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Tv_Radio&quot;)}"
+                android:text="Radio\nTV"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/exit"
+                app:layout_constraintStart_toEndOf="@+id/exit" />
+
+            <Button
+                android:id="@+id/one"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num1&quot;)}"
+                android:text="1"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/syncMenu" />
+
+            <TextView
+                android:id="@+id/textViewOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="/"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/one"
+                app:layout_constraintEnd_toEndOf="@+id/one"
+                app:layout_constraintStart_toStartOf="@+id/one" />
+
+            <Button
+                android:id="@+id/two"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num2&quot;)}"
+                android:text="2"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/one"
+                app:layout_constraintStart_toEndOf="@+id/one" />
+
+            <TextView
+                android:id="@+id/textViewTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="abc"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/two"
+                app:layout_constraintEnd_toEndOf="@+id/two"
+                app:layout_constraintStart_toStartOf="@+id/two" />
+
+            <Button
+                android:id="@+id/three"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num3&quot;)}"
+                android:text="3"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/two"
+                app:layout_constraintStart_toEndOf="@+id/two" />
+
+            <TextView
+                android:id="@+id/textViewThree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="def"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/three"
+                app:layout_constraintEnd_toEndOf="@+id/three"
+                app:layout_constraintStart_toStartOf="@+id/three" />
+
+            <Button
+                android:id="@+id/four"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num4&quot;)}"
+                android:text="4"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/one" />
+
+            <TextView
+                android:id="@+id/textViewFour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="ghi"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/four"
+                app:layout_constraintEnd_toEndOf="@+id/four"
+                app:layout_constraintStart_toStartOf="@+id/four" />
+
+            <Button
+                android:id="@+id/five"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num5&quot;)}"
+                android:text="5"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/four"
+                app:layout_constraintStart_toEndOf="@+id/four" />
+
+            <TextView
+                android:id="@+id/textViewFive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="jkl"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/five"
+                app:layout_constraintEnd_toEndOf="@+id/five"
+                app:layout_constraintStart_toStartOf="@+id/five" />
+
+            <Button
+                android:id="@+id/six"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num6&quot;)}"
+                android:text="6"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/five"
+                app:layout_constraintStart_toEndOf="@+id/five" />
+
+            <TextView
+                android:id="@+id/textViewSix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="mno"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/six"
+                app:layout_constraintEnd_toEndOf="@+id/six"
+                app:layout_constraintStart_toStartOf="@+id/six" />
+
+            <Button
+                android:id="@+id/seven"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num7&quot;)}"
+                android:text="7"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/four" />
+
+            <TextView
+                android:id="@+id/textViewSeven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="pqrs"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/seven"
+                app:layout_constraintEnd_toEndOf="@+id/seven"
+                app:layout_constraintStart_toStartOf="@+id/seven" />
+
+            <Button
+                android:id="@+id/eight"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num8&quot;)}"
+                android:text="8"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/seven"
+                app:layout_constraintStart_toEndOf="@+id/seven" />
+
+            <TextView
+                android:id="@+id/textViewEight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="tuv"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/eight"
+                app:layout_constraintEnd_toEndOf="@+id/eight"
+                app:layout_constraintStart_toStartOf="@+id/eight" />
+
+            <Button
+                android:id="@+id/nine"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num9&quot;)}"
+                android:text="9"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/eight"
+                app:layout_constraintStart_toEndOf="@+id/eight" />
+
+            <TextView
+                android:id="@+id/textViewNine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="wxyz"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/nine"
+                app:layout_constraintEnd_toEndOf="@+id/nine"
+                app:layout_constraintStart_toStartOf="@+id/nine" />
+
+            <Button
+                android:id="@+id/zero"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Num0&quot;)}"
+                android:text="0"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/iManual"
+                app:layout_constraintStart_toEndOf="@+id/iManual" />
+
+            <TextView
+                android:id="@+id/textViewZero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="sans-serif-light"
+                android:text="\u2423"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/zero"
+                app:layout_constraintEnd_toEndOf="@+id/zero"
+                app:layout_constraintStart_toStartOf="@+id/zero" />
+
+            <Button
+                android:id="@+id/enter"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Enter&quot;)}"
+                android:text="Enter"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/zero"
+                app:layout_constraintStart_toEndOf="@+id/zero" />
+
+            <ImageButton
+                android:id="@+id/red"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Red&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@color/commandRed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/zero"
+                app:srcCompat="@drawable/rc_rect_shape" />
+
+            <ImageButton
+                android:id="@+id/green"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Green&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@color/commandGreen"
+                app:layout_constraintBottom_toBottomOf="@+id/red"
+                app:layout_constraintStart_toEndOf="@+id/red"
+                app:srcCompat="@drawable/rc_rect_shape" />
+
+            <ImageButton
+                android:id="@+id/yellow"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Yellow&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@color/commandYellow"
+                app:layout_constraintBottom_toBottomOf="@+id/green"
+                app:layout_constraintStart_toEndOf="@+id/green"
+                app:srcCompat="@drawable/rc_rect_shape" />
+
+            <ImageButton
+                android:id="@+id/blue"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Blue&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@color/commandBlue"
+                app:layout_constraintBottom_toBottomOf="@+id/yellow"
+                app:layout_constraintStart_toEndOf="@+id/yellow"
+                app:srcCompat="@drawable/rc_rect_shape" />
+
+            <ImageButton
+                android:id="@+id/skip_previous"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Prev&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/red"
+                app:srcCompat="@drawable/ic_skip_previous" />
+
+            <ImageButton
+                android:id="@+id/pause"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Pause&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/skip_previous"
+                app:layout_constraintStart_toEndOf="@+id/skip_previous"
+                app:srcCompat="@drawable/ic_pause" />
+
+            <ImageButton
+                android:id="@+id/stop"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Stop&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/pause"
+                app:layout_constraintStart_toEndOf="@+id/pause"
+                app:srcCompat="@drawable/ic_stop" />
+
+            <ImageButton
+                android:id="@+id/skip_next"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Next&quot;)}"
+                android:scaleType="centerInside"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/stop"
+                app:layout_constraintStart_toEndOf="@+id/stop"
+                app:srcCompat="@drawable/ic_skip_next" />
+
+            <ImageButton
+                android:id="@+id/fast_rewind"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Rewind&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/skip_previous"
+                app:srcCompat="@drawable/ic_fast_rewind" />
+
+            <ImageButton
+                android:id="@+id/play"
+                android:layout_width="@dimen/rc_button_play_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Play&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/fast_rewind"
+                app:layout_constraintStart_toEndOf="@+id/fast_rewind"
+                app:srcCompat="@drawable/ic_play_arrow" />
+
+            <ImageButton
+                android:id="@+id/fast_forward"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Forward&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/play"
+                app:layout_constraintStart_toEndOf="@+id/play"
+                app:srcCompat="@drawable/ic_fast_forward" />
+
+            <Button
+                android:id="@+id/tv_pause"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;TvPause&quot;)}"
+                android:text="TV PAUSE"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fast_rewind" />
+
+            <Button
+                android:id="@+id/title_list"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Favorites&quot;)}"
+                android:text="Title List"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_pause"
+                app:layout_constraintStart_toEndOf="@+id/tv_pause" />
+
+            <ImageButton
+                android:id="@+id/record"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Rec&quot;)}"
+                android:tint="@color/commandRed"
+                app:layout_constraintBottom_toBottomOf="@+id/title_list"
+                app:layout_constraintStart_toEndOf="@+id/title_list"
+                app:srcCompat="@drawable/rc_circle_shape" />
+
+            <Button
+                android:id="@+id/three_d"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;Mode3D&quot;)}"
+                android:text="3D"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/record"
+                app:layout_constraintStart_toEndOf="@+id/record" />
+
+            <ImageButton
+                android:id="@+id/view_wide"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Wide&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_pause"
+                app:srcCompat="@drawable/ic_remote_colorkeyviewwide" />
+
+            <ImageButton
+                android:id="@+id/view_cc"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;ClosedCaption&quot;)}"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/view_wide"
+                app:layout_constraintStart_toEndOf="@+id/view_wide"
+                app:srcCompat="@drawable/ic_remote_colorkeyviewcc" />
+
+            <Button
+                android:id="@+id/audio"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Audio&quot;)}"
+                android:fontFamily="sans-serif-medium"
+                android:text="Audio"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/view_cc"
+                app:layout_constraintStart_toEndOf="@+id/view_cc" />
+
+            <ImageButton
+                android:id="@+id/bdv_teletext"
+                android:layout_width="@dimen/rc_button_large_width"
+                android:layout_height="@dimen/rc_button_large_height"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:onClick="@{() -> clickListener.onClick(&quot;Teletext&quot;)}"
+                android:tint="@android:color/holo_green_dark"
+                app:layout_constraintBottom_toBottomOf="@+id/audio"
+                app:layout_constraintStart_toEndOf="@+id/audio"
+                app:srcCompat="@drawable/ic_remote_teletext" />
+
+            <Button
+                android:id="@+id/iManual"
+                android:layout_width="@dimen/rc_button_number_width"
+                android:layout_height="@dimen/rc_button_number_height"
+                android:layout_marginStart="14dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/rc_btn_dark_selector"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> clickListener.onClick(&quot;iManual&quot;)}"
+                android:text="i-Manual"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seven" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</layout>

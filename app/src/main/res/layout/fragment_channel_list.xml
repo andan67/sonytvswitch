@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
+    </data>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listChannelMap"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ChannelMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey_900"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".ui.ChannelMapFragment"
+        tools:listitem="@layout/map_channnel_item" />
+
+</layout>
