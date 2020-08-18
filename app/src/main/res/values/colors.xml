@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="buttonBlue">#3F51B5</color>
+    <color name="buttonGreen">#4CAF50</color>
+    <color name="commandRed">#D50000</color>
+    <color name="commandGreen">#00D500</color>
+    <color name="commandYellow">#D5D500</color>
+    <color name="commandBlue">#0000D5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+</resources>

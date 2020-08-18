@@ -1,0 +1,2 @@
+-keep class org.andan.android.tvbrowser.sonycontrolplugin.** { *; }
+-keepattributes SourceFile,LineNumberTable

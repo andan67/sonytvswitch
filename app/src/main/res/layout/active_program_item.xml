@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="sonyControlViewModel"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/active_program_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey_800">
+
+        <TextView
+            android:id="@+id/active_program_channelid"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:gravity="end"
+            android:text="@{sonyControlViewModel.playingContentInfo.dispNum}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="8888" />
+
+        <TextView
+            android:id="@+id/active_program_channel_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:text="@{sonyControlViewModel.playingContentInfo.title}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBaseline_toBaselineOf="@+id/active_program_channelid"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/active_program_channelid"
+            tools:text="Das Erste Das Erste Das Erste Das Erste Das Erste" />
+
+        <ImageView
+            android:id="@+id/active_program_play_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toStartOf="@+id/active_program_channel_name"
+            app:layout_constraintTop_toTopOf="@+id/active_program_title"
+            app:srcCompat="@drawable/ic_play_arrow" />
+
+        <TextView
+            android:id="@+id/active_program_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:text="@{sonyControlViewModel.playingContentInfo.programTitle}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/active_program_source_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_channel_name"
+            tools:text="Sportschau Sportschau Sportschau Sportschau Sportschau" />
+
+        <ImageView
+            android:id="@+id/active_program_time_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toStartOf="@+id/active_program_play_icon"
+            app:layout_constraintTop_toTopOf="@+id/active_program_time"
+            app:srcCompat="@drawable/ic_access_time" />
+
+        <TextView
+            android:id="@+id/active_program_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="2dp"
+            android:text="@{sonyControlViewModel.playingContentInfo.startEndTimeFormatted}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_title"
+            tools:text="20:15 - 21:45" />
+
+        <ImageView
+            android:id="@+id/active_program_source_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="TODO"
+            android:tint="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toStartOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toTopOf="@+id/active_program_source"
+            app:srcCompat="@drawable/ic_input" />
+
+        <TextView
+            android:id="@+id/active_program_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="2dp"
+            android:text="@{sonyControlViewModel.playingContentInfo.source}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constraintStart_toEndOf="@+id/active_program_time_icon"
+            app:layout_constraintTop_toBottomOf="@+id/active_program_time"
+            tools:text="dvbs (general)" />
+
+        <ImageView
+            android:id="@+id/active_program_mapped_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:tint="@android:color/holo_blue_dark"
+            android:visibility="@{(sonyControlViewModel.getChannelForUri(sonyControlViewModel.playingContentInfo.uri).length >0) ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintStart_toEndOf="@+id/active_program_source"
+            app:layout_constraintTop_toTopOf="@+id/active_program_mapped_name"
+            app:srcCompat="@drawable/ic_action_arrow_right" />
+
+        <TextView
+            android:id="@+id/active_program_mapped_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@{sonyControlViewModel.getChannelForUri(sonyControlViewModel.playingContentInfo.uri)}"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@android:color/holo_blue_dark"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/active_program_mapped_icon"
+            app:layout_constraintTop_toTopOf="@+id/active_program_source"
+            tools:text="Das Erste (ARD) Das Erste (ARD) Das Erste (ARD)" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label ordering must match values -->
+    <array name="pref_start_screen_labels">
+        <item>@string/pref_start_screen_label_control</item>
+        <item>@string/pref_start_screen_label_channels</item>
+    </array>
+
+    <array name="pref_start_screen_values">
+        <item>@string/pref_start_screen_value_control</item>
+        <item>@string/pref_start_screen_value_channels</item>
+    </array>
+
+</resources>
