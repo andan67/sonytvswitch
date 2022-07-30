@@ -66,8 +66,6 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val _binding = FragmentAddControlRegisterDialogBinding.bind(containerView)
-        binding = _binding
 
         initView()
 
@@ -132,7 +130,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
         dialogBuilder.setMessage(R.string.add_control_register_title)
 
         //var hostValue = ""
-
+        val _binding = FragmentAddControlRegisterDialogBinding.bind(containerView)
+        binding = _binding
         dialogBuilder.setView(containerView)
         Timber.d(" dialogBuilder.setView(dialogView)")
         dialogBuilder.setPositiveButton(R.string.add_control_register_pos, null)

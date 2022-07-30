@@ -54,8 +54,6 @@ class AddControlHostDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val _binding = FragmentAddControlHostDialogBinding.bind(containerView)
-        binding = _binding
 
         //observer needs to be defined in onCreateView
         sonyControlViewModel.sonyIpAndDeviceList.observe(viewLifecycleOwner, Observer {
@@ -111,6 +109,8 @@ class AddControlHostDialogFragment : DialogFragment() {
         Timber.d("onCreateDialog")
         val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setView(containerView)
+        val _binding = FragmentAddControlHostDialogBinding.bind(containerView)
+        binding = _binding
         Timber.d(" dialogBuilder.setView(dialogView)")
         Timber.d("isAddControlMode: %s", arguments?.get("isAddControlMode"))
         isAddedControlMode = arguments?.getBoolean("isAddControlMode", false)!!
