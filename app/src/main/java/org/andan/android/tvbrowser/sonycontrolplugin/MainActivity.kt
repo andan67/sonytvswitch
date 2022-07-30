@@ -32,7 +32,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        val selectActiveControlSpinner = navView.getHeaderView(0).findViewById<Spinner>(R.id.channelMapSelectControlSpinner)
+        val selectActiveControlSpinner =
+            navView.getHeaderView(0).findViewById<Spinner>(R.id.channelMapSelectControlSpinner)
         val navController = findNavController(R.id.nav_host_fragment)
 
         val sonyControlViewModel: SonyControlViewModel by viewModels()
@@ -43,8 +44,8 @@ class MainActivity : AppCompatActivity() {
                 "pref_start_screen",
                 "program_list_screen"
             )) {
-                "program_list_screen" -> graph.startDestination = R.id.nav_channel_list
-                else -> graph.startDestination = R.id.nav_remote_control
+                "program_list_screen" -> graph.setStartDestination(R.id.nav_channel_list)
+                else -> graph.setStartDestination(R.id.nav_remote_control)
             }
             navController.graph = graph
         }
@@ -66,7 +67,11 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         controlListAdapter =
-            ArrayAdapter(this, R.layout.control_spinner_item, sonyControlViewModel.sonyControls.value!!.controls)
+            ArrayAdapter(
+                this,
+                R.layout.control_spinner_item,
+                sonyControlViewModel.sonyControls.value!!.controls
+            )
 
         selectActiveControlSpinner.adapter = controlListAdapter
         selectActiveControlSpinner.setSelection(sonyControlViewModel.sonyControls.value!!.selected)

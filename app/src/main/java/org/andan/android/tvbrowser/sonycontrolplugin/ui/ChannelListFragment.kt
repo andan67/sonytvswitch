@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.ChannelItemBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelListBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.EventObserver
@@ -128,13 +128,14 @@ class ChannelListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if(sonyControlViewModel.selectedSonyControl.value!= null) sonyControlViewModel.fetchPlayingContentInfo()
+        if (sonyControlViewModel.selectedSonyControl.value != null) sonyControlViewModel.fetchPlayingContentInfo()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.program_list_menu, menu)
 
-        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager =
+            requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))

@@ -14,16 +14,14 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
-import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.collections.set
 
 class SonyControlViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-    private val sonyControlRepository: SonyControlRepository = SonyControlApplication.get().appComponent.sonyRepository()
+    private val sonyControlRepository: SonyControlRepository =
+        SonyControlApplication.get().appComponent.sonyRepository()
 
     val requestErrorMessage = sonyControlRepository.responseMessage
     val registrationResult = sonyControlRepository.registrationResult
@@ -38,7 +36,7 @@ class SonyControlViewModel : ViewModel() {
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
 
-    var addedControlHostAddress: String =""
+    var addedControlHostAddress: String = ""
 
     private var channelSearchQuery: String? = null
 
@@ -66,7 +64,8 @@ class SonyControlViewModel : ViewModel() {
     val sonyIpAndDeviceList: LiveData<List<SSDP.IpDeviceItem>> = _sonyIpAndDeviceList
 
     private val _interfaceInformation = MutableLiveData<Resource<InterfaceInformationResponse>>()
-    val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> = _interfaceInformation
+    val interfaceInformation: LiveData<Resource<InterfaceInformationResponse>> =
+        _interfaceInformation
 
     private val _powerStatus = MutableLiveData<Resource<PowerStatusResponse>>()
     val powerStatus: LiveData<Resource<PowerStatusResponse>> = _powerStatus
@@ -114,7 +113,7 @@ class SonyControlViewModel : ViewModel() {
 
     private fun refreshDerivedVariablesForSelectedControl() {
         Timber.d("refreshDerivedVariablesForSelectedControl()")
-        selectedSonyControl.value?.let {control ->
+        selectedSonyControl.value?.let { control ->
             // helper collections for channel
             channelNameList.clear()
             uriChannelMap.clear()
@@ -143,8 +142,8 @@ class SonyControlViewModel : ViewModel() {
 
     fun filterChannelList(query: String?) {
         Timber.d("filter channel list query='$query' ")
-        selectedSonyControl.value?.let {control ->
-        channelSearchQuery = query
+        selectedSonyControl.value?.let { control ->
+            channelSearchQuery = query
             filteredChannelList.value = control.channelList.filter { p ->
                 channelSearchQuery.isNullOrEmpty() || p.title.contains(
                     channelSearchQuery!!,
@@ -262,9 +261,9 @@ class SonyControlViewModel : ViewModel() {
 
     fun fetchSonyIpAndDeviceList() = viewModelScope.launch(Dispatchers.IO) {
         val list = sonyControlRepository.getSonyIpAndDeviceList()
-       /* val list = listOf<SSDP.IpDeviceItem>(
-            SSDP.IpDeviceItem("192.168.178.27", "BRAVIA KDL-50W656A"),
-            SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))*/
+        /* val list = listOf<SSDP.IpDeviceItem>(
+             SSDP.IpDeviceItem("192.168.178.27", "BRAVIA KDL-50W656A"),
+             SSDP.IpDeviceItem("192.168.178.37", "BRAVIA KDL-40W250"))*/
         Timber.d("fetchSonyIpAndDeviceList(): $list")
         _sonyIpAndDeviceList.postValue(list)
     }
@@ -273,9 +272,10 @@ class SonyControlViewModel : ViewModel() {
         registerControl(control, null)
     }
 
-    fun registerControl(control: SonyControl, challenge: String?) = viewModelScope.launch(Dispatchers.IO) {
-        sonyControlRepository.registerControl(control, challenge)
-    }
+    fun registerControl(control: SonyControl, challenge: String?) =
+        viewModelScope.launch(Dispatchers.IO) {
+            sonyControlRepository.registerControl(control, challenge)
+        }
 
     fun postRegistrationFetches() = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.fetchRemoteControllerInfo()
@@ -293,7 +293,7 @@ class SonyControlViewModel : ViewModel() {
     fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
         selectedSonyControl.value?.let { control ->
             val code = control.commandList[name]
-            if(!code.isNullOrEmpty()) {
+            if (!code.isNullOrEmpty()) {
                 sonyControlRepository.sendIRCC(code)
             }
         }

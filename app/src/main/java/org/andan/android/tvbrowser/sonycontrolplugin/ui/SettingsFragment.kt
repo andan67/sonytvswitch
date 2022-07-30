@@ -12,7 +12,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
-import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import java.io.File
 import java.io.FileInputStream
@@ -26,11 +25,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceScreen.findPreference<Preference>("license")!!.onPreferenceClickListener =
             Preference.OnPreferenceClickListener {
                 // dialog code here
-                val builder = AlertDialog.Builder(requireContext(),
+                val builder = AlertDialog.Builder(
+                    requireContext(),
                     R.style.Theme_AppCompat_Dialog_Alert
                 )
                 builder.setTitle(resources.getString(R.string.pref_app_license_title))
-                builder.setMessage(HtmlCompat.fromHtml(context?.assets?.open("license.html")?.bufferedReader().use { it!!.readText() }, HtmlCompat.FROM_HTML_MODE_LEGACY))
+                builder.setMessage(
+                    HtmlCompat.fromHtml(
+                        context?.assets?.open("license.html")?.bufferedReader()
+                            .use { it!!.readText() }, HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                )
                 builder.setPositiveButton(resources.getString(R.string.dialog_ok), null)
                 val dialog = builder.create()
                 dialog.show()
@@ -46,8 +51,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 // dialog code here
                 true
             }
-        val applicationLogPreference = preferenceScreen.findPreference<Preference>("application_log")
-        if(applicationLogPreference!= null) {
+        val applicationLogPreference =
+            preferenceScreen.findPreference<Preference>("application_log")
+        if (applicationLogPreference != null) {
             if (BuildConfig.DEBUG) {
                 applicationLogPreference.onPreferenceClickListener =
                     Preference.OnPreferenceClickListener {

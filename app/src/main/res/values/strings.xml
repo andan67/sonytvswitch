@@ -129,7 +129,6 @@
     <string name="add_control_host_testing_msg">Testing connectivity…</string>
 
 
-
     <string name="add_control_register_title">Register control</string>
     <string name="add_control_register_instructions">
         \u25BA Enter nickname for the control and a device name

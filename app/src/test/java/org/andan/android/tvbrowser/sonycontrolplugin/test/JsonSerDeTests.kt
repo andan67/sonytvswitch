@@ -97,7 +97,7 @@ class JsonSerDeTests {
 
     @Test
     fun testUnicodeConversion() {
-        var text ="{\n" +
+        var text = "{\n" +
                 "  \"controls\": [\n" +
                 "    {\n" +
                 "      \"channelProgramMap\": {\n" +
@@ -107,6 +107,7 @@ class JsonSerDeTests {
         println(removeUTFCharacters(text))
 
     }
+
     fun removeUTFCharacters(data: String): String {
         val p: Pattern = Pattern.compile("\\\\u(\\p{XDigit}{4})")
         //val p: Pattern = Pattern.compile("\\\\u([0-9A-Fa-f]{4})")

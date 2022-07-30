@@ -65,15 +65,15 @@ class ManageControlFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        if(sonyControlViewModel.selectedSonyControl.value == null) {
-            menu.findItem(R.id.delete_control ).isEnabled = false
-            menu.findItem(R.id.register_control ).isEnabled = false
-            menu.findItem(R.id.get_program_list ).isEnabled = false
-            menu.findItem(R.id.enable_wol ).isEnabled = false
-            menu.findItem(R.id.check_set_host ).isEnabled = false
+        if (sonyControlViewModel.selectedSonyControl.value == null) {
+            menu.findItem(R.id.delete_control).isEnabled = false
+            menu.findItem(R.id.register_control).isEnabled = false
+            menu.findItem(R.id.get_program_list).isEnabled = false
+            menu.findItem(R.id.enable_wol).isEnabled = false
+            menu.findItem(R.id.check_set_host).isEnabled = false
         }
         if (!BuildConfig.DEBUG) {
-            menu.findItem(R.id.save_controls ).isVisible = false
+            menu.findItem(R.id.save_controls).isVisible = false
         }
 
     }
@@ -109,7 +109,8 @@ class ManageControlFragment : Fragment() {
             R.id.save_controls -> {
                 if (sonyControlViewModel.sonyControls.value != null) {
                     val file = File(requireContext().filesDir, "controls.json")
-                    var fileContent = GsonBuilder().setPrettyPrinting().create().toJson(sonyControlViewModel.sonyControls.value!!)
+                    var fileContent = GsonBuilder().setPrettyPrinting().create()
+                        .toJson(sonyControlViewModel.sonyControls.value!!)
                     file.writeText(sonyControlViewModel.removeUTFCharacters(fileContent))
                 }
             }

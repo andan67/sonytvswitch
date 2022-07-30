@@ -9,10 +9,10 @@
         android:id="@+id/nav_manage_control"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ManageControlFragment"
         android:label="@string/menu_manage_control"
-        tools:layout="@layout/fragment_manage_control" >
+        tools:layout="@layout/fragment_manage_control">
         <action
             android:id="@+id/action_nav_manage_control_to_nav_add_control_host"
-            app:destination="@id/nav_add_control_host" >
+            app:destination="@id/nav_add_control_host">
             <argument
                 android:name="isAddControlMode"
                 android:defaultValue="false" />
@@ -29,7 +29,7 @@
         android:id="@+id/nav_add_control_host"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.AddControlHostDialogFragment"
         android:label="@string/menu_add_control"
-        tools:layout="@layout/fragment_add_control_host_dialog" >
+        tools:layout="@layout/fragment_add_control_host_dialog">
         <argument
             android:name="isAddControlMode"
             app:argType="boolean"
@@ -41,7 +41,7 @@
         android:id="@+id/nav_channel_list"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelListFragment"
         android:label="@string/menu_show_channels"
-        tools:layout="@layout/fragment_channel_list" >
+        tools:layout="@layout/fragment_channel_list">
         <action
             android:id="@+id/action_nav_program_list_to_activeProgramDetailsFragment"
             app:destination="@id/activeProgramDetailsFragment" />
@@ -51,7 +51,7 @@
         android:id="@+id/nav_channel_map"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapFragment"
         android:label="@string/menu_channel_map_fragment_label"
-        tools:layout="@layout/fragment_channel_map" >
+        tools:layout="@layout/fragment_channel_map">
         <action
             android:id="@+id/action_nav_channel_list_to_channelMapSingleFragment"
             app:destination="@id/channelMapSingleFragment" />
@@ -61,30 +61,30 @@
         android:id="@+id/channelMapSingleFragment"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapSingleFragment"
         android:label="@string/channel_map_label"
-        tools:layout="@layout/fragment_channel_map_single"/>
+        tools:layout="@layout/fragment_channel_map_single" />
 
     <fragment
         android:id="@+id/nav_remote_control"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.RemoteControlFragment"
         android:label="@string/menu_remote_control"
-        tools:layout="@layout/fragment_remote_control"/>
+        tools:layout="@layout/fragment_remote_control" />
 
     <fragment
         android:id="@+id/nav_help"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.HelpFragment"
         android:label="@string/menu_help"
-        tools:layout="@layout/fragment_help"/>
+        tools:layout="@layout/fragment_help" />
 
     <fragment
         android:id="@+id/nav_settings"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.SettingsFragment"
-        android:label="@string/menu_settings"/>
+        android:label="@string/menu_settings" />
 
     <fragment
         android:id="@+id/activeProgramDetailsFragment"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ActiveProgramDetailsFragment"
         android:label="@string/active_program_fragment_label"
-        tools:layout="@layout/fragment_active_program_details"/>
+        tools:layout="@layout/fragment_active_program_details" />
 
 
 </navigation>

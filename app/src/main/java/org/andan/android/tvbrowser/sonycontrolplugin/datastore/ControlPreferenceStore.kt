@@ -8,10 +8,12 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import timber.log.Timber
 import javax.inject.Inject
 
-class ControlPreferenceStore @Inject constructor(context: Context): ControlsStore, TokenStore {
+class ControlPreferenceStore @Inject constructor(context: Context) : ControlsStore, TokenStore {
     private var controlsPreferences: SharedPreferences = context.getSharedPreferences(
-        context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE)
-    private var tokenPreferences: SharedPreferences = context.getSharedPreferences("token_store", Context.MODE_PRIVATE)
+        context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE
+    )
+    private var tokenPreferences: SharedPreferences =
+        context.getSharedPreferences("token_store", Context.MODE_PRIVATE)
 
     override fun loadControls(): SonyControls {
         val controlConfig = controlsPreferences.getString("controlConfig", "")
@@ -24,7 +26,7 @@ class ControlPreferenceStore @Inject constructor(context: Context): ControlsStor
 
         reconcileTokenStore(sonyControls)
         Timber.i("#loaded controls: ${sonyControls.controls.size}, selected=${sonyControls.selected}")
-        if (sonyControls.selected>=0) {
+        if (sonyControls.selected >= 0) {
             val uuid = sonyControls.controls[sonyControls.selected].uuid
             Timber.i("Selected control token: ${loadToken(uuid)}")
         }
@@ -47,22 +49,22 @@ class ControlPreferenceStore @Inject constructor(context: Context): ControlsStor
 
     private fun reconcileTokenStore(sonyControls: SonyControls) {
         // build set of existing uuids in sonyControls
-        val controlUuids = HashMap<String,SonyControl>()
+        val controlUuids = HashMap<String, SonyControl>()
         val tokenStoreEditor = tokenPreferences.edit()
         val tokenEntries = tokenPreferences.all
-        for(i in 0 until sonyControls.controls.size) {
+        for (i in 0 until sonyControls.controls.size) {
             val control = sonyControls.controls[i]
             val uuid = control.uuid
             controlUuids[uuid] = control
             // add token entry if it not exists
-            if(uuid !in tokenEntries.keys) {
+            if (uuid !in tokenEntries.keys) {
                 tokenStoreEditor.putString(uuid, control.cookie)
             }
         }
-        for(tokenEntry in tokenPreferences.all) {
+        for (tokenEntry in tokenPreferences.all) {
             val uuid = tokenEntry.key
             // remove token entry if not exists in list of controls (e.g. control has been deleted)
-            if(uuid !in controlUuids.keys) {
+            if (uuid !in controlUuids.keys) {
                 tokenStoreEditor.remove(uuid)
             } else {
                 controlUuids[uuid]!!.cookie = tokenEntry.value as String

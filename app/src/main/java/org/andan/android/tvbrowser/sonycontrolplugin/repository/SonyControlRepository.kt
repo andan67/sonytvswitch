@@ -12,9 +12,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_FATAL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_ERROR_NON_FATAL
@@ -65,12 +65,12 @@ class SonyControlRepository @Inject constructor(
 
     fun setSonyServiceContextForControl(control: SonyControl?) {
         sonyServiceContext.sonyService = api
-        if(control!=null) {
+        if (control != null) {
             sonyServiceContext.ip = control.ip
             sonyServiceContext.uuid = control.uuid
             sonyServiceContext.nickname = control.nickname
             sonyServiceContext.devicename = control.devicename
-            sonyServiceContext.preSharedKey = control.preSharedKey?:""
+            sonyServiceContext.preSharedKey = control.preSharedKey ?: ""
         }
     }
 
@@ -353,8 +353,13 @@ class SonyControlRepository @Inject constructor(
                     val jsonRpcResponse = response.body()
                     if (jsonRpcResponse?.error != null) {
                         _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_ERROR_NON_FATAL,
-                                jsonRpcResponse.error.asJsonArray.get(1).asString)))
+                            Event(
+                                RegistrationStatus(
+                                    REGISTRATION_ERROR_NON_FATAL,
+                                    jsonRpcResponse.error.asJsonArray.get(1).asString
+                                )
+                            )
+                        )
                     } else if (!isPSK && !response.headers()["Set-Cookie"].isNullOrEmpty()) {
                         // get token from set cookie and store
                         val cookieString: String? = response.headers()["Set-Cookie"]
@@ -368,7 +373,8 @@ class SonyControlRepository @Inject constructor(
                         )
                     } else if (isPSK) {
                         _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, "")))
+                            Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, ""))
+                        )
                     }
                 } else {
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED ||
@@ -377,18 +383,37 @@ class SonyControlRepository @Inject constructor(
                         // Navigate to enter challenge code view
                         if (!isPSK && challenge.isNullOrEmpty()) {
                             _registrationResult.postValue(
-                                Event(RegistrationStatus(REGISTRATION_REQUIRES_CHALLENGE_CODE, response.message())))
+                                Event(
+                                    RegistrationStatus(
+                                        REGISTRATION_REQUIRES_CHALLENGE_CODE,
+                                        response.message()
+                                    )
+                                )
+                            )
                         } else _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message())))
+                            Event(RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message()))
+                        )
                     } else {
                         _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_ERROR_NON_FATAL, response.message())))
+                            Event(
+                                RegistrationStatus(
+                                    REGISTRATION_ERROR_NON_FATAL,
+                                    response.message()
+                                )
+                            )
+                        )
                     }
                 }
             } catch (se: SocketTimeoutException) {
                 Timber.e("Error: ${se.message}")
                 _registrationResult.postValue(
-                    Event(RegistrationStatus(REGISTRATION_ERROR_FATAL, se.message ?: "Unknown failure")))
+                    Event(
+                        RegistrationStatus(
+                            REGISTRATION_ERROR_FATAL,
+                            se.message ?: "Unknown failure"
+                        )
+                    )
+                )
             } finally {
                 // reset context
                 setSonyServiceContextForControl(selectedSonyControl.value)
@@ -399,7 +424,7 @@ class SonyControlRepository @Inject constructor(
 
     suspend fun sendIRCC(code: String) {
         withContext(Dispatchers.IO) {
-            selectedSonyControl.value?.let {control ->
+            selectedSonyControl.value?.let { control ->
                 val requestBodyText =
                     SonyServiceUtil.SONY_IRCC_REQUEST_TEMPLATE.replace(
                         "<IRCCCode>",
@@ -430,8 +455,7 @@ class SonyControlRepository @Inject constructor(
                 selectedSonyControl.value?.let { control ->
                     WakeOnLan.wakeOnLan(control.ip, control.systemMacAddr)
                 }
-            }
-            catch (se: SocketTimeoutException) {
+            } catch (se: SocketTimeoutException) {
                 Timber.e("Error: ${se.message}")
             }
         }

@@ -24,8 +24,11 @@ class AppModule(private val context: Context) {
     @Nullable
     @Named("TokenStore")
     fun provideTokenStoreSharedPreferences(): SharedPreferences? {
-        val preferences =  context.getSharedPreferences("TokenStore", Context.MODE_PRIVATE)
-        preferences.edit().putString("TokenStore","auth=eab24792414cc9ad67fcf13e5693456c066b8a68a9728b6d037516fddbd7a656").apply()
+        val preferences = context.getSharedPreferences("TokenStore", Context.MODE_PRIVATE)
+        preferences.edit().putString(
+            "TokenStore",
+            "auth=eab24792414cc9ad67fcf13e5693456c066b8a68a9728b6d037516fddbd7a656"
+        ).apply()
         return preferences
     }
 
@@ -34,7 +37,10 @@ class AppModule(private val context: Context) {
     @Nullable
     @Named("Controls")
     fun provideControlsSharedPreferences(): SharedPreferences? {
-        return context.getSharedPreferences(context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE)
+        return context.getSharedPreferences(
+            context.getString(R.string.pref_control_file_key),
+            Context.MODE_PRIVATE
+        )
     }
 
     @Singleton

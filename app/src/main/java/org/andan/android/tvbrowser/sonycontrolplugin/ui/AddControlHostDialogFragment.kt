@@ -15,10 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.navArgs
-import kotlinx.android.synthetic.main.fragment_add_control_host_dialog.*
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentAddControlHostDialogBinding
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
@@ -34,13 +32,19 @@ class AddControlHostDialogFragment : DialogFragment() {
     private lateinit var sonyIpAndDeviceListAdapter: ArrayAdapter<SSDP.IpDeviceItem>
     private val deviceList = mutableListOf<SSDP.IpDeviceItem>()
     private var dialog: AlertDialog? = null
+
     //private var host: String = ""
     private var testMode = 0
     private var isAddedControlMode = false
 
+    private var binding: FragmentAddControlHostDialogBinding? = null
 
     private val containerView by lazy {
-        this.requireActivity().layoutInflater.inflate(R.layout.fragment_add_control_host_dialog, null, false) as ViewGroup
+        this.requireActivity().layoutInflater.inflate(
+            R.layout.fragment_add_control_host_dialog,
+            null,
+            false
+        ) as ViewGroup
     }
 
     override fun getView() = containerView
@@ -50,6 +54,9 @@ class AddControlHostDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val _binding = FragmentAddControlHostDialogBinding.bind(containerView)
+        binding = _binding
+
         //observer needs to be defined in onCreateView
         sonyControlViewModel.sonyIpAndDeviceList.observe(viewLifecycleOwner, Observer {
             Timber.d("observed change ${sonyControlViewModel.sonyIpAndDeviceList.value}")
@@ -62,12 +69,12 @@ class AddControlHostDialogFragment : DialogFragment() {
 
         sonyControlViewModel.powerStatus.observe(viewLifecycleOwner, Observer {
             if (it.data != null && it.status == Status.SUCCESS) {
-                if (testMode > 0 ) {
+                if (testMode > 0) {
                     //Timber.d("Product ${it.data.productName}")
                     Timber.d("Test succussful")
-                    if(!isAddedControlMode) {
-                        messageTextView!!.setTextColor(Color.GREEN)
-                        messageTextView!!.text = "Test successful"
+                    if (!isAddedControlMode) {
+                        binding!!.messageTextView.setTextColor(Color.GREEN)
+                        binding!!.messageTextView.text = "Test successful"
                     }
                     if (testMode == 2) {
                         Timber.d("Navigate to registration")
@@ -86,8 +93,8 @@ class AddControlHostDialogFragment : DialogFragment() {
                 }
             } else if (testMode > 0) {
                 Timber.d("Test unsuccessful")
-                messageTextView!!.setTextColor(Color.RED)
-                messageTextView!!.text = getString(R.string.add_control_host_failed_msg)
+                binding!!.messageTextView.setTextColor(Color.RED)
+                binding!!.messageTextView.text = getString(R.string.add_control_host_failed_msg)
             }
             testMode = 0
         })
@@ -97,6 +104,7 @@ class AddControlHostDialogFragment : DialogFragment() {
     override fun onDestroyView() {
         // avoid leak
         super.onDestroyView()
+        binding = null
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -108,16 +116,16 @@ class AddControlHostDialogFragment : DialogFragment() {
         isAddedControlMode = arguments?.getBoolean("isAddControlMode", false)!!
 
 
-        if(isAddedControlMode) {
+        if (isAddedControlMode) {
             dialogBuilder.setMessage(R.string.add_control_host_title)
             dialogBuilder.setPositiveButton(R.string.add_control_host_pos, null)
             dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
         } else {
             dialogBuilder.setMessage(R.string.add_control_host_check_title)
-            instructionsTextView.visibility=View.GONE
+            binding!!.instructionsTextView.visibility = View.GONE
             dialogBuilder.setPositiveButton(R.string.add_control_host_check_pos, null)
             dialogBuilder.setNegativeButton(R.string.add_control_host_neg) { dialog, _ -> dialog.cancel() }
-            dialogBuilder.setNeutralButton(R.string.add_control_host_neu,null)
+            dialogBuilder.setNeutralButton(R.string.add_control_host_neu, null)
         }
 
         dialog = dialogBuilder.create()
@@ -130,18 +138,18 @@ class AddControlHostDialogFragment : DialogFragment() {
         sonyIpAndDeviceListAdapter =
             ArrayAdapter(requireContext(), R.layout.control_spinner_item, deviceList)
 
-        deviceSpinner.adapter = sonyIpAndDeviceListAdapter
+        binding!!.deviceSpinner.adapter = sonyIpAndDeviceListAdapter
 
-        if(isAddedControlMode) {
+        if (isAddedControlMode) {
             sonyControlViewModel.addedControlHostAddress = ""
-        }
-        else {
+        } else {
             Timber.d("ip: ${sonyControlViewModel.selectedSonyControl.value?.ip}")
-            sonyControlViewModel.addedControlHostAddress = sonyControlViewModel.selectedSonyControl.value?.ip?:""
-            addControlIPEditText.setText(sonyControlViewModel.addedControlHostAddress)
+            sonyControlViewModel.addedControlHostAddress =
+                sonyControlViewModel.selectedSonyControl.value?.ip ?: ""
+            binding!!.addControlIPEditText.setText(sonyControlViewModel.addedControlHostAddress)
         }
 
-        deviceSpinner.onItemSelectedListener = object :
+        binding!!.deviceSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 adapterView: AdapterView<*>,
@@ -149,11 +157,11 @@ class AddControlHostDialogFragment : DialogFragment() {
                 position: Int,
                 id: Long
             ) {
-                if(position > 0) {
+                if (position > 0) {
                     Timber.d("onItemSelected $position")
                     sonyControlViewModel.addedControlHostAddress = deviceList[position].ip
                     hasSelected = true
-                    addControlIPEditText.setText(sonyControlViewModel.addedControlHostAddress)
+                    binding!!.addControlIPEditText.setText(sonyControlViewModel.addedControlHostAddress)
                 }
                 //deviceSpinner.performItemClick(view, position, id)
             }
@@ -162,11 +170,12 @@ class AddControlHostDialogFragment : DialogFragment() {
             }
         }
 
-        addControlIPEditText.doAfterTextChanged {
-            Timber.d("doAfterTextChanged: ${deviceSpinner.selectedItemPosition} $hasSelected")
-            if(!hasSelected) {
-                deviceSpinner.setSelection(0)
-                sonyControlViewModel.addedControlHostAddress = addControlIPEditText.text.toString()
+        binding!!.addControlIPEditText.doAfterTextChanged {
+            Timber.d("doAfterTextChanged: ${binding!!.deviceSpinner.selectedItemPosition} $hasSelected")
+            if (!hasSelected) {
+                binding!!.deviceSpinner.setSelection(0)
+                sonyControlViewModel.addedControlHostAddress =
+                    binding!!.addControlIPEditText.text.toString()
             }
             hasSelected = false
         }
@@ -177,13 +186,13 @@ class AddControlHostDialogFragment : DialogFragment() {
                 // dialog won't close by default
                 Timber.d("Test host=$host")
                 testMode = 1
-                messageTextView!!.setTextColor(Color.GRAY)
-                messageTextView!!.text = getString(R.string.add_control_host_testing_msg)
+                binding!!.messageTextView.setTextColor(Color.GRAY)
+                binding!!.messageTextView.text = getString(R.string.add_control_host_testing_msg)
                 sonyControlViewModel.fetchPowerStatus(sonyControlViewModel.addedControlHostAddress)
             }
             val positiveButton = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                if(isAddedControlMode) {
+                if (isAddedControlMode) {
                     Timber.d("Test host=$host")
                     testMode = 2
                     sonyControlViewModel.fetchPowerStatus(sonyControlViewModel.addedControlHostAddress)

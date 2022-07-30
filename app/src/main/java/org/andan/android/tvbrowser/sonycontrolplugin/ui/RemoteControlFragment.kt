@@ -29,7 +29,8 @@ class RemoteControlFragment : Fragment() {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentRemoteControlBinding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_remote_control, container, false)
+            R.layout.fragment_remote_control, container, false
+        )
 
         val view = binding.root
 
@@ -43,8 +44,7 @@ class RemoteControlFragment : Fragment() {
                 resources.getString(R.string.dialog_ok)
             ) { dialog, arg1 -> dialog.dismiss() }
             alertDialogBuilder.create().show()
-        } else
-        {
+        } else {
             binding.clickListener =
                 CommandListener { name: String ->
                     sendCode(name)
@@ -74,7 +74,7 @@ class RemoteControlFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun sendCode(name:String) {
+    private fun sendCode(name: String) {
         sonyControlViewModel.sendIRRCCByName(name)
     }
 

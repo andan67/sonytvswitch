@@ -5,12 +5,13 @@ import com.google.gson.annotations.SerializedName
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
 
-data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), var selected: Int = -1) {
+data class SonyControls(
+    val controls: MutableList<SonyControl> = ArrayList(),
+    var selected: Int = -1
+) {
 
-    fun toJson() : String = gson.toJson(this)
+    fun toJson(): String = gson.toJson(this)
 
     companion object {
         private val gson = Gson()
@@ -18,7 +19,13 @@ data class SonyControls(val controls: MutableList<SonyControl> = ArrayList(), va
     }
 }
 
-data class SonyControl(var ip: String, val nickname: String, val devicename: String, var preSharedKey: String, val uuid: String = java.util.UUID.randomUUID().toString()) {
+data class SonyControl(
+    var ip: String,
+    val nickname: String,
+    val devicename: String,
+    var preSharedKey: String,
+    val uuid: String = java.util.UUID.randomUUID().toString()
+) {
 
     companion object {
         private val gson = Gson()
@@ -27,42 +34,42 @@ data class SonyControl(var ip: String, val nickname: String, val devicename: Str
     }
 
 
-    @SerializedName(value="channelList", alternate= ["programList"])
-    var channelList= mutableListOf<SonyChannel>()
+    @SerializedName(value = "channelList", alternate = ["programList"])
+    var channelList = mutableListOf<SonyChannel>()
         set(value) {
-        _channelUriMap=null
-        field = value
-    }
+            _channelUriMap = null
+            field = value
+        }
 
     var cookie = ""
-    var sourceList= mutableListOf<String>()
+    var sourceList = mutableListOf<String>()
     var systemModel = ""
     var systemName = ""
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
-    var commandList = LinkedHashMap<String,String>()
+    var commandList = LinkedHashMap<String, String>()
     //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
 
     @Transient
-    private var _channelUriMap : LinkedHashMap<String, SonyChannel>? = null
+    private var _channelUriMap: LinkedHashMap<String, SonyChannel>? = null
 
     @Transient
-    val channelUriMap : LinkedHashMap<String, SonyChannel>? = null
-    get() {
-        // lazy construction
-        if(_channelUriMap == null) {
-            _channelUriMap = LinkedHashMap<String, SonyChannel>()
-            for(channel in channelList) {
-                _channelUriMap!![channel.uri] = channel
+    val channelUriMap: LinkedHashMap<String, SonyChannel>? = null
+        get() {
+            // lazy construction
+            if (_channelUriMap == null) {
+                _channelUriMap = LinkedHashMap<String, SonyChannel>()
+                for (channel in channelList) {
+                    _channelUriMap!![channel.uri] = channel
+                }
             }
+            // This is a workaround to allow transient annotation (why?)
+            // Note that field as implicit backing field is null, so explicit backing value is returned
+            return field ?: _channelUriMap
         }
-        // This is a workaround to allow transient annotation (why?)
-        // Note that field as implicit backing field is null, so explicit backing value is returned
-        return field?: _channelUriMap
-    }
 
-    @SerializedName(value="channelMap", alternate= ["channelProgramMap"])
+    @SerializedName(value = "channelMap", alternate = ["channelProgramMap"])
     var channelMap = LinkedHashMap<String, String>()
 
     override fun toString(): String {
@@ -71,7 +78,14 @@ data class SonyControl(var ip: String, val nickname: String, val devicename: Str
 
 }
 
-data class SonyChannel(var source: String, val dispNumber: String, val index : Int, val mediaType: String, val title: String, val uri: String ) {
+data class SonyChannel(
+    var source: String,
+    val dispNumber: String,
+    val index: Int,
+    val mediaType: String,
+    val title: String,
+    val uri: String
+) {
 
     val shortSource: String
         get() {
@@ -101,11 +115,13 @@ data class PlayingContentInfo(
     val uri: String = "",
     val programTitle: String = "",
     val startDateTime: String = "",
-    val durationSec: Long = 0) {
+    val durationSec: Long = 0
+) {
 
     companion object {
         private val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ")
-        private val DateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
+        private val DateTimeFormat =
+            DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
         private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
         private val cal = Calendar.getInstance()
     }

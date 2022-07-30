@@ -17,8 +17,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentChannelMapSingleBinding
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 import java.util.*
@@ -52,29 +52,34 @@ class ChannelMapSingleFragment : Fragment() {
         // Get a reference to the binding object and inflate the fragment views.
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_channel_map_single, container, false)
+            R.layout.fragment_channel_map_single, container, false
+        )
 
-        selectedChannelName =  sonyControlViewModel.selectedChannelName
+        selectedChannelName = sonyControlViewModel.selectedChannelName
         Timber.d("selectedChannelName: $selectedChannelName")
-        val channelPosition = sonyControlViewModel.getFilteredTvbChannelNameList().value?.indexOfFirst { it==selectedChannelName }
-        binding.channelPosition = channelPosition!! +1
+        val channelPosition =
+            sonyControlViewModel.getFilteredTvbChannelNameList().value?.indexOfFirst { it == selectedChannelName }
+        binding.channelPosition = channelPosition!! + 1
 
         binding.tvbChannelName = selectedChannelName
-        control=sonyControlViewModel.selectedSonyControl.value!!
+        control = sonyControlViewModel.selectedSonyControl.value!!
 
         initialChannelUri = control!!.channelMap[selectedChannelName!!]
         Timber.d("initialProgramUri : $initialChannelUri")
-        sonyControlViewModel.setSelectedChannelMapChannelUri(binding.tvbChannelName , initialChannelUri)
+        sonyControlViewModel.setSelectedChannelMapChannelUri(
+            binding.tvbChannelName,
+            initialChannelUri
+        )
 
         sonyControlViewModel.selectedChannelMapChannelUri.observe(viewLifecycleOwner, Observer {
             val selectedProgramUri = sonyControlViewModel.selectedChannelMapChannelUri.value
             if (!selectedProgramUri.isNullOrEmpty()) {
-                val channel: SonyChannel? = sonyControlViewModel.selectedSonyControl.value!!.channelUriMap!![selectedProgramUri]
+                val channel: SonyChannel? =
+                    sonyControlViewModel.selectedSonyControl.value!!.channelUriMap!![selectedProgramUri]
                 binding.channelName = channel?.title
                 binding.channelSourceWithType = channel?.sourceWithType
-            } else
-            {
-                binding.channelName="--unmapped--"
+            } else {
+                binding.channelName = "--unmapped--"
                 binding.channelSourceWithType = ""
             }
         })
@@ -92,22 +97,28 @@ class ChannelMapSingleFragment : Fragment() {
         binding.channelMapChannelListView.setItemChecked(currentChannelPosition, true)
         arrayAdapter.notifyDataSetChanged()
 
-        binding.channelMapChannelListView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            binding.channelMapChannelListView.setSelection(position)
-            //binding.channelMapProgramListView.setItemChecked(position,true)
-            currentChannelPosition = position
-            val selectedChannelMapChannelUri = channelUriMatchList[currentChannelPosition]
-            sonyControlViewModel.setSelectedChannelMapChannelUri(binding.tvbChannelName, selectedChannelMapChannelUri)
-            // Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
-        }
-        binding.channelMapChannelListView.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, position, _ ->
-            //binding.channelMapProgramListView.setItemChecked(position,true)
-            currentChannelPosition = position
-            val program = sonyControlViewModel.uriChannelMap[channelUriMatchList[currentChannelPosition]]
-            // switch to program
-            Toast.makeText(context, "Switched to ${program?.title}", Toast.LENGTH_LONG).show()
-            true
-        }
+        binding.channelMapChannelListView.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                binding.channelMapChannelListView.setSelection(position)
+                //binding.channelMapProgramListView.setItemChecked(position,true)
+                currentChannelPosition = position
+                val selectedChannelMapChannelUri = channelUriMatchList[currentChannelPosition]
+                sonyControlViewModel.setSelectedChannelMapChannelUri(
+                    binding.tvbChannelName,
+                    selectedChannelMapChannelUri
+                )
+                // Toast.makeText( context, "Clicked item #${position}",  Toast.LENGTH_SHORT).show()
+            }
+        binding.channelMapChannelListView.onItemLongClickListener =
+            AdapterView.OnItemLongClickListener { _, _, position, _ ->
+                //binding.channelMapProgramListView.setItemChecked(position,true)
+                currentChannelPosition = position
+                val program =
+                    sonyControlViewModel.uriChannelMap[channelUriMatchList[currentChannelPosition]]
+                // switch to program
+                Toast.makeText(context, "Switched to ${program?.title}", Toast.LENGTH_LONG).show()
+                true
+            }
 
         Timber.d("currentProgramPosition=${currentChannelPosition}")
         Timber.d("adapter.count=${arrayAdapter.count}")
@@ -123,7 +134,8 @@ class ChannelMapSingleFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.channel_map_single_menu, menu)
 
-        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager =
+            requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
@@ -146,7 +158,7 @@ class ChannelMapSingleFragment : Fragment() {
             }
             queryTextListener = object : SearchView.OnQueryTextListener {
                 override fun onQueryTextChange(query: String): Boolean {
-                    if(query.isNullOrEmpty() || query.length>1) {
+                    if (query.isNullOrEmpty() || query.length > 1) {
                         Timber.d("onQueryTextChange: $query")
                         createMatchIndicesListAndSetPositions(query)
                         binding.channelMapChannelListView.setSelection(currentChannelPosition)
@@ -176,8 +188,13 @@ class ChannelMapSingleFragment : Fragment() {
 
     fun createMatchIndicesListAndSetPositions(query: String?) {
         channelUriMatchList.clear()
-        channelUriMatchList.addAll(sonyControlViewModel.createChannelUriMatchList(selectedChannelName, query))
-        channelPosition = channelUriMatchList.indexOfFirst { it==initialChannelUri }
+        channelUriMatchList.addAll(
+            sonyControlViewModel.createChannelUriMatchList(
+                selectedChannelName,
+                query
+            )
+        )
+        channelPosition = channelUriMatchList.indexOfFirst { it == initialChannelUri }
         currentChannelPosition = if (!initialChannelUri.isNullOrEmpty()) channelPosition else -1
     }
 
@@ -187,13 +204,20 @@ class ChannelMapSingleFragment : Fragment() {
                 // Not implemented here
                 return true
             R.id.channel_map_reset -> {
-                sonyControlViewModel.setSelectedChannelMapChannelUri(binding.channelName, initialChannelUri)
+                sonyControlViewModel.setSelectedChannelMapChannelUri(
+                    binding.channelName,
+                    initialChannelUri
+                )
                 currentChannelPosition = channelPosition
                 binding.channelMapChannelListView.setItemChecked(currentChannelPosition, true)
             }
             R.id.channel_map_unmap -> {
-                sonyControlViewModel.setSelectedChannelMapChannelUri( binding.channelName, "")
-                Toast.makeText( context, "Selected item with currentProgramPosition: $currentChannelPosition",  Toast.LENGTH_SHORT).show()
+                sonyControlViewModel.setSelectedChannelMapChannelUri(binding.channelName, "")
+                Toast.makeText(
+                    context,
+                    "Selected item with currentProgramPosition: $currentChannelPosition",
+                    Toast.LENGTH_SHORT
+                ).show()
                 binding.channelMapChannelListView.setItemChecked(currentChannelPosition, false)
                 binding.channelMapChannelListView.clearChoices()
 
@@ -204,7 +228,11 @@ class ChannelMapSingleFragment : Fragment() {
     }
 }
 
-class ChannelMapAdapter(context: Context?, programUriMatchList: ArrayList<String>, channelUriMap: MutableMap<String,SonyChannel>) :
+class ChannelMapAdapter(
+    context: Context?,
+    programUriMatchList: ArrayList<String>,
+    channelUriMap: MutableMap<String, SonyChannel>
+) :
     BaseAdapter() {
 
 

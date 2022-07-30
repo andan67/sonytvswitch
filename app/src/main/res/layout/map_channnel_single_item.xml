@@ -1,25 +1,24 @@
-
 <layout xmlns:tools="http://schemas.android.com/tools"
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<data>
+    <data>
 
-    <import type="android.view.View" />
+        <import type="android.view.View" />
 
-    <variable
-        name="channelName"
-        type="String" />
+        <variable
+            name="channelName"
+            type="String" />
 
-    <variable
-        name="channelSourceWithType"
-        type="String" />
+        <variable
+            name="channelSourceWithType"
+            type="String" />
 
-    <variable
-        name="clickListener"
-        type="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapListener" />
+        <variable
+            name="clickListener"
+            type="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapListener" />
 
-</data>
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"

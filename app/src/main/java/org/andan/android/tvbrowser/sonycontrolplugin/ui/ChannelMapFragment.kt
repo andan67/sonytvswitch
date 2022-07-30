@@ -61,7 +61,8 @@ class ChannelMapFragment : Fragment() {
                 alertDialogBuilder.setTitle(resources.getString(R.string.alert_no_tvb_channels_title))
                 alertDialogBuilder.setMessage(resources.getString(R.string.alert_no_tvb_channels_message))
             }
-            alertDialogBuilder.setPositiveButton( resources.getString(R.string.dialog_ok)
+            alertDialogBuilder.setPositiveButton(
+                resources.getString(R.string.dialog_ok)
             ) { dialog, _ -> dialog.dismiss() }
             alertDialogBuilder.create().show()
         } else {
@@ -102,10 +103,11 @@ class ChannelMapFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             })
 
-            sonyControlViewModel.getFilteredTvbChannelNameList().observe(viewLifecycleOwner, Observer {
-                Timber.d("observed change filtered Channel")
-                adapter.notifyDataSetChanged()
-            })
+            sonyControlViewModel.getFilteredTvbChannelNameList()
+                .observe(viewLifecycleOwner, Observer {
+                    Timber.d("observed change filtered Channel")
+                    adapter.notifyDataSetChanged()
+                })
 
 
             if (view is RecyclerView) {
@@ -122,7 +124,8 @@ class ChannelMapFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.channel_map_menu, menu)
 
-        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager =
+            requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         (menu.findItem(R.id.action_search).actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
@@ -211,12 +214,16 @@ class ChannelMapFragment : Fragment() {
     }
 }
 
-class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, val sonyControlViewModel: SonyControlViewModel) :
+class ChannelMapItemRecyclerViewAdapter(
+    val clickListener: ChannelMapListener,
+    val sonyControlViewModel: SonyControlViewModel
+) :
     RecyclerView.Adapter<ChannelMapItemRecyclerViewAdapter.ViewHolder>() {
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val channelName = sonyControlViewModel.getFilteredTvbChannelNameList().value?.get(position)!!
+        val channelName =
+            sonyControlViewModel.getFilteredTvbChannelNameList().value?.get(position)!!
         holder.bind(channelName, clickListener, sonyControlViewModel)
     }
 
@@ -233,17 +240,22 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
     class ViewHolder private constructor(val binding: MapChannelItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: String, clickListener: ChannelMapListener, sonyControlViewModel: SonyControlViewModel) {
+        fun bind(
+            item: String,
+            clickListener: ChannelMapListener,
+            sonyControlViewModel: SonyControlViewModel
+        ) {
             binding.tvbChannelName = item
-            binding.channelPosition = adapterPosition+1
-            val programUri: String? = sonyControlViewModel.selectedSonyControl.value!!.channelMap[item]
+            binding.channelPosition = adapterPosition + 1
+            val programUri: String? =
+                sonyControlViewModel.selectedSonyControl.value!!.channelMap[item]
             if (!programUri.isNullOrEmpty()) {
-                val channel: SonyChannel? = sonyControlViewModel.selectedSonyControl.value!!.channelUriMap!![programUri]
+                val channel: SonyChannel? =
+                    sonyControlViewModel.selectedSonyControl.value!!.channelUriMap!![programUri]
                 binding.channelName = channel?.title
                 binding.channelSourceWithType = channel?.sourceWithType
-            } else
-            {
-                binding.channelName="--unmapped--"
+            } else {
+                binding.channelName = "--unmapped--"
                 binding.channelSourceWithType = ""
             }
 
@@ -251,7 +263,7 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
             binding.sonyControlViewModel = sonyControlViewModel
             binding.executePendingBindings()
             //ToDO: set in layout file (however, it seems than android:onLongClick attribute does not exist)
-            binding.root.setOnLongClickListener { clickListener.longClickListener(item)}
+            binding.root.setOnLongClickListener { clickListener.longClickListener(item) }
         }
 
         companion object {
@@ -266,8 +278,10 @@ class ChannelMapItemRecyclerViewAdapter(val clickListener: ChannelMapListener, v
     }
 }
 
-class ChannelMapListener(val clickListener: (view: View, channelName: String) -> Unit,
-                         val longClickListener: (channelName: String) -> Boolean) {
+class ChannelMapListener(
+    val clickListener: (view: View, channelName: String) -> Unit,
+    val longClickListener: (channelName: String) -> Boolean
+) {
     fun onClick(view: View, channelName: String) = clickListener(view, channelName)
     fun onLongClick(channelName: String) = longClickListener(channelName)
 }

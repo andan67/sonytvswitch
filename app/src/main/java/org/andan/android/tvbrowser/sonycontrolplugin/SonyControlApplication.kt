@@ -12,7 +12,7 @@ class SonyControlApplication : Application() {
     // Reference to the application graph that is used across the whole app
     override fun onCreate() {
         super.onCreate()
-        INSTANCE=this
+        INSTANCE = this
         appComponent = DaggerApplicationComponent
             .builder().appModule(AppModule(this))
             .build()
@@ -26,6 +26,7 @@ class SonyControlApplication : Application() {
 
     companion object {
         private var INSTANCE: SonyControlApplication? = null
+
         @JvmStatic
         fun get(): SonyControlApplication = INSTANCE!!
     }

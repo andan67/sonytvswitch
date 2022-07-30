@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.di
 
 import dagger.Module
 import dagger.Provides
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Logger
@@ -33,17 +32,20 @@ class NetworkModule {
     fun provideInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor(object : Logger {
         override fun log(message: String) {
             Timber.tag("OkHttp").d(message)
-            }
+        }
     }).setLevel(level = HttpLoggingInterceptor.Level.BODY)
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor, serviceClientContext: SonyServiceClientContext, tokenStore: TokenStore,
-                            authenticator: TokenAuthenticator
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        serviceClientContext: SonyServiceClientContext,
+        tokenStore: TokenStore,
+        authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
-            .connectTimeout(2,TimeUnit.SECONDS)
+            .connectTimeout(2, TimeUnit.SECONDS)
             .addInterceptor(AddTokenInterceptor(serviceClientContext, tokenStore))
         if (BuildConfig.DEBUG) {
             client.addInterceptor(loggingInterceptor)
@@ -56,7 +58,7 @@ class NetworkModule {
     // Function parameters are the dependencies of this type.
     @Singleton
     @Provides
-    fun provideSonyRetrofitService(okHttpClient :OkHttpClient): SonyService {
+    fun provideSonyRetrofitService(okHttpClient: OkHttpClient): SonyService {
         // Whenever Dagger needs to provide an instance of type LoginRetrofitService,
         // this code (the one inside the @Provides method) is run.
         return Retrofit.Builder()

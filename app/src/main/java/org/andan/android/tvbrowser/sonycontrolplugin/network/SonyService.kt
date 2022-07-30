@@ -8,8 +8,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.POST
 import retrofit2.http.Headers
+import retrofit2.http.POST
 import retrofit2.http.Url
 import timber.log.Timber
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
@@ -47,15 +47,16 @@ class AddTokenInterceptor @Inject constructor(
         if (serviceClientContext.preSharedKey.isEmpty()) {
             // token based authentication
             builder.addHeader("Cookie", tokenStore.loadToken(serviceClientContext.uuid))
-            if(serviceClientContext.password.isNotEmpty()) {
+            if (serviceClientContext.password.isNotEmpty()) {
                 builder.addHeader(
                     "Authorization",
-                    Credentials.basic(serviceClientContext.username, serviceClientContext.password))
+                    Credentials.basic(serviceClientContext.username, serviceClientContext.password)
+                )
             }
             // execute request
             var newRequest = builder.build()
             val response = chain.proceed(newRequest)
-            return if(response.code == HTTP_FORBIDDEN) {
+            return if (response.code == HTTP_FORBIDDEN) {
                 //  It seems that the Sony TV responses with 403 (FORBIDDEN) code instead of 401 (UNAUTHORIZED)
                 //  if token has expired or is invalid. Thus this case will not be handled by the TokenAuthenticator
                 //  class.
@@ -184,15 +185,15 @@ object SonyServiceUtil {
     const val SONY_SYSTEM_ENDPOINT = "/sony/system"
     const val SONY_IRCC_ENDPOINT = "/sony/IRCC"
     const val SONY_IRCC_REQUEST_TEMPLATE =
-            "<s:Envelope\n" +
-            "    xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
-            "    s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n" +
-            "    <s:Body>\n" +
-            "        <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">\n" +
-            "            <IRCCCode></IRCCCode>\n" +
-            "        </u:X_SendIRCC>\n" +
-            "    </s:Body>\n" +
-            "</s:Envelope>"
+        "<s:Envelope\n" +
+                "    xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+                "    s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n" +
+                "    <s:Body>\n" +
+                "        <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">\n" +
+                "            <IRCCCode></IRCCCode>\n" +
+                "        </u:X_SendIRCC>\n" +
+                "    </s:Body>\n" +
+                "</s:Envelope>"
 
     val gson = GsonBuilder().create()
 

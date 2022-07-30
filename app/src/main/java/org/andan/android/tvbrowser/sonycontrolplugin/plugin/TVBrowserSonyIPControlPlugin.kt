@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream
 class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
     private var mPluginManager: PluginManager? = null
+
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
     private val sonyControlRepository: SonyControlRepository =
@@ -73,7 +74,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
                 if (pluginMenu.id == SWITCH_TO_CHANNEL) {
                     Timber.d(" onProgramContextMenuSelected:switch to channel: $program.channel.channelName")
                     try {
-                        if(sonyControlRepository.getSelectedControl()!=null) {
+                        if (sonyControlRepository.getSelectedControl() != null) {
                             val programUri =
                                 sonyControlRepository.getSelectedControl()!!.channelMap[program.channel.channelName]
                             if (!programUri.isNullOrEmpty()) {
@@ -198,7 +199,6 @@ class TVBrowserSonyIPControlPlugin : Service() {
         Timber.d("updateChannelMap: ${channelNameList.size}")
         sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
     }
-
 
 
     companion object {

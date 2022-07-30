@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="sonyControlViewModel"
             type="org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel" />

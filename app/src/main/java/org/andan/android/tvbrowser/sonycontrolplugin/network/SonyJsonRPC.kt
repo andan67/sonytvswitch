@@ -1,7 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.network
 
 import com.google.gson.JsonElement
-import java.util.*
 
 data class JsonRpcRequest(
     val id: Long,
@@ -15,9 +14,13 @@ data class JsonRpcRequest(
 
         fun actRegister(nickname: String, devicename: String, uuid: String): JsonRpcRequest {
             val params = ArrayList<Any>()
-            params.add(hashMapOf("nickname" to "$nickname ($devicename)",
-                "clientid" to "$nickname:$uuid",
-                "level" to "private"))
+            params.add(
+                hashMapOf(
+                    "nickname" to "$nickname ($devicename)",
+                    "clientid" to "$nickname:$uuid",
+                    "level" to "private"
+                )
+            )
             params.add(listOf(hashMapOf("value" to "yes", "function" to "WOL")))
             return JsonRpcRequest(8, "actRegister", params)
         }
@@ -93,7 +96,14 @@ data class JsonRpcRequest(
 
         fun getContentList(source: String, stIdx: Int, cnt: Int, type: String): JsonRpcRequest {
             val params = ArrayList<Any>()
-            params.add(hashMapOf("source" to source, "stIdx" to stIdx, "cnt" to cnt, "type" to type))
+            params.add(
+                hashMapOf(
+                    "source" to source,
+                    "stIdx" to stIdx,
+                    "cnt" to cnt,
+                    "type" to type
+                )
+            )
             return JsonRpcRequest(103, "getContentList", params)
         }
     }

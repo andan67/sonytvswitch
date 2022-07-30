@@ -1,7 +1,6 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/pref_basic">
+    <PreferenceCategory android:title="@string/pref_basic">
 
         <ListPreference
             android:key="pref_start_screen"
@@ -9,31 +8,30 @@
             android:defaultValue="@string/pref_start_screen_value_channels"
             android:entries="@array/pref_start_screen_labels"
             android:entryValues="@array/pref_start_screen_values"
-            android:summary="%s"/>
+            android:summary="%s" />
 
     </PreferenceCategory>
 
 
-    <PreferenceCategory
-        android:title="@string/pref_about">
+    <PreferenceCategory android:title="@string/pref_about">
 
         <Preference
             android:key="pref_app_name"
             android:selectable="false"
             android:title="@string/app_name_title"
-            android:summary="@string/app_name"/>
+            android:summary="@string/app_name" />
 
         <Preference
             android:key="pref_app_version"
             android:selectable="false"
             android:title="@string/pref_app_version_title"
-            android:summary="@string/app_version"/>
+            android:summary="@string/app_version" />
 
         <Preference
             android:key="copyright"
             android:selectable="false"
             android:title="@string/pref_copyright_title"
-            android:summary="@string/pref_copyright"/>
+            android:summary="@string/pref_copyright" />
 
         <Preference
             android:key="license"
@@ -53,7 +51,7 @@
         android:key="application_log"
         android:selectable="true"
         android:title="Application debug log"
-        android:summary="Open application log in browser"/>
+        android:summary="Open application log in browser" />
 
 
 </androidx.preference.PreferenceScreen>

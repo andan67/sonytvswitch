@@ -43,7 +43,7 @@ object SSDP {
         responseList.forEach {
             //println(it)
             var matcher = sonyPattern.matcher(it)
-            var model :String? = null
+            var model: String? = null
             var ip: String? = null
             //println(matcher)
             if (matcher.find()) {
@@ -54,7 +54,7 @@ object SSDP {
                 ip = matcher.group(1)
                 //println("ip: $ip")
             }
-            if(!model.isNullOrEmpty() && !ip.isNullOrEmpty()) {
+            if (!model.isNullOrEmpty() && !ip.isNullOrEmpty()) {
                 sonyIpDeviceList.add(IpDeviceItem(ip, model))
             }
         }
@@ -107,7 +107,7 @@ object SSDP {
 
     data class IpDeviceItem(val ip: String = "", val device: String = "") {
         override fun toString(): String {
-            return if(ip.isEmpty()) {
+            return if (ip.isEmpty()) {
                 ""
             } else {
                 "$device (ip=$ip)"
