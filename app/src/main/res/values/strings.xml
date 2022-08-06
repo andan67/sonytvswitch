@@ -148,4 +148,5 @@
     <string name="pref_start_screen_label_channels">Channel list</string>
     <string name="pref_start_screen_value_control">control_screen</string>
     <string name="pref_start_screen_value_channels">program_list_screen</string>
+    <string name="title_activity_main2">MainActivity2</string>
 </resources>

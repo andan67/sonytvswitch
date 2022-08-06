@@ -48,6 +48,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_channel_list2"
+        android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelListFragment2"
+        android:label="@string/menu_show_channels"
+        tools:layout="@layout/fragment_channel_list">
+        <action
+            android:id="@+id/action_nav_program_list_to_activeProgramDetailsFragment"
+            app:destination="@id/activeProgramDetailsFragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_channel_map"
         android:name="org.andan.android.tvbrowser.sonycontrolplugin.ui.ChannelMapFragment"
         android:label="@string/menu_channel_map_fragment_label"

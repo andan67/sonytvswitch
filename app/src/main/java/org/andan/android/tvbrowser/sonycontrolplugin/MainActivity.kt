@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_manage_control,
                 R.id.nav_remote_control,
                 R.id.nav_channel_list,
+                R.id.nav_channel_list2,
                 R.id.nav_channel_map,
                 R.id.nav_help,
                 R.id.nav_settings

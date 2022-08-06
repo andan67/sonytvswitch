@@ -12,6 +12,10 @@
             android:id="@+id/nav_channel_list"
             android:icon="@drawable/ic_action_tv"
             android:title="@string/menu_show_channels" />
+        <item
+            android:id="@+id/nav_channel_list2"
+            android:icon="@drawable/ic_action_tv"
+            android:title="@string/menu_show_channels" />
     </group>
     <group
         android:id="@+id/menu_manage"
