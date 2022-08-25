@@ -149,4 +149,11 @@
     <string name="pref_start_screen_value_control">control_screen</string>
     <string name="pref_start_screen_value_channels">program_list_screen</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="switch_channel">Switch channels</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="search_clear_content_description">Clear Search</string>
+    <string name="search_content_description">Filter Channels</string>
+    <string name="menu_list_channels">Channel List</string>
+    <string name="search_channels">Search Channels</string>
+    <string name="back_search_channels">Exit Search View</string>
 </resources>

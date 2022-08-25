@@ -6,11 +6,13 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +50,7 @@ class ChannelListFragment : Fragment() {
         )
         val view = binding.root
         binding.lifecycleOwner = this
-        sonyControlViewModel.onSelectedIndexChange()
+        //sonyControlViewModel.onSelectedIndexChange()
 
         val fab: FloatingActionButton = view.findViewById(R.id.listChannelFab)
         fab.setOnClickListener { view ->
@@ -57,7 +59,7 @@ class ChannelListFragment : Fragment() {
             }
         }
 
-        if (sonyControlViewModel.getFilteredChannelList().value.isNullOrEmpty()) {
+        if (sonyControlViewModel.filteredChannelList.value.isNullOrEmpty()) {
             val alertDialogBuilder = AlertDialog.Builder(this.context)
             alertDialogBuilder.setCancelable(false)
             if (sonyControlViewModel.selectedSonyControl.value == null) {
@@ -106,8 +108,7 @@ class ChannelListFragment : Fragment() {
                 )
 
             binding.listChannel.adapter = adapter
-
-            sonyControlViewModel.getFilteredChannelList().observe(viewLifecycleOwner, Observer {
+            sonyControlViewModel.filteredChannelList.observe(viewLifecycleOwner, Observer {
                 Timber.d("observed change filtered program list with filter ${sonyControlViewModel.getChannelSearchQuery()}")
                 adapter.notifyDataSetChanged()
             })
@@ -204,11 +205,11 @@ class ProgramItemRecyclerViewAdapter(
     RecyclerView.Adapter<ProgramItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int {
-        return sonyControlViewModel.getFilteredChannelList().value!!.size
+        return sonyControlViewModel.filteredChannelList.value!!.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val program = sonyControlViewModel.getFilteredChannelList().value!![position]
+        val program = sonyControlViewModel.filteredChannelList.value!![position]
         holder.bind(program, clickListener, sonyControlViewModel)
     }
 

@@ -3,9 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/drawable/ic_round_autorenew_24.xml" value="0.1" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/app_bar_main.xml" value="0.19322916666666667" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/channel_item.xml" value="0.20606884057971014" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/content_main.xml" value="0.19322916666666667" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_active_program_details.xml" value="0.20606884057971014" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_add_control_dialog.xml" value="0.20606884057971014" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_add_control_host_dialog.xml" value="0.20606884057971014" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_add_control_register_dialog.xml" value="0.20606884057971014" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_channel_list.xml" value="0.19322916666666667" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_channel_map.xml" value="0.20606884057971014" />
+        <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_channel_map_single.xml" value="0.20606884057971014" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/layout/fragment_remote_control.xml" value="0.25769927536231885" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/menu/activity_main_drawer.xml" value="0.19322916666666667" />
         <entry key="..\:/Users/Andreas/develop/StudioProjects/sonytvswitch/app/src/main/res/menu/program_list_menu.xml" value="0.19322916666666667" />

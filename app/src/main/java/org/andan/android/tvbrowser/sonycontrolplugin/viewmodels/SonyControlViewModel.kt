@@ -1,5 +1,8 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,9 +41,12 @@ class SonyControlViewModel : ViewModel() {
 
     var addedControlHostAddress: String = ""
 
-    private var channelSearchQuery: String? = null
+    private var channelSearchQuery: String = ""
 
-    private var filteredChannelList = MutableLiveData<List<SonyChannel>>()
+    //val filteredChannelList: MutableState<List<SonyChannel>> = mutableStateOf(emptyList<SonyChannel>())
+    val filteredChannelList = MutableLiveData<List<SonyChannel>>()
+    //val filteredChannelList: LiveData<List<SonyChannel>>
+    //    get() = _filteredChannelList
 
     // derived variables for selected control
     private var channelMap: MutableMap<String, String> = HashMap()
@@ -107,7 +113,7 @@ class SonyControlViewModel : ViewModel() {
         lastChannelUri = ""
         currentChannelUri = ""
         refreshDerivedVariablesForSelectedControl()
-        filterChannelList(null)
+        filterChannelList("")
         filterTvbChannelNameList(null)
     }
 
@@ -135,26 +141,25 @@ class SonyControlViewModel : ViewModel() {
         }
     }
 
-    fun getFilteredChannelList(): LiveData<List<SonyChannel>> {
-        return filteredChannelList
-    }
-
-
-    fun filterChannelList(query: String?) {
+    fun filterChannelList(query: String) {
         Timber.d("filter channel list query='$query' ")
         selectedSonyControl.value?.let { control ->
             channelSearchQuery = query
-            filteredChannelList.value = control.channelList.filter { p ->
-                channelSearchQuery.isNullOrEmpty() || p.title.contains(
-                    channelSearchQuery!!,
-                    true
-                )
+            val filteredList = ArrayList<SonyChannel>()
+            control.channelList.forEach { channel ->
+                if (channelSearchQuery.isNullOrEmpty() || channel.title.contains(
+                        channelSearchQuery!!,
+                        true
+                    )
+                ) {
+                    filteredList.add(channel)
+                }
+                filteredChannelList.value = filteredList
             }
         }
-
     }
 
-    fun getChannelSearchQuery(): String? {
+    fun getChannelSearchQuery(): String {
         return channelSearchQuery
     }
 
