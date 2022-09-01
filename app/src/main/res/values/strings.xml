@@ -156,4 +156,5 @@
     <string name="menu_list_channels">Channel List</string>
     <string name="search_channels">Search Channels</string>
     <string name="back_search_channels">Exit Search View</string>
+    <string name="menu_more">More</string>
 </resources>

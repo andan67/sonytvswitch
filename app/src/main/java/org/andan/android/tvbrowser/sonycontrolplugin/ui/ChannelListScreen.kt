@@ -10,9 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
@@ -52,8 +51,12 @@ fun ChannelListScreen(
     //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
     Scaffold(
         scaffoldState = scaffoldState,
+        drawerContent = {
+            AppDrawer(closeDrawer = {coroutineScope.launch { scaffoldState.drawerState.close()   }} )
+        },
         topBar = {
             ChannelTopAppBar(
+                openDrawer = {coroutineScope.launch { scaffoldState.drawerState.open()   }; Timber.d("openDrawer") },
                 onSearchBarClick = {
                     navHostController.navigate(route = NavPath.ChannelListSearch.route)
                     Timber.d("Clicked search bar")
@@ -84,9 +87,15 @@ fun ChannelListScreen(
 
 @Composable
 fun ChannelTopAppBar(
+    openDrawer: () -> Unit,
     onSearchBarClick: () -> Unit
 ) {
     TopAppBar(title = { Text(text = stringResource(id = R.string.menu_list_channels)) },
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(Icons.Filled.Menu, stringResource(id = R.string.open_drawer))
+            }
+        },
         actions = {
             IconButton(
                 modifier = Modifier,
@@ -96,7 +105,56 @@ fun ChannelTopAppBar(
                     contentDescription = stringResource(id = R.string.search_channels)
                 )
             }
+            ChannelListMenu({}, {}, {})
         })
+}
+
+@Composable
+private fun ChannelListMenu(
+    onWakeOnLan: () -> Unit,
+    onScreenOff: () -> Unit,
+    onScreenOn: () -> Unit
+) {
+    TopAppBarDropdownMenu(
+        iconContent = {
+            Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more))
+        }
+    ) {
+        // Here closeMenu stands for the lambda expression parameter that is passed when this
+        // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
+        // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
+        closeMenu ->
+        DropdownMenuItem(onClick = { onWakeOnLan(); closeMenu() }) {
+            Text(text = stringResource(id = R.string.wol_action))
+        }
+        DropdownMenuItem(onClick = { onScreenOff(); closeMenu() }) {
+            Text(text = stringResource(id = R.string.screen_off_action))
+        }
+        DropdownMenuItem(onClick = { onScreenOn(); closeMenu() }) {
+            Text(text = stringResource(id = R.string.screen_on_action))
+        }
+    }
+}
+
+@Composable
+private fun TopAppBarDropdownMenu(
+    iconContent: @Composable () -> Unit,
+    content: @Composable ColumnScope.(() -> Unit) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+        IconButton(onClick = { expanded = !expanded }) {
+            iconContent()
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+        ) {
+            content { expanded = !expanded }
+        }
+    }
 }
 
 @Composable
@@ -241,7 +299,6 @@ private fun ChannelListContent(
 }
 
 @Preview()
-//@PreviewParameter(name = "Das Erste HD")
 @Composable
 fun ChannelItem(@PreviewParameter(SampleUserProvider::class) channel: SonyChannel) {
     Row {

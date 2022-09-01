@@ -15,8 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.databinding.FragmentAddControlHostDialogBinding
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
@@ -194,8 +196,18 @@ class AddControlHostDialogFragment : DialogFragment() {
             positiveButton.setOnClickListener {
                 if (isAddedControlMode) {
                     Timber.d("Test host=$host")
-                    testMode = 2
-                    sonyControlViewModel.fetchPowerStatus(sonyControlViewModel.addedControlHostAddress)
+                    if(sonyControlViewModel.addedControlHostAddress.contains("sample")) {
+                        val sonyControl = SonyControl.fromJson(
+                            requireContext().assets.open("SonyControl_sample.json").bufferedReader()
+                                .use { it.readText() }.replace("android sample",sonyControlViewModel.addedControlHostAddress))
+                        sonyControlViewModel.addControl(sonyControl)
+                        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                        navController.navigate(R.id.nav_manage_control)
+                        dialog!!.dismiss()
+                    } else {
+                        testMode = 2
+                        sonyControlViewModel.fetchPowerStatus(sonyControlViewModel.addedControlHostAddress)
+                    }
                 } else {
                     sonyControlViewModel.setSelectedHost(sonyControlViewModel.addedControlHostAddress)
                     dialog!!.dismiss()
