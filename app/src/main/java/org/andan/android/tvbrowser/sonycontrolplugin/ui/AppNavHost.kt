@@ -17,8 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import timber.log.Timber
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 enum class NavPath(
     val route: String,
@@ -29,7 +32,11 @@ enum class NavPath(
 }
 
 @Composable
-fun AppNavHost(navHostController: NavHostController) {
+fun AppNavHost(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController = rememberNavController()
+)
+    {
     NavHost(
         navController = navHostController,
         startDestination = NavPath.ChannelList.route
@@ -133,7 +140,8 @@ fun AppDrawer(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun DrawerHeader(
-    modifier: Modifier = Modifier.background(color = MaterialTheme.colors.primary).fillMaxWidth()
+    modifier: Modifier = Modifier.background(color = MaterialTheme.colors.primary).fillMaxWidth(),
+    viewModel: SonyControlViewModel = viewModel()
 ) {
     Row(
         horizontalArrangement = Arrangement.Start,
@@ -154,9 +162,10 @@ private fun DrawerHeader(
         )
     }
 
-    val options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5")
+    //val options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5")
+    val options = viewModel.sonyControls.value!!.controls
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0]) }
+    var selectedOptionText by remember { mutableStateOf(options[0].nickname) }
 // We want to react on tap/press on TextField to show menu
     ExposedDropdownMenuBox(
         modifier = modifier.fillMaxWidth().background(color = MaterialTheme.colors.primary ),
@@ -170,14 +179,15 @@ private fun DrawerHeader(
             readOnly = true,
             value = selectedOptionText,
             onValueChange = { },
-            label = { Text("Label") },
+            label = { Text(stringResource(R.string.select_remote_controller_label)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded
                 )
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedLabelColor = Color.White,
+                unfocusedLabelColor = Color.Gray,
+                focusedLabelColor = Color.Gray,
                 trailingIconColor = Color.White,
                 focusedTrailingIconColor = Color.White,
                 backgroundColor = MaterialTheme.colors.primary,
@@ -193,15 +203,22 @@ private fun DrawerHeader(
                 expanded = false
             }
         ) {
-            options.forEach { selectionOption ->
+            options.forEachIndexed {index,  selectionOption ->
                 DropdownMenuItem(
                     modifier = modifier.fillMaxWidth().padding(start = 16.dp),
                     onClick = {
-                        selectedOptionText = selectionOption
+
+                        selectedOptionText = selectionOption.nickname
                         expanded = false
+                        Timber.i("onItemSelected position:$index")
+                        // check if new position/control index is set
+                        if (viewModel.sonyControls.value!!.selected != index) {
+                            viewModel.setSelectedControlIndex(index)
+                            Timber.d("onItemSelected setSelectedControlIndex")
+                        }
                     }
                 ) {
-                    Text(text = selectionOption)
+                    Text(text = selectionOption.nickname)
                 }
             }
         }

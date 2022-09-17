@@ -157,4 +157,5 @@
     <string name="search_channels">Search Channels</string>
     <string name="back_search_channels">Exit Search View</string>
     <string name="menu_more">More</string>
+    <string name="select_remote_controller_label">Select Controller</string>
 </resources>
