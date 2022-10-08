@@ -23,18 +23,12 @@ import timber.log.Timber
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
-enum class NavPath(
-    val route: String,
-) {
-    ChannelList(route = "channel_list"),
-    ChannelListSearch(route = "channel_list_search"),
-    ChannelDetail(route = "channel_detail")
-}
-
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController = rememberNavController()
+    navHostController: NavHostController = rememberNavController(),
+    navActions: NavigationActions = remember(navHostController) {
+        NavigationActions(navHostController)}
 )
     {
     NavHost(
@@ -42,13 +36,16 @@ fun AppNavHost(
         startDestination = NavPath.ChannelList.route
     ) {
         composable(NavPath.ChannelList.route) {
-            ChannelListScreen(navHostController = navHostController)
+            ChannelListScreen(navActions = navActions)
         }
 
         composable(NavPath.ChannelListSearch.route) {
-            ChannelSearchListScreen(navHostController = navHostController)
+            ChannelSearchListScreen(navActions = navActions)
         }
 
+        composable(NavPath.RemoteControl.route) {
+            RemoteControlScreen(navActions = navActions)
+        }
     }
 
 }
@@ -56,7 +53,8 @@ fun AppNavHost(
 @Composable
 fun AppDrawer(
     closeDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navActions: NavigationActions
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         DrawerHeader()
@@ -64,20 +62,18 @@ fun AppDrawer(
         DrawerButton(
             painter = painterResource(id = R.drawable.ic_settings_remote),
             label = stringResource(id = R.string.menu_remote_control),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
             action = {
                 Timber.d("Called menu remote control")
-                //navigateToStatistics()
+                navActions.navigateToRemoteControl()
                 closeDrawer()
             }
         )
         DrawerButton(
             painter = painterResource(id = R.drawable.ic_action_tv),
             label = stringResource(id = R.string.menu_show_channels),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
             action = {
                 Timber.d("Called menu remote control")
-                //navigateToStatistics()
+                navActions.navigateToChannelList()
                 closeDrawer()
             }
         )
@@ -140,19 +136,25 @@ fun AppDrawer(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun DrawerHeader(
-    modifier: Modifier = Modifier.background(color = MaterialTheme.colors.primary).fillMaxWidth(),
+    modifier: Modifier = Modifier
+        .background(color = MaterialTheme.colors.primary)
+        .fillMaxWidth(),
     viewModel: SonyControlViewModel = viewModel()
 ) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(top = 16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
     ) {
         Image(
             painter = painterResource(id = R.mipmap.ic_launcher),
             contentDescription = null, // decorative
             //tint = tintColor,
-            modifier = Modifier.width(64.dp).padding(start = 16.dp)
+            modifier = Modifier
+                .width(64.dp)
+                .padding(start = 16.dp)
         )
         Spacer(Modifier.width(16.dp))
         Text(
@@ -165,17 +167,21 @@ private fun DrawerHeader(
     //val options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5")
     val options = viewModel.sonyControls.value!!.controls
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0].nickname) }
+    var selectedOptionText by remember { mutableStateOf(if (options.size > 0) options[0].nickname else "") }
 // We want to react on tap/press on TextField to show menu
     ExposedDropdownMenuBox(
-        modifier = modifier.fillMaxWidth().background(color = MaterialTheme.colors.primary ),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colors.primary),
         expanded = expanded,
         onExpandedChange = {
             expanded = !expanded
         }
     ) {
         TextField(
-            modifier = modifier.fillMaxWidth().padding(start = 16.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp),
             readOnly = true,
             value = selectedOptionText,
             onValueChange = { },
@@ -205,7 +211,9 @@ private fun DrawerHeader(
         ) {
             options.forEachIndexed {index,  selectionOption ->
                 DropdownMenuItem(
-                    modifier = modifier.fillMaxWidth().padding(start = 16.dp),
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp),
                     onClick = {
 
                         selectedOptionText = selectionOption.nickname
@@ -263,6 +271,27 @@ private fun DrawerButton(
                 style = MaterialTheme.typography.body2,
                 color = tintColor
             )
+        }
+    }
+}
+
+@Composable
+public fun TopAppBarDropdownMenu(
+    iconContent: @Composable () -> Unit,
+    content: @Composable ColumnScope.(() -> Unit) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+        IconButton(onClick = { expanded = !expanded }) {
+            iconContent()
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+        ) {
+            content { expanded = !expanded }
         }
     }
 }

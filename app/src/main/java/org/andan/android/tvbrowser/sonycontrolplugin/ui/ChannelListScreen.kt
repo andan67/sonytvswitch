@@ -43,7 +43,7 @@ fun ChannelListScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel = viewModel(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navHostController: NavHostController,
+    navActions: NavigationActions,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
@@ -52,13 +52,13 @@ fun ChannelListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
-            AppDrawer(closeDrawer = {coroutineScope.launch { scaffoldState.drawerState.close()   }} )
+            AppDrawer(closeDrawer = {coroutineScope.launch { scaffoldState.drawerState.close()   }} , navActions = navActions)
         },
         topBar = {
             ChannelTopAppBar(
                 openDrawer = {coroutineScope.launch { scaffoldState.drawerState.open()   }; Timber.d("openDrawer") },
                 onSearchBarClick = {
-                    navHostController.navigate(route = NavPath.ChannelListSearch.route)
+                    navActions.navigateToChannelListSearch()
                     Timber.d("Clicked search bar")
                 }
             )
@@ -137,32 +137,11 @@ private fun ChannelListMenu(
 }
 
 @Composable
-private fun TopAppBarDropdownMenu(
-    iconContent: @Composable () -> Unit,
-    content: @Composable ColumnScope.(() -> Unit) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
-        IconButton(onClick = { expanded = !expanded }) {
-            iconContent()
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.wrapContentSize(Alignment.TopEnd)
-        ) {
-            content { expanded = !expanded }
-        }
-    }
-}
-
-@Composable
 fun ChannelSearchListScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel = viewModel(),
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navHostController: NavHostController,
+    navActions: NavigationActions,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
@@ -173,7 +152,7 @@ fun ChannelSearchListScreen(
         topBar = {
             ChannelSearchTopAppBar(
                 onNavigateBack = {
-                    navHostController.navigate(route = NavPath.ChannelList.route)
+                    navActions.navigateToChannelList()
                 },
                 searchText = "Search Text",
                 onSearchTextChanged = {

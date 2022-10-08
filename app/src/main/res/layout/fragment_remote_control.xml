@@ -891,13 +891,13 @@
                 android:layout_width="@dimen/rc_button_number_width"
                 android:layout_height="@dimen/rc_button_number_height"
                 android:layout_marginStart="14dp"
-                android:layout_marginLeft="14dp"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/rc_btn_dark_selector"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="@{() -> clickListener.onClick(&quot;iManual&quot;)}"
                 android:text="i-Manual"
                 android:textSize="14sp"
+                android:typeface="sans"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seven" />
 
