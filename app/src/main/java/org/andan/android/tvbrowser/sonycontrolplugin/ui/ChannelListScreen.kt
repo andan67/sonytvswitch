@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,53 +39,57 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelListScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel = viewModel(),
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
     navActions: NavigationActions,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
-    Scaffold(
-        scaffoldState = scaffoldState,
-        drawerContent = {
-            AppDrawer(closeDrawer = {coroutineScope.launch { scaffoldState.drawerState.close()   }} , navActions = navActions)
-        },
-        topBar = {
-            ChannelTopAppBar(
-                openDrawer = {coroutineScope.launch { scaffoldState.drawerState.open()   }; Timber.d("openDrawer") },
-                onSearchBarClick = {
-                    navActions.navigateToChannelListSearch()
-                    Timber.d("Clicked search bar")
+    AppDrawer(
+        modifier = modifier,
+        navActions = navActions,
+        drawerState = drawerState,
+        coroutineScope = coroutineScope,
+        content = {
+            Scaffold(
+                topBar = {
+                    ChannelTopAppBar(
+                        openDrawer = { coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer") },
+                        onSearchBarClick = {
+                            navActions.navigateToChannelListSearch()
+                            Timber.d("Clicked search bar")
+                        }
+                    )
+                },
+                modifier = modifier.fillMaxSize(),
+                floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                        Timber.d("Switch channel")
+                    })
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_round_autorenew_24),
+                            contentDescription = stringResource(id = R.string.switch_channel)
+                        )
+                    }
                 }
-            )
-        },
-        modifier = modifier.fillMaxSize(),
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                Timber.d("Switch channel")
-            })
-            {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_round_autorenew_24),
-                    contentDescription = stringResource(id = R.string.switch_channel)
+            ) { innerPadding ->
+                ChannelListContent(
+                    modifier = Modifier.padding(innerPadding),
+                    channelNameList = viewModel.channelNameList,
+                    channelList = channelList
+                    //channelListState = channelListState
                 )
             }
         }
-    ) { innerPadding ->
-        ChannelListContent(
-            modifier = Modifier.padding(innerPadding),
-            channelNameList = viewModel.channelNameList,
-            channelList = channelList
-            //channelListState = channelListState
-        )
-    }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelTopAppBar(
     openDrawer: () -> Unit,
@@ -110,7 +115,7 @@ fun ChannelTopAppBar(
 }
 
 @Composable
-private fun ChannelListMenu(
+fun ChannelListMenu(
     onWakeOnLan: () -> Unit,
     onScreenOff: () -> Unit,
     onScreenOn: () -> Unit
@@ -123,68 +128,69 @@ private fun ChannelListMenu(
         // Here closeMenu stands for the lambda expression parameter that is passed when this
         // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
         // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
-        closeMenu ->
-        DropdownMenuItem(onClick = { onWakeOnLan(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.wol_action))
-        }
-        DropdownMenuItem(onClick = { onScreenOff(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.screen_off_action))
-        }
-        DropdownMenuItem(onClick = { onScreenOn(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.screen_on_action))
-        }
+            closeMenu ->
+        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.wol_action)) }, onClick = { onWakeOnLan(); closeMenu() })
+        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.screen_off_action)) }, onClick = { onScreenOff(); closeMenu() })
+        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.screen_on_action)) }, onClick = { onScreenOn(); closeMenu() })
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelSearchListScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel = viewModel(),
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navActions: NavigationActions,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    navActions: NavigationActions
 ) {
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            ChannelSearchTopAppBar(
-                onNavigateBack = {
-                    navActions.navigateToChannelList()
+    AppDrawer(
+        modifier = modifier,
+        navActions = navActions,
+        drawerState = drawerState,
+        coroutineScope = coroutineScope,
+        content = {
+            Scaffold(
+                topBar = {
+                    ChannelSearchTopAppBar(
+                        onNavigateBack = {
+                            navActions.navigateToChannelList()
+                        },
+                        searchText = "Search Text",
+                        onSearchTextChanged = {
+                            Timber.d("onSearchTextChanged")
+                        },
+                        onClearClick = {
+                            Timber.d("onClearClick")
+                        }
+                    )
                 },
-                searchText = "Search Text",
-                onSearchTextChanged = {
-                    Timber.d("onSearchTextChanged")
-                },
-                onClearClick = {
-                    Timber.d("onClearClick")
+                modifier = modifier.fillMaxSize(),
+                floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                        Timber.d("Switch channel")
+                    })
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_round_autorenew_24),
+                            contentDescription = stringResource(id = R.string.switch_channel)
+                        )
+                    }
                 }
-            )
-        },
-        modifier = modifier.fillMaxSize(),
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                Timber.d("Switch channel")
-            })
-            {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_round_autorenew_24),
-                    contentDescription = stringResource(id = R.string.switch_channel)
+            ) { innerPadding ->
+                ChannelListContent(
+                    modifier = Modifier.padding(innerPadding),
+                    channelNameList = viewModel.channelNameList,
+                    channelList = channelList
+                    //channelListState = channelListState
                 )
             }
         }
-    ) { innerPadding ->
-        ChannelListContent(
-            modifier = Modifier.padding(innerPadding),
-            channelNameList = viewModel.channelNameList,
-            channelList = channelList
-            //channelListState = channelListState
-        )
-    }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelSearchTopAppBar(
     searchText: String,
@@ -221,15 +227,15 @@ fun ChannelSearchTopAppBar(
                 value = searchText,
                 //TODO: Proper implementation
                 //onValueChange = onSearchTextChanged,
-                onValueChange = {searchText = it },
+                onValueChange = { searchText = it },
                 placeholder = {
                     Text(text = placeholderText)
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    backgroundColor = Color.Transparent,
-                    cursorColor = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+                    containerColor = Color.Transparent,
+                    cursorColor = LocalContentColor.current.copy(alpha = 0.4f)
                 ),
                 trailingIcon = {
                     AnimatedVisibility(
@@ -282,27 +288,36 @@ private fun ChannelListContent(
 fun ChannelItem(@PreviewParameter(SampleUserProvider::class) channel: SonyChannel) {
     Row {
         Column {
-            Text( modifier = Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.h6,
-                text = channel.dispNumber)
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                style = MaterialTheme.typography.titleLarge,
+                text = channel.dispNumber
+            )
         }
         Column() {
-            Text(style = MaterialTheme.typography.h6,
-                text = channel.title)
+            Text(
+                style = MaterialTheme.typography.titleLarge,
+                text = channel.title
+            )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(modifier = Modifier.padding(end = 8.dp),
+                Icon(
+                    modifier = Modifier.padding(end = 8.dp),
                     painter = painterResource(id = R.drawable.ic_input),
                     contentDescription = null,
-                    tint = MaterialTheme.colors.secondary)
-                Text(style = MaterialTheme.typography.subtitle1,
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    style = MaterialTheme.typography.titleMedium,
                     text = channel.shortSource,
-                color = MaterialTheme.colors.secondary)}
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }
 
 
-class SampleUserProvider: PreviewParameterProvider<SonyChannel> {
+class SampleUserProvider : PreviewParameterProvider<SonyChannel> {
     override val values = sequenceOf(
         SonyChannel(
             title = "Das Erste",
@@ -311,5 +326,6 @@ class SampleUserProvider: PreviewParameterProvider<SonyChannel> {
             index = 0,
             uri = "tv:dvbs?trip\\u003d1.1019.10301\\u0026srvName\\u003dDas%20Erste%20HD",
             mediaType = "tv"
-        ))
+        )
+    )
 }

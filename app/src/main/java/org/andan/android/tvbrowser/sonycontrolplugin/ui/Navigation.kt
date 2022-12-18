@@ -9,7 +9,8 @@ enum class NavPath(
     ChannelList(route = "channel_list"),
     ChannelListSearch(route = "channel_list_search"),
     ChannelDetail(route = "channel_detail"),
-    RemoteControl(route = "remote_control")
+    RemoteControl(route = "remote_control"),
+    AddControl(route = "add_control")
 }
 
 /**
@@ -31,5 +32,9 @@ class NavigationActions(private val navController: NavHostController) {
 
     fun navigateToRemoteControl() {
         navController.navigate(NavPath.RemoteControl.route)
+    }
+
+    fun openAddControlDialog() {
+        navController.navigate(NavPath.AddControl.route)
     }
 }

@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,23 +14,28 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     navActions: NavigationActions = remember(navHostController) {
-        NavigationActions(navHostController)}
-)
-    {
+        NavigationActions(navHostController)
+    }
+) {
     NavHost(
         navController = navHostController,
         startDestination = NavPath.ChannelList.route
@@ -46,98 +51,118 @@ fun AppNavHost(
         composable(NavPath.RemoteControl.route) {
             RemoteControlScreen(navActions = navActions)
         }
+
+        dialog(
+            route = NavPath.AddControl.route,
+            dialogProperties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+            )
+        ) {
+            AddControlDialogContent()
+        }
+
     }
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawer(
-    closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    navActions: NavigationActions
+    navActions: NavigationActions,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    coroutineScope: CoroutineScope,
+    content: @Composable () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        DrawerHeader()
-        Divider()
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_settings_remote),
-            label = stringResource(id = R.string.menu_remote_control),
-            action = {
-                Timber.d("Called menu remote control")
-                navActions.navigateToRemoteControl()
-                closeDrawer()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Column(modifier = modifier.fillMaxSize()) {
+                DrawerHeader()
+                Divider()
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_settings_remote),
+                    label = stringResource(id = R.string.menu_remote_control),
+                    action = {
+                        Timber.d("Called menu remote control")
+                        navActions.navigateToRemoteControl()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_action_tv),
+                    label = stringResource(id = R.string.menu_show_channels),
+                    action = {
+                        Timber.d("Called menu remote control")
+                        navActions.navigateToChannelList()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                Divider()
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_action_add),
+                    label = stringResource(id = R.string.menu_add_control),
+                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                    action = {
+                        Timber.d("Called menu remote control")
+                        navActions.openAddControlDialog()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_action_edit),
+                    label = stringResource(id = R.string.menu_manage_control),
+                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                    action = {
+                        Timber.d("Called menu remote control")
+                        //navigateToStatistics()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_action_arrow_right),
+                    label = stringResource(id = R.string.menu_channel_map),
+                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                    action = {
+                        Timber.d("Called menu remote control")
+                        //navigateToStatistics()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                Divider()
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_settings),
+                    label = stringResource(id = R.string.menu_settings),
+                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                    action = {
+                        Timber.d("Called menu remote control")
+                        //navigateToStatistics()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
+                DrawerButton(
+                    painter = painterResource(id = R.drawable.ic_help_outline),
+                    label = stringResource(id = R.string.menu_help),
+                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                    action = {
+                        Timber.d("Called menu remote control")
+                        //navigateToStatistics()
+                        coroutineScope.launch {drawerState.close()}
+                    }
+                )
             }
-        )
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_action_tv),
-            label = stringResource(id = R.string.menu_show_channels),
-            action = {
-                Timber.d("Called menu remote control")
-                navActions.navigateToChannelList()
-                closeDrawer()
-            }
-        )
-        Divider()
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_action_add),
-            label = stringResource(id = R.string.menu_add_control),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-            action = {
-                Timber.d("Called menu remote control")
-                //navigateToStatistics()
-                closeDrawer()
-            }
-        )
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_action_edit),
-            label = stringResource(id = R.string.menu_manage_control),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-            action = {
-                Timber.d("Called menu remote control")
-                //navigateToStatistics()
-                closeDrawer()
-            }
-        )
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_action_arrow_right),
-            label = stringResource(id = R.string.menu_channel_map),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-            action = {
-                Timber.d("Called menu remote control")
-                //navigateToStatistics()
-                closeDrawer()
-            }
-        )
-        Divider()
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_settings),
-            label = stringResource(id = R.string.menu_settings),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-            action = {
-                Timber.d("Called menu remote control")
-                //navigateToStatistics()
-                closeDrawer()
-            }
-        )
-        DrawerButton(
-            painter = painterResource(id = R.drawable.ic_help_outline),
-            label = stringResource(id = R.string.menu_help),
-            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-            action = {
-                Timber.d("Called menu remote control")
-                //navigateToStatistics()
-                closeDrawer()
-            }
-        )
-    }
+        },
+        content = content
+    )
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DrawerHeader(
     modifier: Modifier = Modifier
-        .background(color = MaterialTheme.colors.primary)
+        .background(color = MaterialTheme.colorScheme.primary)
         .fillMaxWidth(),
     viewModel: SonyControlViewModel = viewModel()
 ) {
@@ -159,7 +184,7 @@ private fun DrawerHeader(
         Spacer(Modifier.width(16.dp))
         Text(
             text = stringResource(id = R.string.app_name_nav),
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.headlineMedium
             //color = tintColor
         )
     }
@@ -172,7 +197,7 @@ private fun DrawerHeader(
     ExposedDropdownMenuBox(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colors.primary),
+            .background(color = MaterialTheme.colorScheme.primary),
         expanded = expanded,
         onExpandedChange = {
             expanded = !expanded
@@ -194,10 +219,10 @@ private fun DrawerHeader(
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 unfocusedLabelColor = Color.Gray,
                 focusedLabelColor = Color.Gray,
-                trailingIconColor = Color.White,
+                unfocusedTrailingIconColor = Color.White,
                 focusedTrailingIconColor = Color.White,
-                backgroundColor = MaterialTheme.colors.primary,
-                textColor = MaterialTheme.colors.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
+                textColor = MaterialTheme.colorScheme.secondary,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
@@ -209,7 +234,7 @@ private fun DrawerHeader(
                 expanded = false
             }
         ) {
-            options.forEachIndexed {index,  selectionOption ->
+            options.forEachIndexed { index, selectionOption ->
                 DropdownMenuItem(
                     modifier = modifier
                         .fillMaxWidth()
@@ -224,10 +249,9 @@ private fun DrawerHeader(
                             viewModel.setSelectedControlIndex(index)
                             Timber.d("onItemSelected setSelectedControlIndex")
                         }
-                    }
-                ) {
-                    Text(text = selectionOption.nickname)
-                }
+                    },
+                    text = {Text(text = selectionOption.nickname)}
+                )
             }
         }
     }
@@ -241,7 +265,7 @@ private fun DrawerButton(
     action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tintColor = MaterialTheme.colors.secondary
+    val tintColor = MaterialTheme.colorScheme.secondary
     /*val tintColor = if (isSelected) {
         MaterialTheme.colors.secondary
     } else {
@@ -268,7 +292,7 @@ private fun DrawerButton(
             Spacer(Modifier.width(16.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 color = tintColor
             )
         }

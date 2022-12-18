@@ -10,9 +10,9 @@ class SonyControlMainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppCompatTheme {
+            //AppCompatTheme() {
                 AppNavHost()
-            }
+            //}
         }
     }
 }

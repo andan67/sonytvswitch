@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,42 +44,43 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoteControlScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel = viewModel(),
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navActions: NavigationActions,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    navActions: NavigationActions
 ) {
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
-    Scaffold(
-        scaffoldState = scaffoldState,
-        drawerContent = {
-            AppDrawer(
-                closeDrawer = { coroutineScope.launch { scaffoldState.drawerState.close() } },
-                navActions = navActions
-            )
-        },
-        topBar = {
-            RemoteControlTopAppBar(
-                openDrawer = {
-                    coroutineScope.launch { scaffoldState.drawerState.open() }; Timber.d(
-                    "openDrawer"
-                )
+    AppDrawer(
+        modifier = modifier,
+        navActions = navActions,
+        drawerState = drawerState,
+        coroutineScope = coroutineScope,
+        content = {
+
+            //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
+            Scaffold(
+                topBar = {
+                    RemoteControlTopAppBar(
+                        openDrawer = {
+                            coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer")
+                        },
+                    )
                 },
-            )
-        },
-        modifier = modifier.fillMaxSize(),
-    ) { innerPadding ->
-        RemoteControlContent(
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
+                modifier = modifier.fillMaxSize(),
+            ) { innerPadding ->
+                RemoteControlContent(
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
+        }
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoteControlTopAppBar(
     openDrawer: () -> Unit,
@@ -90,35 +92,8 @@ fun RemoteControlTopAppBar(
             }
         },
         actions = {
-            RemoteControlMenu({}, {}, {})
+            ChannelListMenu({}, {}, {})
         })
-}
-
-@Composable
-private fun RemoteControlMenu(
-    onWakeOnLan: () -> Unit,
-    onScreenOff: () -> Unit,
-    onScreenOn: () -> Unit
-) {
-    TopAppBarDropdownMenu(
-        iconContent = {
-            Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more))
-        }
-    ) {
-        // Here closeMenu stands for the lambda expression parameter that is passed when this
-        // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
-        // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
-            closeMenu ->
-        DropdownMenuItem(onClick = { onWakeOnLan(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.wol_action))
-        }
-        DropdownMenuItem(onClick = { onScreenOff(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.screen_off_action))
-        }
-        DropdownMenuItem(onClick = { onScreenOn(); closeMenu() }) {
-            Text(text = stringResource(id = R.string.screen_on_action))
-        }
-    }
 }
 
 @SuppressLint("ResourceType")
@@ -166,7 +141,7 @@ private fun RemoteControlContent(
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.TopStart),
                 command = "",
-                text = "I+"
+                text = "INFO"
             )
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.TopEnd),
@@ -230,87 +205,39 @@ private fun RemoteControlContent(
         {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(24.dp))
-                RemoteControlButton(
+                RemoteControlIconButton(
                     width = dimensionResource(id = R.dimen.rc_button_small_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_action_mute),
-                            tint = Color.White,
-                            contentDescription = null
-                        )
-                    }
+                    command = "",
+                    painter = painterResource(id = R.drawable.ic_action_mute)
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "VOLUME",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
+                RemoteControlLabel("VOLUME")
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    RemoteControlButton(
+                    RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        onClick = { /*TODO*/ },
-                        content = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_remove),
-                                tint = Color.White,
-                                contentDescription = null
-                            )
-                        }
+                        command = "",
+                        painter = painterResource(id = R.drawable.ic_remove)
                     )
-                    RemoteControlButton(
+                    RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        onClick = { /*TODO*/ },
-                        content = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_add),
-                                tint = Color.White,
-                                contentDescription = null
-                            )
-                        }
+                        command = "",
+                        painter = painterResource(id = R.drawable.ic_add)
                     )
                 }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "PROG",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
+                RemoteControlLabel("PROG")
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    RemoteControlButton(
+                    RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        onClick = { /*TODO*/ },
-                        content = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_remove),
-                                tint = Color.White,
-                                contentDescription = null
-                            )
-                        }
+                        command = "",
+                        painter = painterResource(id = R.drawable.ic_remove)
                     )
-                    RemoteControlButton(
+                    RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        onClick = { /*TODO*/ },
-                        content = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_add),
-                                tint = Color.White,
-                                contentDescription = null
-                            )
-                        }
+                        command = "",
+                        painter = painterResource(id = R.drawable.ic_add)
                     )
                 }
             }
@@ -318,298 +245,128 @@ private fun RemoteControlContent(
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "SYNC\nMENU",
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
+            RemoteControlTextButton(
+                command = "",
+                text = "SYNC\nMENU"
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "ANALOG\nDIGITAL",
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
+            RemoteControlTextButton(
+                command = "",
+                text = "ANALOG\nDIGITAL"
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "EXIT",
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
+            RemoteControlTextButton(
+                command = "",
+                text = "EXIT"
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "Radio\nTV",
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
+            RemoteControlTextButton(
+                command = "",
+                text = "Radio\nTV"
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "ghi",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("/")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "4",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "1"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "jkl",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("abc")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "5",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "2"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "mno",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("def")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "6",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "3"
                 )
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "pqrs",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("ghi")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "7",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "4"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "tuv",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("jkl")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "8",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "5"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "wxyz",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("mno")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "9",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "6"
                 )
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    " ",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("pqrs")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "I-MANUAL",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "7"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "\u2423",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("tuv")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "0",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "8"
                 )
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    " ",
-                    modifier = Modifier
-                        .height(24.dp)
-                        .padding(top = 6.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Light
-                )
-                RemoteControlButton(
+                RemoteControlLabel("wxyz")
+                RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    onClick = { /*TODO*/ },
-                    content = {
-                        Text(
-                            "ENTER",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    command = "",
+                    text = "9"
+                )
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
+        {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RemoteControlLabel("")
+                RemoteControlTextButton(
+                    width = dimensionResource(id = R.dimen.rc_button_number_width),
+                    command = "",
+                    text = "I-MANUAL"
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RemoteControlLabel("␣")
+                RemoteControlTextButton(
+                    width = dimensionResource(id = R.dimen.rc_button_number_width),
+                    command = "",
+                    text = "0"
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RemoteControlLabel("")
+                RemoteControlTextButton(
+                    width = dimensionResource(id = R.dimen.rc_button_number_width),
+                    command = "",
+                    text = "ENTER"
                 )
             }
         }
@@ -617,7 +374,7 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlButton(
-                onClick = { /*TODO*/ },
+                command = "",
                 content = {
                     Box(
                         modifier = Modifier
@@ -629,7 +386,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                onClick = { /*TODO*/ },
+                command = "",
                 content = {
                     Box(
                         modifier = Modifier
@@ -641,7 +398,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                onClick = { /*TODO*/ },
+                command = "",
                 content = {
                     Box(
                         modifier = Modifier
@@ -653,7 +410,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                onClick = { /*TODO*/ },
+                command = "",
                 content = {
                     Box(
                         modifier = Modifier
@@ -668,110 +425,53 @@ private fun RemoteControlContent(
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_skip_previous),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_skip_previous)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pause),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_pause)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_stop),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_stop)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_skip_next),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_skip_next)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_fast_rewind),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_fast_rewind)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
+            RemoteControlIconButton(
+                command = "",
                 width = dimensionResource(id = R.dimen.rc_button_play_width),
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_play_arrow),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+                painter = painterResource(id = R.drawable.ic_play_arrow)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_fast_forward),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_fast_forward)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "TV PAUSE",
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+            RemoteControlTextButton(
+                command = "",
+                text = "TV\nPAUSE",
+            )
+            RemoteControlTextButton(
+                command = "",
+                text = "TITLE\nLIST",
             )
             RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "TITLE LIST",
-                        fontSize = 14.sp,
-                        //style = MaterialTheme.typography.button
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
-            )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
+                command = "",
                 content = {
                     Box(
                         modifier = Modifier
@@ -782,65 +482,50 @@ private fun RemoteControlContent(
                     )
                 }
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "3D",
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+            RemoteControlTextButton(
+                command = "",
+                text = "3D",
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_action_aspect),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_action_aspect)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_action_subtitle),
-                        tint = Color.White,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                painter = painterResource(id = R.drawable.ic_action_subtitle)
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Text(
-                        "AUDIO",
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+            RemoteControlTextButton(
+                command = "",
+                text = "AUDIO",
             )
-            RemoteControlButton(
-                onClick = { /*TODO*/ },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_action_teletext),
-                        tint = Color.Green,
-                        contentDescription = null
-                    )
-                }
+            RemoteControlIconButton(
+                command = "",
+                tint = Color.Green,
+                painter = painterResource(id = R.drawable.ic_action_teletext)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
+
+@Composable
+private fun RemoteControlLabel(
+    text: String = ""
+) {
+    Text(
+        text,
+        modifier = Modifier
+            .height(24.dp)
+            .padding(top = 6.dp),
+        textAlign = TextAlign.Center,
+        fontSize = 12.sp,
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Light
+    )
 }
 
 @Composable
@@ -891,6 +576,7 @@ private fun RemoteControlTextButton(
         content = {
             Text(
                 text,
+                textAlign = TextAlign.Center,
                 fontSize = fontSize,
                 fontFamily = fontFamily,
                 fontWeight = fontWeight
@@ -921,8 +607,15 @@ private fun RemoteControlButton(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         interactionSource = interactionSource,
+        elevation =  ButtonDefaults.buttonElevation(
+            defaultElevation = 20.dp,
+            pressedElevation = 15.dp,
+            disabledElevation = 0.dp,
+            hoveredElevation = 15.dp,
+            focusedElevation = 10.dp
+        ),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (isPressed) colorResource(id = R.color.grey_500) else backgroundColor
+            containerColor = if (isPressed) colorResource(id = R.color.grey_500) else backgroundColor
         )
     ) {
         content.invoke()
