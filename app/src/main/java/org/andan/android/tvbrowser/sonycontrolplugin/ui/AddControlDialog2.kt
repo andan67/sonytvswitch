@@ -23,10 +23,11 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.PowerStatusResponse
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Status
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.AddControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
-enum class AddControlState2() {
+enum class AddControlState() {
     SPECIFY_HOST,
     SPECIFY_HOST_VALIDATING,
     REGISTER,
@@ -35,9 +36,9 @@ enum class AddControlState2() {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun AddControlDialog(
+fun AddControlDialog2(
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel
+    viewModel: AddControlViewModel
 ) {
     var addControlState by rememberSaveable { mutableStateOf(AddControlState.SPECIFY_HOST) }
     var host by rememberSaveable { mutableStateOf("") }

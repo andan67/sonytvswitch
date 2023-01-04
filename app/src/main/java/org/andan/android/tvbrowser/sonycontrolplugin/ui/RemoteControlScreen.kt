@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -48,7 +47,7 @@ import timber.log.Timber
 @Composable
 fun RemoteControlScreen(
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel = viewModel(),
+    viewModel: SonyControlViewModel,
     navActions: NavigationActions
 ) {
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -59,25 +58,23 @@ fun RemoteControlScreen(
         navActions = navActions,
         drawerState = drawerState,
         coroutineScope = coroutineScope,
-        content = {
+        viewModel = viewModel
+    ) {
 
-            //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
-            Scaffold(
-                topBar = {
-                    RemoteControlTopAppBar(
-                        openDrawer = {
-                            coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer")
-                        },
-                    )
-                },
-                modifier = modifier.fillMaxSize(),
-            ) { innerPadding ->
-                RemoteControlContent(
-                    modifier = Modifier.padding(innerPadding)
+        //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
+        Scaffold(
+            topBar = {
+                RemoteControlTopAppBar(
+                    openDrawer = {
+                        coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer")
+                    },
                 )
+            },
+            content = {contentPadding ->
+                RemoteControlContent(modifier = Modifier.padding(contentPadding))
             }
-        }
-    )
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,12 +96,12 @@ fun RemoteControlTopAppBar(
 @SuppressLint("ResourceType")
 @Composable
 private fun RemoteControlContent(
-    modifier: Modifier = Modifier.width(dimensionResource(id = R.dimen.rc_layout_width))
+    modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(scrollState)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

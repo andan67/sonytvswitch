@@ -43,8 +43,8 @@ import timber.log.Timber
 @Composable
 fun ChannelListScreen(
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel = viewModel(),
     navActions: NavigationActions,
+    viewModel: SonyControlViewModel
 ) {
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
@@ -54,6 +54,7 @@ fun ChannelListScreen(
         navActions = navActions,
         drawerState = drawerState,
         coroutineScope = coroutineScope,
+        viewModel = viewModel,
         content = {
             Scaffold(
                 topBar = {
@@ -129,9 +130,15 @@ fun ChannelListMenu(
         // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
         // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
             closeMenu ->
-        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.wol_action)) }, onClick = { onWakeOnLan(); closeMenu() })
-        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.screen_off_action)) }, onClick = { onScreenOff(); closeMenu() })
-        DropdownMenuItem(text = { Text(text = stringResource(id = R.string.screen_on_action)) }, onClick = { onScreenOn(); closeMenu() })
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.wol_action)) },
+            onClick = { onWakeOnLan(); closeMenu() })
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.screen_off_action)) },
+            onClick = { onScreenOff(); closeMenu() })
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.screen_on_action)) },
+            onClick = { onScreenOn(); closeMenu() })
     }
 }
 
@@ -139,8 +146,8 @@ fun ChannelListMenu(
 @Composable
 fun ChannelSearchListScreen(
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel = viewModel(),
-    navActions: NavigationActions
+    navActions: NavigationActions,
+    viewModel: SonyControlViewModel
 ) {
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
@@ -150,6 +157,7 @@ fun ChannelSearchListScreen(
         navActions = navActions,
         drawerState = drawerState,
         coroutineScope = coroutineScope,
+        viewModel = viewModel,
         content = {
             Scaffold(
                 topBar = {
@@ -182,7 +190,7 @@ fun ChannelSearchListScreen(
                 ChannelListContent(
                     modifier = Modifier.padding(innerPadding),
                     channelNameList = viewModel.channelNameList,
-                    channelList = channelList
+                    channelList = channelList,
                     //channelListState = channelListState
                 )
             }

@@ -1,12 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
@@ -38,10 +36,13 @@ class SonyControlViewModel : ViewModel() {
     private var _sonyControls = MutableLiveData<SonyControls>()
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
-
     var addedControlHostAddress: String = ""
 
     private var channelSearchQuery: String = ""
+
+    private var _noControls = MutableLiveData<Int>(0)
+    val noControls: LiveData<Int>
+        get() = _noControls
 
     //val filteredChannelList: MutableState<List<SonyChannel>> = mutableStateOf(emptyList<SonyChannel>())
     val filteredChannelList = MutableLiveData<List<SonyChannel>>()
@@ -75,12 +76,15 @@ class SonyControlViewModel : ViewModel() {
 
     private val _powerStatus = MutableLiveData<Resource<PowerStatusResponse>>()
     val powerStatus: LiveData<Resource<PowerStatusResponse>> = _powerStatus
-
+    private fun <T> MutableLiveData<T>.notifyObserver() {
+        this.setValue(this.value)
+    }
     init {
         Timber.d("init")
         _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
+        _noControls.value = sonyControlRepository.sonyControls.value!!.controls.size;
         onSelectedIndexChange()
         //filterChannelNameList("")
     }
@@ -92,15 +96,29 @@ class SonyControlViewModel : ViewModel() {
         }
     }
 
+    fun addSampleControl(context: Context, host : String) {
+        addedControlHostAddress = host
+
+        val sampleSonyControl = SonyControl.fromJson(
+            context.assets.open("SonyControl_sample.json").bufferedReader()
+                .use { it.readText() }.replace("android sample",host))
+        addControl(sampleSonyControl)
+    }
     fun addControl(control: SonyControl) {
         Timber.d("addControl(): $control")
         Timber.d("sonyControlViewModel: $this")
         sonyControlRepository.addControl(control)
+        _noControls.postValue(sonyControls.value!!.controls.size)
+        Timber.d("_noControls: $_noControls")
+        //_sonyControls.notifyObserver()
     }
 
     fun deleteSelectedControl() {
         //if (sonyControlRepository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
-        if (sonyControlRepository.removeControl(sonyControls.value!!.selected)) onSelectedIndexChange()
+        if (sonyControlRepository.removeControl(sonyControls.value!!.selected)) {
+            onSelectedIndexChange()
+            _noControls.postValue(sonyControls.value!!.controls.size)
+        }
     }
 
     fun setSelectedControlIndex(index: Int) {
@@ -109,7 +127,7 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun onSelectedIndexChange() {
-        Timber.d("onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
+        //Timber.d("onSelectedIndexChange(): ${_sonyControls.value!!.selected}")
         lastChannelUri = ""
         currentChannelUri = ""
         refreshDerivedVariablesForSelectedControl()
@@ -256,9 +274,26 @@ class SonyControlViewModel : ViewModel() {
         _interfaceInformation.postValue(sonyControlRepository.getInterfaceInformation(host))
     }
 
-    fun fetchPowerStatus(host: String) = viewModelScope.launch(Dispatchers.IO) {
-        _powerStatus.postValue(sonyControlRepository.getPowerStatus(host))
+    fun fetchPowerStatus(host: String) {
+        _powerStatus.value = Resource.Loading()
+        viewModelScope.launch(Dispatchers.IO) {
+            Timber.d("fetchPowerStatus: postValue")
+            _powerStatus.postValue(sonyControlRepository.getPowerStatus(host))
+        }
     }
+
+    val powerStatus2: LiveData<Resource<PowerStatusResponse>> =
+        liveData<Resource<PowerStatusResponse>> {
+            emit(Resource.Loading())
+            //sonyControlRepository.getPowerStatus(host)
+            viewModelScope.launch(Dispatchers.IO) {
+                emit(
+                    sonyControlRepository.getPowerStatus(
+                        addedControlHostAddress
+                    )
+                )
+            }
+        }
 
     fun fetchSystemInformation() = viewModelScope.launch(Dispatchers.IO) {
         sonyControlRepository.fetchSystemInformation()

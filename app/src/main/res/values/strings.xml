@@ -112,30 +112,27 @@
 
     <string name="add_control_host_title">Define host/ip address</string>
     <string name="add_control_host_check_title">Check connectivity</string>
-    <string name="add_control_host_instructions">
-        \u25BA Switch on Sony TV
-        \n\u25BA Enter host address of the TV into "IP/Host address" field
-        \n\u25BA Alternatively select discovered device (if found) from drop down box
-        \n\u25BA Click next
-        \n\u25BA See [Help] menu for more information
+    <string name="add_control_host_instructions">\u25AA Switch on Sony TV
+        \n\u25AA Enter host/IP address of the TV
+        \n\u25AA Alternatively select discovered device
+        \n\u25AA Click next
     </string>
     <string name="add_control_host_field_title">Host/IP address</string>
     <string name="add_control_host_discovered_devices">Discovered devices</string>
     <string name="add_control_host_neu">Test</string>
     <string name="add_control_host_neg">Cancel</string>
     <string name="add_control_host_pos">Next</string>
+    <string name="add_control_host_confirm">Next</string>
     <string name="add_control_host_check_pos">Set</string>
     <string name="add_control_host_failed_msg">Connectivity test failed.</string>
     <string name="add_control_host_testing_msg">Testing connectivity…</string>
 
 
     <string name="add_control_register_title">Register control</string>
-    <string name="add_control_register_instructions">
-        \u25BA Enter nickname for the control and a device name
-        \n\u25BA Enter pre-shared key as defined for your TV (optional)
-        \n\u25BA Click register
-        \n\u25BA Possibly enter challenge code if pre-shared key has not been defined
-        \n\u25BA See [Help] menu for more information
+    <string name="add_control_register_instructions">\u25AA Enter nickname for the control and a device name
+        \n\u25AA Enter pre-shared key as defined for your TV (optional)
+        \n\u25AA Click register
+        \n\u25AA Enter challenge code if pre-shared key has not been defined
     </string>
     <string name="add_control_register_unauthorized_challenge_message">Registration error. Please retry.</string>
     <string name="add_control_register_pos">Finish</string>
@@ -158,4 +155,7 @@
     <string name="back_search_channels">Exit Search View</string>
     <string name="menu_more">More</string>
     <string name="select_remote_controller_label">Select Controller</string>
+    <string name="add_control_step1">Add control: step 1</string>
+    <string name="add_control_specify_host_title">Specify host address of control</string>
+    <string name="add_control_host_invalid">Host address not valid</string>
 </resources>

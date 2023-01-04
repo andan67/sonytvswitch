@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
 enum class NavPath(
@@ -36,5 +35,9 @@ class NavigationActions(private val navController: NavHostController) {
 
     fun openAddControlDialog() {
         navController.navigate(NavPath.AddControl.route)
+    }
+
+    fun navigateUp() {
+        navController.navigateUp()
     }
 }

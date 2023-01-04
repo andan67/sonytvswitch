@@ -61,6 +61,7 @@ class SonyControlRepository @Inject constructor(
     private fun onSonyControlsChange() {
         Timber.d("onSonyControlsChange()")
         setSonyServiceContextForControl(selectedSonyControl.value)
+        sonyControls.notifyObserverBackground()
     }
 
     fun setSonyServiceContextForControl(control: SonyControl?) {
@@ -75,7 +76,7 @@ class SonyControlRepository @Inject constructor(
     }
 
     private fun <T> MutableLiveData<T>.notifyObserver() {
-        this.value = this.value
+        this.setValue(this.value)
     }
 
     private fun <T> MutableLiveData<T>.notifyObserverBackground() {

@@ -2,11 +2,13 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -25,31 +27,33 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     navActions: NavigationActions = remember(navHostController) {
         NavigationActions(navHostController)
-    }
+    },
+    viewModel: SonyControlViewModel
 ) {
     NavHost(
         navController = navHostController,
         startDestination = NavPath.ChannelList.route
     ) {
         composable(NavPath.ChannelList.route) {
-            ChannelListScreen(navActions = navActions)
+            ChannelListScreen(navActions = navActions, viewModel = viewModel)
         }
 
         composable(NavPath.ChannelListSearch.route) {
-            ChannelSearchListScreen(navActions = navActions)
+            ChannelSearchListScreen(navActions = navActions, viewModel = viewModel)
         }
 
         composable(NavPath.RemoteControl.route) {
-            RemoteControlScreen(navActions = navActions)
+            RemoteControlScreen(navActions = navActions, viewModel = viewModel)
         }
 
         dialog(
@@ -57,9 +61,14 @@ fun AppNavHost(
             dialogProperties = DialogProperties(
                 dismissOnBackPress = true,
                 dismissOnClickOutside = true,
-            )
+                usePlatformDefaultWidth = false
+            ),
         ) {
-            AddControlDialogContent()
+            AddControlDialog(
+                navActions = navActions,
+                //initialAddControlStata = AddControlState.SPECIFY_HOST,
+                viewModel = viewModel
+            )
         }
 
     }
@@ -73,88 +82,96 @@ fun AppDrawer(
     navActions: NavigationActions,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     coroutineScope: CoroutineScope,
+    viewModel: SonyControlViewModel,
     content: @Composable () -> Unit
 ) {
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            Column(modifier = modifier.fillMaxSize()) {
-                DrawerHeader()
-                Divider()
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_settings_remote),
-                    label = stringResource(id = R.string.menu_remote_control),
-                    action = {
-                        Timber.d("Called menu remote control")
-                        navActions.navigateToRemoteControl()
-                        coroutineScope.launch {drawerState.close()}
+    var noControls by remember { mutableStateOf(viewModel.sonyControls.value!!.controls.size) }
+
+    SonyTVSwitchTheme() {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    Column(modifier = modifier.fillMaxSize()) {
+                        //DrawerHeader(noControls = noControls, onNoControlsChange =  {noControls = it} )
+                        DrawerHeader(viewModel = viewModel)
+                        Divider()
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_settings_remote),
+                            label = stringResource(id = R.string.menu_remote_control),
+                            action = {
+                                Timber.d("Called menu remote control")
+                                navActions.navigateToRemoteControl()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_action_tv),
+                            label = stringResource(id = R.string.menu_show_channels),
+                            action = {
+                                Timber.d("Called menu remote control")
+                                navActions.navigateToChannelList()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        Divider()
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_action_add),
+                            label = stringResource(id = R.string.menu_add_control),
+                            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                            action = {
+                                Timber.d("Called menu remote control")
+                                navActions.openAddControlDialog()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_action_edit),
+                            label = stringResource(id = R.string.menu_manage_control),
+                            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                            action = {
+                                Timber.d("Called menu remote control")
+                                //navigateToStatistics()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_action_arrow_right),
+                            label = stringResource(id = R.string.menu_channel_map),
+                            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                            action = {
+                                Timber.d("Called menu remote control")
+                                //navigateToStatistics()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        Divider()
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_settings),
+                            label = stringResource(id = R.string.menu_settings),
+                            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                            action = {
+                                Timber.d("Called menu remote control")
+                                //navigateToStatistics()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
+                        DrawerButton(
+                            painter = painterResource(id = R.drawable.ic_help_outline),
+                            label = stringResource(id = R.string.menu_help),
+                            //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
+                            action = {
+                                Timber.d("Called menu remote control")
+                                //navigateToStatistics()
+                                coroutineScope.launch { drawerState.close() }
+                            }
+                        )
                     }
-                )
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_action_tv),
-                    label = stringResource(id = R.string.menu_show_channels),
-                    action = {
-                        Timber.d("Called menu remote control")
-                        navActions.navigateToChannelList()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-                Divider()
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_action_add),
-                    label = stringResource(id = R.string.menu_add_control),
-                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-                    action = {
-                        Timber.d("Called menu remote control")
-                        navActions.openAddControlDialog()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_action_edit),
-                    label = stringResource(id = R.string.menu_manage_control),
-                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-                    action = {
-                        Timber.d("Called menu remote control")
-                        //navigateToStatistics()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_action_arrow_right),
-                    label = stringResource(id = R.string.menu_channel_map),
-                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-                    action = {
-                        Timber.d("Called menu remote control")
-                        //navigateToStatistics()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-                Divider()
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_settings),
-                    label = stringResource(id = R.string.menu_settings),
-                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-                    action = {
-                        Timber.d("Called menu remote control")
-                        //navigateToStatistics()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-                DrawerButton(
-                    painter = painterResource(id = R.drawable.ic_help_outline),
-                    label = stringResource(id = R.string.menu_help),
-                    //isSelected = currentRoute == TodoDestinations.STATISTICS_ROUTE,
-                    action = {
-                        Timber.d("Called menu remote control")
-                        //navigateToStatistics()
-                        coroutineScope.launch {drawerState.close()}
-                    }
-                )
-            }
-        },
-        content = content
-    )
+                }
+            },
+            content = content
+        )
+    }
 }
 
 
@@ -164,58 +181,67 @@ private fun DrawerHeader(
     modifier: Modifier = Modifier
         .background(color = MaterialTheme.colorScheme.primary)
         .fillMaxWidth(),
-    viewModel: SonyControlViewModel = viewModel()
+    viewModel: SonyControlViewModel
+    //noControls : Int,
+    //onNoControlsChange: (Int) -> Unit
 ) {
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.mipmap.ic_launcher),
-            contentDescription = null, // decorative
-            //tint = tintColor,
-            modifier = Modifier
-                .width(64.dp)
-                .padding(start = 16.dp)
-        )
-        Spacer(Modifier.width(16.dp))
-        Text(
-            text = stringResource(id = R.string.app_name_nav),
-            style = MaterialTheme.typography.headlineMedium
-            //color = tintColor
-        )
-    }
-
-    //val options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5")
-    val options = viewModel.sonyControls.value!!.controls
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(if (options.size > 0) options[0].nickname else "") }
-// We want to react on tap/press on TextField to show menu
-    ExposedDropdownMenuBox(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.primary),
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-        }
-    ) {
-        TextField(
+    Column()
+    {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp),
-            readOnly = true,
-            value = selectedOptionText,
-            onValueChange = { },
-            label = { Text(stringResource(R.string.select_remote_controller_label)) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            },
+                .padding(top = 16.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.mipmap.ic_launcher),
+                contentDescription = null, // decorative
+                //tint = tintColor,
+                modifier = Modifier
+                    .width(64.dp)
+                    .padding(start = 16.dp)
+            )
+            Spacer(Modifier.width(16.dp))
+            Text(
+                text = stringResource(id = R.string.app_name_nav),
+                style = MaterialTheme.typography.headlineMedium
+                //color = tintColor
+            )
+        }
+
+        var expanded by remember { mutableStateOf(false) }
+        //val noControls by viewModel.noControls.observeAsState()
+        val controls by viewModel.sonyControls.observeAsState()
+        val controlList = controls!!.controls
+        Timber.d("DrawerHeader controlList.size: ${controlList.size}")
+        //Timber.d("DrawerHeader noControls: $noControls")
+        //var selectedOptionText by remember { mutableStateOf(if (controlList.size > 0) controlList[0].nickname else "") }
+        val selectedControlIndex =  controls!!.selected
+        val selectedControlName = if (selectedControlIndex >= 0) controlList[selectedControlIndex].nickname else ""
+// We want to react on tap/press on TextField to show menu
+        ExposedDropdownMenuBox(
+            modifier = modifier.padding(start = 16.dp),
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            TextField(
+                modifier = modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                    //.padding(start = 16.dp),
+                readOnly = true,
+                value = selectedControlName,
+                onValueChange = { },
+                label = { Text(stringResource(R.string.select_remote_controller_label)) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = expanded
+                    )
+                },
+                /*
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 unfocusedLabelColor = Color.Gray,
                 focusedLabelColor = Color.Gray,
@@ -225,33 +251,35 @@ private fun DrawerHeader(
                 textColor = MaterialTheme.colorScheme.secondary,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
-            )
-        )
-        ExposedDropdownMenu(
-            modifier = modifier.fillMaxWidth(),
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            }
-        ) {
-            options.forEachIndexed { index, selectionOption ->
-                DropdownMenuItem(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp),
-                    onClick = {
 
-                        selectedOptionText = selectionOption.nickname
-                        expanded = false
-                        Timber.i("onItemSelected position:$index")
-                        // check if new position/control index is set
-                        if (viewModel.sonyControls.value!!.selected != index) {
-                            viewModel.setSelectedControlIndex(index)
-                            Timber.d("onItemSelected setSelectedControlIndex")
-                        }
-                    },
-                    text = {Text(text = selectionOption.nickname)}
-                )
+            )
+             */
+            )
+            ExposedDropdownMenu(
+                modifier = modifier.fillMaxWidth(),
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                controlList.forEachIndexed { index, selectionOption ->
+                    DropdownMenuItem(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
+                        onClick = {
+                            //selectedOptionText = selectionOption.nickname
+                            expanded = false
+                            Timber.i("onItemSelected position:$index")
+                            // check if new position/control index is set
+                            if (viewModel.sonyControls.value!!.selected != index) {
+                                viewModel.setSelectedControlIndex(index)
+                                Timber.d("onItemSelected setSelectedControlIndex")
+                            }
+                        },
+                        text = { Text(text = selectionOption.nickname) }
+                    )
+                }
             }
         }
     }

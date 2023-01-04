@@ -144,15 +144,18 @@ sealed class Resource<T>(
     val data: T? = null,
     val code: Int = 0,
     val message: String? = null,
-    val status: Status
+    val status: Status = Status.INIT
 ) {
     class Success<T>(code: Int, data: T) : Resource<T>(data, code, status = Status.SUCCESS)
-    class Loading<T>(data: T? = null) : Resource<T>(data, status = Status.LOADING)
+    //class Loading<T>(data: T? = null) : Resource<T>(data, status = Status.LOADING)
     class Error<T>(message: String, code: Int, data: T? = null) :
         Resource<T>(data, code, message, Status.ERROR)
+    class Loading<T>() : Resource<T>(status = Status.LOADING)
+    class Init<T>() : Resource<T>()
 }
 
 enum class Status {
+    INIT,
     SUCCESS,
     ERROR,
     LOADING
@@ -171,6 +174,7 @@ data class SonyServiceClientContext(
 
 data class RegistrationStatus(val code: Int, val message: String) {
     companion object {
+        const val REGISTRATION_INIT = -1
         const val REGISTRATION_SUCCESSFUL = 0
         const val REGISTRATION_REQUIRES_CHALLENGE_CODE = 1
         const val REGISTRATION_UNAUTHORIZED = 2

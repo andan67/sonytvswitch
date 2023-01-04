@@ -45,6 +45,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.config
         }
+        debug {
+            //minifyEnabled true
+        }
     }
     compileOptions {
         sourceCompatibility = 1.8
