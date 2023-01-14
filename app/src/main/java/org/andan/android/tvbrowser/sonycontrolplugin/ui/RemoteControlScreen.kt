@@ -48,33 +48,22 @@ import timber.log.Timber
 fun RemoteControlScreen(
     modifier: Modifier = Modifier,
     viewModel: SonyControlViewModel,
-    navActions: NavigationActions
+    navActions: NavigationActions,
+    openDrawer: () -> Unit
 ) {
-    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    AppDrawer(
-        modifier = modifier,
-        navActions = navActions,
-        drawerState = drawerState,
-        coroutineScope = coroutineScope,
-        viewModel = viewModel
-    ) {
 
-        //AppNavHost(navHostController = navHostController, scaffoldState = scaffoldState )
-        Scaffold(
-            topBar = {
-                RemoteControlTopAppBar(
-                    openDrawer = {
-                        coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer")
-                    },
+    Scaffold(
+        topBar = {
+            RemoteControlTopAppBar(
+                openDrawer = { openDrawer() },
+
                 )
-            },
-            content = {contentPadding ->
-                RemoteControlContent(modifier = Modifier.padding(contentPadding))
-            }
-        )
-    }
+        },
+        content = { contentPadding ->
+            RemoteControlContent(modifier = Modifier.padding(contentPadding))
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -604,7 +593,7 @@ private fun RemoteControlButton(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         interactionSource = interactionSource,
-        elevation =  ButtonDefaults.buttonElevation(
+        elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 20.dp,
             pressedElevation = 15.dp,
             disabledElevation = 0.dp,

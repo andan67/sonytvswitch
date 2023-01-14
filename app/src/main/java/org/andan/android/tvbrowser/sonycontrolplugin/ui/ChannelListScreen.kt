@@ -44,50 +44,40 @@ import timber.log.Timber
 fun ChannelListScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel
+    viewModel: SonyControlViewModel,
+    openDrawer: () -> Unit
 ) {
-    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    AppDrawer(
-        modifier = modifier,
-        navActions = navActions,
-        drawerState = drawerState,
-        coroutineScope = coroutineScope,
-        viewModel = viewModel,
-        content = {
-            Scaffold(
-                topBar = {
-                    ChannelTopAppBar(
-                        openDrawer = { coroutineScope.launch { drawerState.open() }; Timber.d("openDrawer") },
-                        onSearchBarClick = {
-                            navActions.navigateToChannelListSearch()
-                            Timber.d("Clicked search bar")
-                        }
-                    )
-                },
-                modifier = modifier.fillMaxSize(),
-                floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        Timber.d("Switch channel")
-                    })
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_round_autorenew_24),
-                            contentDescription = stringResource(id = R.string.switch_channel)
-                        )
-                    }
+    Scaffold(
+        topBar = {
+            ChannelTopAppBar(
+                openDrawer = { openDrawer() },
+                onSearchBarClick = {
+                    navActions.navigateToChannelListSearch()
+                    Timber.d("Clicked search bar")
                 }
-            ) { innerPadding ->
-                ChannelListContent(
-                    modifier = Modifier.padding(innerPadding),
-                    channelNameList = viewModel.channelNameList,
-                    channelList = channelList
-                    //channelListState = channelListState
+            )
+        },
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                Timber.d("Switch channel")
+            })
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_round_autorenew_24),
+                    contentDescription = stringResource(id = R.string.switch_channel)
                 )
             }
         }
-    )
+    ) { innerPadding ->
+        ChannelListContent(
+            modifier = Modifier.padding(innerPadding),
+            channelNameList = viewModel.channelNameList,
+            channelList = channelList
+            //channelListState = channelListState
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,53 +139,42 @@ fun ChannelSearchListScreen(
     navActions: NavigationActions,
     viewModel: SonyControlViewModel
 ) {
-    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    AppDrawer(
-        modifier = modifier,
-        navActions = navActions,
-        drawerState = drawerState,
-        coroutineScope = coroutineScope,
-        viewModel = viewModel,
-        content = {
-            Scaffold(
-                topBar = {
-                    ChannelSearchTopAppBar(
-                        onNavigateBack = {
-                            navActions.navigateToChannelList()
-                        },
-                        searchText = "Search Text",
-                        onSearchTextChanged = {
-                            Timber.d("onSearchTextChanged")
-                        },
-                        onClearClick = {
-                            Timber.d("onClearClick")
-                        }
-                    )
+    Scaffold(
+        topBar = {
+            ChannelSearchTopAppBar(
+                onNavigateBack = {
+                    navActions.navigateToChannelList()
                 },
-                modifier = modifier.fillMaxSize(),
-                floatingActionButton = {
-                    FloatingActionButton(onClick = {
-                        Timber.d("Switch channel")
-                    })
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_round_autorenew_24),
-                            contentDescription = stringResource(id = R.string.switch_channel)
-                        )
-                    }
+                searchText = "Search Text",
+                onSearchTextChanged = {
+                    Timber.d("onSearchTextChanged")
+                },
+                onClearClick = {
+                    Timber.d("onClearClick")
                 }
-            ) { innerPadding ->
-                ChannelListContent(
-                    modifier = Modifier.padding(innerPadding),
-                    channelNameList = viewModel.channelNameList,
-                    channelList = channelList,
-                    //channelListState = channelListState
+            )
+        },
+        modifier = modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                Timber.d("Switch channel")
+            })
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_round_autorenew_24),
+                    contentDescription = stringResource(id = R.string.switch_channel)
                 )
             }
         }
-    )
+    ) { innerPadding ->
+        ChannelListContent(
+            modifier = Modifier.padding(innerPadding),
+            channelNameList = viewModel.channelNameList,
+            channelList = channelList,
+            //channelListState = channelListState
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -280,7 +259,7 @@ private fun ChannelListContent(
     channelList: List<SonyChannel>
     //channelListState: State<List<SonyChannel>>
 ) {
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         items(channelList) { channel ->
             ChannelItem(
                 channel = channel

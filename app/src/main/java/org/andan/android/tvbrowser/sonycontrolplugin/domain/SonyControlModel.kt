@@ -20,10 +20,10 @@ data class SonyControls(
 }
 
 data class SonyControl(
-    var ip: String,
-    val nickname: String,
-    val devicename: String,
-    var preSharedKey: String,
+    var ip: String = "",
+    var nickname: String = "",
+    var devicename: String= "",
+    var preSharedKey: String = "",
     val uuid: String = java.util.UUID.randomUUID().toString()
 ) {
 

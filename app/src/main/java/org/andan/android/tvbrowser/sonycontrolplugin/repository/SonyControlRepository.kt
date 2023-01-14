@@ -21,6 +21,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_REQUIRES_CHALLENGE_CODE
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_SUCCESSFUL
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
+import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNKNOWN
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
 import timber.log.Timber
 import java.net.HttpURLConnection
@@ -53,10 +54,6 @@ class SonyControlRepository @Inject constructor(
     private val _responseMessage = MutableLiveData<Event<String>>()
     val responseMessage: LiveData<Event<String>>
         get() = _responseMessage
-
-    private val _registrationResult = MutableLiveData<Event<RegistrationStatus>>()
-    val registrationResult: LiveData<Event<RegistrationStatus>>
-        get() = _registrationResult
 
     private fun onSonyControlsChange() {
         Timber.d("onSonyControlsChange()")
@@ -320,8 +317,9 @@ class SonyControlRepository @Inject constructor(
         }
     }
 
-    suspend fun registerControl(control: SonyControl, challenge: String?) {
-        withContext(Dispatchers.IO) {
+    suspend fun registerControl(control: SonyControl, challenge: String?) :RegistrationStatus {
+        return withContext(Dispatchers.IO) {
+            var registrationStatus: RegistrationStatus = RegistrationStatus(REGISTRATION_UNKNOWN, "")
             Timber.d("registerControl(): ${control.nickname}")
             // set context
             setSonyServiceContextForControl(control)
@@ -353,13 +351,9 @@ class SonyControlRepository @Inject constructor(
                 if (response.isSuccessful) {
                     val jsonRpcResponse = response.body()
                     if (jsonRpcResponse?.error != null) {
-                        _registrationResult.postValue(
-                            Event(
-                                RegistrationStatus(
-                                    REGISTRATION_ERROR_NON_FATAL,
-                                    jsonRpcResponse.error.asJsonArray.get(1).asString
-                                )
-                            )
+                        registrationStatus = RegistrationStatus(
+                            REGISTRATION_ERROR_NON_FATAL,
+                            jsonRpcResponse.error.asJsonArray.get(1).asString
                         )
                     } else if (!isPSK && !response.headers()["Set-Cookie"].isNullOrEmpty()) {
                         // get token from set cookie and store
@@ -369,13 +363,9 @@ class SonyControlRepository @Inject constructor(
                         if (matcher.find()) {
                             preferenceStore.storeToken(control.uuid, "auth=" + matcher.group(1))
                         }
-                        _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, ""))
-                        )
+                        registrationStatus = RegistrationStatus(REGISTRATION_SUCCESSFUL, "")
                     } else if (isPSK) {
-                        _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_SUCCESSFUL, ""))
-                        )
+                        registrationStatus = RegistrationStatus(REGISTRATION_SUCCESSFUL, "")
                     }
                 } else {
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED ||
@@ -383,43 +373,32 @@ class SonyControlRepository @Inject constructor(
                     ) {
                         // Navigate to enter challenge code view
                         if (!isPSK && challenge.isNullOrEmpty()) {
-                            _registrationResult.postValue(
-                                Event(
-                                    RegistrationStatus(
-                                        REGISTRATION_REQUIRES_CHALLENGE_CODE,
-                                        response.message()
-                                    )
-                                )
+                            registrationStatus = RegistrationStatus(
+                                REGISTRATION_REQUIRES_CHALLENGE_CODE,
+                                response.message()
                             )
-                        } else _registrationResult.postValue(
-                            Event(RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message()))
-                        )
+                        } else {
+                            registrationStatus = RegistrationStatus(REGISTRATION_UNAUTHORIZED, response.message())
+                        }
                     } else {
-                        _registrationResult.postValue(
-                            Event(
-                                RegistrationStatus(
-                                    REGISTRATION_ERROR_NON_FATAL,
-                                    response.message()
-                                )
-                            )
+                        registrationStatus = RegistrationStatus(
+                            REGISTRATION_ERROR_NON_FATAL,
+                            response.message()
                         )
                     }
                 }
             } catch (se: SocketTimeoutException) {
                 Timber.e("Error: ${se.message}")
-                _registrationResult.postValue(
-                    Event(
-                        RegistrationStatus(
-                            REGISTRATION_ERROR_FATAL,
-                            se.message ?: "Unknown failure"
-                        )
-                    )
+                registrationStatus = RegistrationStatus(
+                    REGISTRATION_ERROR_FATAL,
+                    se.message ?: "Unknown failure"
                 )
             } finally {
                 // reset context
                 setSonyServiceContextForControl(selectedSonyControl.value)
                 sonyServiceContext.password = ""
             }
+            registrationStatus
         }
     }
 

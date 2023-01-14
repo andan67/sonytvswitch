@@ -25,7 +25,7 @@ class SonyControlViewModel : ViewModel() {
         SonyControlApplication.get().appComponent.sonyRepository()
 
     val requestErrorMessage = sonyControlRepository.responseMessage
-    val registrationResult = sonyControlRepository.registrationResult
+    //val registrationResult = sonyControlRepository.registrationResult
 
     var isCreated: Boolean = false
 

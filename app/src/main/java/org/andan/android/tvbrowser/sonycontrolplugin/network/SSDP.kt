@@ -30,6 +30,7 @@ object SSDP {
     @JvmStatic
     fun main(args: Array<String>) {
         val responseList = getSsdpResponses()
+        println("Showing list of responses...")
         responseList.forEach { println(it) }
         //getSonyIpAndDeviceList().forEach { println(it) }
     }

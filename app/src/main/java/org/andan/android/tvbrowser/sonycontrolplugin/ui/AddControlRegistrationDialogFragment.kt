@@ -69,6 +69,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
 
         initView()
 
+        /*
         sonyControlViewModel.registrationResult.observe(viewLifecycleOwner,
             EventObserver<RegistrationStatus> {
                 Timber.d("observed $it")
@@ -116,6 +117,8 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                 }
             }
         )
+
+         */
         return containerView
     }
 
@@ -154,6 +157,7 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                 // validate
                 if (isInputValid()) {
                     when (mode) {
+                        // first registration call (always performed)
                         0 -> {
                             addedControl = SonyControl(
                                 sonyControlViewModel.addedControlHostAddress,
@@ -163,17 +167,20 @@ class AddControlRegistrationDialogFragment : DialogFragment() {
                             )
                             sonyControlViewModel.registerControl(addedControl)
                         }
+                        // registration with challenge code if required
                         1 -> {
                             sonyControlViewModel.registerControl(
                                 addedControl,
                                 binding!!.addControlChallengeCodeEditView.text.toString()
                             )
                         }
+                        // registration after error
                         2 -> {
                             mode = 0
                             if (!binding!!.addControlPSKEditText!!.text!!.toString()
                                     .isNullOrEmpty()
                             ) {
+                                // with pre shared key
                                 addedControl.preSharedKey =
                                     binding!!.addControlPSKEditText.text.toString()
                                 sonyControlViewModel.registerControl(addedControl)

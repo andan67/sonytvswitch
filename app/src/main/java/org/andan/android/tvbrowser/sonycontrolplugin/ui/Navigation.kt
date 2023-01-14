@@ -2,14 +2,16 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import androidx.navigation.NavHostController
 
-enum class NavPath(
+enum class NavDestinations(
     val route: String,
 ) {
     ChannelList(route = "channel_list"),
     ChannelListSearch(route = "channel_list_search"),
     ChannelDetail(route = "channel_detail"),
     RemoteControl(route = "remote_control"),
-    AddControl(route = "add_control")
+    AddControl(route = "add_control"),
+    ManageControl(route = "manage_control")
+
 }
 
 /**
@@ -17,24 +19,30 @@ enum class NavPath(
  */
 class NavigationActions(private val navController: NavHostController) {
 
+    val navHostController:  NavHostController = navController
+
     fun navigateToChannelList() {
-        navController.navigate(NavPath.ChannelList.route)
+        navController.navigate(NavDestinations.ChannelList.route)
     }
 
     fun navigateToChannelListSearch() {
-        navController.navigate(NavPath.ChannelListSearch.route)
+        navController.navigate(NavDestinations.ChannelListSearch.route)
     }
 
     fun navigateToChannelDetail() {
-        navController.navigate(NavPath.ChannelDetail.route)
+        navController.navigate(NavDestinations.ChannelDetail.route)
     }
 
     fun navigateToRemoteControl() {
-        navController.navigate(NavPath.RemoteControl.route)
+        navController.navigate(NavDestinations.RemoteControl.route)
+    }
+
+    fun navigateToManageControl() {
+        navController.navigate(NavDestinations.ManageControl.route)
     }
 
     fun openAddControlDialog() {
-        navController.navigate(NavPath.AddControl.route)
+        navController.navigate(NavDestinations.AddControl.route)
     }
 
     fun navigateUp() {
