@@ -44,15 +44,13 @@ fun SonyControlApp(appComponent: ApplicationComponent) {
             },
             drawerState = drawerState,
         ) {
-            Row {
-                SonyControlNavGraph(
-                    appComponent = appComponent,
-                    navController = navController,
-                    navigationActions = navigationActions,
-                    openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    viewModel = sonyControlViewModel
-                )
-            }
+            SonyControlNavGraph(
+                appComponent = appComponent,
+                navController = navController,
+                navigationActions = navigationActions,
+                openDrawer = { coroutineScope.launch { drawerState.open() } },
+                viewModel = sonyControlViewModel
+            )
         }
     }
 }

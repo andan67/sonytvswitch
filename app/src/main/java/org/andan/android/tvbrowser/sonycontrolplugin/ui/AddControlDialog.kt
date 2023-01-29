@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
@@ -23,8 +22,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewM
 import timber.log.Timber
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
-    ExperimentalLifecycleComposeApi::class
+    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class
 )
 @Composable
 fun AddControlDialog(

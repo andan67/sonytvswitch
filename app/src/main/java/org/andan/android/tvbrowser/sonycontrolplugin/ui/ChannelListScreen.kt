@@ -3,6 +3,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -140,18 +142,18 @@ fun ChannelSearchListScreen(
     viewModel: SonyControlViewModel
 ) {
     val channelList by viewModel.filteredChannelList.observeAsState(initial = emptyList())
+    var searchText by rememberSaveable { mutableStateOf("") }
     Scaffold(
         topBar = {
             ChannelSearchTopAppBar(
                 onNavigateBack = {
                     navActions.navigateToChannelList()
                 },
-                searchText = "Search Text",
+                searchText = searchText,
                 onSearchTextChanged = {
-                    Timber.d("onSearchTextChanged")
-                },
-                onClearClick = {
-                    Timber.d("onClearClick")
+                    Timber.d("onSearchTextChanged: $it")
+                    searchText = it
+                    viewModel.filterChannelList(searchText)
                 }
             )
         },
@@ -181,15 +183,17 @@ fun ChannelSearchListScreen(
 @Composable
 fun ChannelSearchTopAppBar(
     searchText: String,
-    placeholderText: String = "",
+    placeholderText: String = "Search...",
     onSearchTextChanged: (String) -> Unit = {},
-    onClearClick: () -> Unit = {},
     onNavigateBack: () -> Unit,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     val keyboardController = LocalTextInputService.current
     val focusRequester = remember { FocusRequester() }
-    var searchText by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     TopAppBar(
         title = { Text("") },
@@ -205,7 +209,7 @@ fun ChannelSearchTopAppBar(
         actions = {
             OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(start = 48.dp)
                     .padding(vertical = 2.dp)
                     .onFocusChanged { focusState ->
                         showClearButton = (focusState.isFocused)
@@ -214,7 +218,7 @@ fun ChannelSearchTopAppBar(
                 value = searchText,
                 //TODO: Proper implementation
                 //onValueChange = onSearchTextChanged,
-                onValueChange = { searchText = it },
+                onValueChange = { onSearchTextChanged(it) },
                 placeholder = {
                     Text(text = placeholderText)
                 },
@@ -230,7 +234,7 @@ fun ChannelSearchTopAppBar(
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        IconButton(onClick = { onClearClick() }) {
+                        IconButton(onClick = { onSearchTextChanged("") }) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = stringResource(id = R.string.search_clear_content_description)
@@ -259,30 +263,35 @@ private fun ChannelListContent(
     channelList: List<SonyChannel>
     //channelListState: State<List<SonyChannel>>
 ) {
+    //SelectedChannelHeader()
     LazyColumn(modifier = modifier) {
         items(channelList) { channel ->
             ChannelItem(
-                channel = channel
-                //name = channel.title
-                //name = channel.dispNumber
+                channel = channel,
+                onclick = {Timber.d ("Clicked: $it")}
             )
         }
     }
 }
 
-@Preview()
 @Composable
-fun ChannelItem(@PreviewParameter(SampleUserProvider::class) channel: SonyChannel) {
-    Row {
+fun ChannelItem(channel: SonyChannel, onclick: (SonyChannel) -> Unit) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onclick(channel) }){
         Column {
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 8.dp)
+                    .width(56.dp),
                 style = MaterialTheme.typography.titleLarge,
-                text = channel.dispNumber
+                text = channel.dispNumber,
+                textAlign = TextAlign.Right
             )
         }
         Column() {
             Text(
+                modifier = Modifier.padding(horizontal = 0.dp),
                 style = MaterialTheme.typography.titleLarge,
                 text = channel.title
             )

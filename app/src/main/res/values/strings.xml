@@ -125,6 +125,7 @@
     <string name="add_control_host_confirm">Next</string>
     <string name="add_control_host_check_pos">Set</string>
     <string name="add_control_host_failed_msg">Connectivity test failed.</string>
+    <string name="add_control_host_success_msg">Connectivity test succeeded.</string>
     <string name="add_control_host_testing_msg">Testing connectivity…</string>
 
 

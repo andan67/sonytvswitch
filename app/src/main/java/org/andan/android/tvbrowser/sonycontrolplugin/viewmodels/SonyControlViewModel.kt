@@ -9,10 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.*
-import org.andan.android.tvbrowser.sonycontrolplugin.network.InterfaceInformationResponse
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PowerStatusResponse
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
+import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 import java.util.regex.Matcher
@@ -80,7 +77,10 @@ class SonyControlViewModel : ViewModel() {
         this.setValue(this.value)
     }
     init {
-        Timber.d("init")
+        Timber.d("init $sonyControlRepository")
+        Timber.d("init ${SonyControlApplication.get()}")
+        Timber.d("init ${SonyControlApplication.get().appComponent}")
+        Timber.d("init ${SonyControlApplication.get().appComponent.sonyRepository()}")
         _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
@@ -241,9 +241,12 @@ class SonyControlViewModel : ViewModel() {
     }
 
     fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
-        val result = sonyControlRepository.getPlayingContentInfo()
-        _playingContentInfo.postValue(result)
-        updateCurrentChannel(result.uri)
+        val response = sonyControlRepository.getPlayingContentInfo()
+        if (response is Resource.Success) {
+            val value: PlayingContentInfo = if(response.data != null) response.data.asDomainModel() else PlayingContentInfo()
+            _playingContentInfo.postValue(value)
+            updateCurrentChannel(value.uri)
+        }
     }
 
     fun fetchChannelList() = viewModelScope.launch(Dispatchers.IO) {

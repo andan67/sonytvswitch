@@ -12,10 +12,10 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Url
 import timber.log.Timber
-import java.net.HttpURLConnection.HTTP_FORBIDDEN
-import java.net.HttpURLConnection.HTTP_OK
+import java.net.HttpURLConnection.*
 import java.util.regex.Pattern
 import javax.inject.Inject
+import javax.inject.Singleton
 
 interface SonyService {
     @POST
@@ -161,6 +161,7 @@ enum class Status {
     LOADING
 }
 
+@Singleton
 data class SonyServiceClientContext(
     var sonyService: SonyService? = null,
     var ip: String = "",

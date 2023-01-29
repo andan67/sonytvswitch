@@ -23,12 +23,16 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNKNOWN
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
+import retrofit2.http.HTTP
 import timber.log.Timber
 import java.net.HttpURLConnection
+import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SonyControlRepository @Inject constructor(
     val client: OkHttpClient,
     val api: SonyService,
@@ -165,6 +169,7 @@ class SonyControlRepository @Inject constructor(
         }
     }
 
+    /*
     suspend fun getPlayingContentInfo(): PlayingContentInfo {
         getSelectedControl()?.let { control ->
             return withContext(Dispatchers.IO) {
@@ -181,6 +186,19 @@ class SonyControlRepository @Inject constructor(
             }
         }
         return PlayingContentInfo()
+    }
+    */
+
+    suspend fun getPlayingContentInfo(): Resource<PlayingContentInfoResponse> {
+        getSelectedControl()?.let { control ->
+            return withContext(Dispatchers.IO) {
+                avContentService<PlayingContentInfoResponse>(
+                    control.ip,
+                    JsonRpcRequest.getPlayingContentInfo()
+                )
+            }
+        }
+        return Resource.Error("No control defined", code = HTTP_INTERNAL_ERROR)
     }
 
     suspend fun getInterfaceInformation(host: String): Resource<InterfaceInformationResponse> {
@@ -239,13 +257,12 @@ class SonyControlRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchChannelList() {
+    suspend fun fetchChannelList(): Boolean {
         getSelectedControl()?.let { control ->
             Timber.d("fetchChannelList(): ${control.sourceList}")
             if (control.sourceList.isNullOrEmpty()) {
                 fetchSourceList()
             }
-            control.channelList.clear()
             val channelList = mutableListOf<SonyChannel>()
             if (!control.sourceList.isNullOrEmpty()) {
                 for (sonySource in control.sourceList) {
@@ -267,6 +284,7 @@ class SonyControlRepository @Inject constructor(
                     // Break loop over source in case of error
                     if (count == -1) {
                         Timber.d("fetchChannelList(): error")
+                        return false
                     }
                 }
                 control.channelList.clear()
@@ -274,8 +292,10 @@ class SonyControlRepository @Inject constructor(
                 saveControls(true)
                 _responseMessage.postValue(Event("Fetched ${control.channelList.size} channels from TV"))
                 Timber.d("fetchChannelList(): ${control.channelList.size}")
+                return true
             }
         }
+        return false
     }
 
     private suspend fun fetchTvContentList(

@@ -3,6 +3,8 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -27,6 +29,9 @@ fun SonyControlNavGraph(
     startDestination: String = NavDestinations.RemoteControl.route,
     viewModel: SonyControlViewModel = viewModel()
 ) {
+
+    val selectedSonyControlState = viewModel.selectedSonyControl.observeAsState()
+
     NavHost(
         navController = navController,
         startDestination = NavDestinations.ChannelList.route,
@@ -45,7 +50,9 @@ fun SonyControlNavGraph(
         }
 
         composable(NavDestinations.ManageControl.route) {
-            ManageControlScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
+            ManageControlScreen(navActions = navigationActions, deleteSelectedControl = {viewModel.deleteSelectedControl()},
+                //selectedSonyControlState = selectedSonyControlState,
+                openDrawer = openDrawer)
         }
 
         dialog(

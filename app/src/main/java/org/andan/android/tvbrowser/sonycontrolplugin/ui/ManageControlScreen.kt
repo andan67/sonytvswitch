@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,16 +8,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.AddControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ManageControlUiState
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ManageControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
@@ -25,12 +31,42 @@ import timber.log.Timber
 fun ManageControlScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel,
+    deleteSelectedControl: () -> Unit,
+    //selectedSonyControlState: State<SonyControl?>,
     openDrawer: () -> Unit
 ) {
-    val sonyControl by viewModel.selectedSonyControl.observeAsState()
+/*    val sonyControl by remember {
+        selectedSonyControlState
+    }*/
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    val manageControlViewModel: ManageControlViewModel = viewModel()
+    val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
+
+    Timber.d(uiState.toString())
+    uiState.message?.let {
+        val messageString = when (it) {
+            is IntEventMessage -> stringResource(id = it.message)
+            is StringEventMessage -> it.message
+        }
+        LaunchedEffect(uiState.message, uiState.isLoading) {
+            Timber.d(messageString)
+            snackbarHostState.showSnackbar(messageString)
+            manageControlViewModel.onConsumedMessage()
+        }
+    }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) {data ->
+                Snackbar(
+                    containerColor = if(uiState.isSuccess) SnackbarDefaults.color else MaterialTheme.colorScheme.errorContainer,
+                    contentColor = if(uiState.isSuccess) SnackbarDefaults.contentColor else MaterialTheme.colorScheme.error
+                ) {
+                    Text(data.visuals.message)
+                }
+            } },
         topBar = {
             TopAppBar(title = { Text(text = stringResource(id = R.string.menu_manage_control)) },
                 navigationIcon = {
@@ -40,11 +76,12 @@ fun ManageControlScreen(
                 },
                 actions = {
                     ManageControlMenu(
-                        {},
-                        deleteControlAction = { Timber.d("deleteControlAction"); viewModel.deleteSelectedControl() },
-                        {},
-                        {},
-                        {})
+                        registerControlAction = {manageControlViewModel.registerControl()},
+                        deleteControlAction = { deleteSelectedControl() },
+                        requestChannelListAction = { manageControlViewModel.fetchChannelList() },
+                        enableWOLAction = {manageControlViewModel.wakeOnLan()},
+                        checkConnectivityAction = { manageControlViewModel.checkAvailability() },
+                        enabled = uiState.sonyControl != null )
                 })
         },
         modifier = modifier.fillMaxSize()
@@ -52,7 +89,8 @@ fun ManageControlScreen(
     { innerPadding ->
         ManageControlContent(
             modifier = Modifier.padding(innerPadding),
-            sonyControl = sonyControl
+            //sonyControl = uiState.sonyControl
+            sonyControl = uiState.sonyControl
         )
     }
 }
@@ -151,7 +189,8 @@ fun ManageControlMenu(
     deleteControlAction: () -> Unit,
     requestChannelListAction: () -> Unit,
     enableWOLAction: () -> Unit,
-    checkConnectivityAction: () -> Unit
+    checkConnectivityAction: () -> Unit,
+    enabled: Boolean
 ) {
     TopAppBarDropdownMenu(
         iconContent = {
@@ -165,7 +204,8 @@ fun ManageControlMenu(
         val openDialog = remember { mutableStateOf(false) }
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.register_control_action)) },
-            onClick = { registerControlAction(); closeMenu() })
+            onClick = { registerControlAction(); closeMenu() },
+            enabled = enabled)
         DropdownMenuItem(
             text = {
                 DeleteControlDialog(
@@ -173,16 +213,20 @@ fun ManageControlMenu(
                     openDialog.value,
                     { openDialog.value = false; closeMenu() })
             },
-            onClick = { openDialog.value = true; /*closeMenu()*/ })
+            onClick = { openDialog.value = true; /*closeMenu()*/ },
+            enabled = enabled)
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.get_tv_channel_list_action)) },
-            onClick = { requestChannelListAction(); closeMenu() })
+            onClick = { requestChannelListAction(); closeMenu() },
+            enabled = enabled )
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.enable_wol_action)) },
-            onClick = { enableWOLAction(); closeMenu() })
+            onClick = { enableWOLAction(); closeMenu() },
+            enabled = enabled)
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.check_set_host)) },
-            onClick = { checkConnectivityAction(); closeMenu() })
+            onClick = { checkConnectivityAction(); closeMenu() },
+            enabled = enabled)
     }
 }
 

@@ -2,6 +2,8 @@ package org.andan.android.tvbrowser.sonycontrolplugin.di
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Logger
@@ -19,7 +21,8 @@ import javax.inject.Singleton
 
 
 @Module
-class NetworkModule {
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
 
     @Singleton
     @Provides
