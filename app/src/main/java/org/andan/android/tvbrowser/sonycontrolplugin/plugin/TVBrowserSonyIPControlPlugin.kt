@@ -6,30 +6,33 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.os.RemoteException
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.MainActivity
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.SonyControlMainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.tvbrowser.devplugin.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
 /**
  * A service class that provides a channel switch functionality for Sony TVs within TV-Browser for Android.
  *
  * @author andan
  */
+@AndroidEntryPoint
 class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
+    @Inject
+    lateinit var sonyControlRepository: SonyControlRepository
     private var mPluginManager: PluginManager? = null
 
     /* The set with the marking ids */
     private val mMarkingProgramIds: MutableSet<String>? = null
-    private val sonyControlRepository: SonyControlRepository =
-        SonyControlApplication.get().appComponent.sonyRepository()
 
     private val getBinder: Plugin.Stub =
         object : Plugin.Stub() {
@@ -113,7 +116,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
             override fun openPreferences(subscribedChannels: List<Channel>) {
                 Timber.d("openPreferences:start")
                 // start main activity
-                val startPref = Intent(this@TVBrowserSonyIPControlPlugin, MainActivity::class.java)
+                val startPref = Intent(this@TVBrowserSonyIPControlPlugin, SonyControlMainActivity::class.java)
                 startPref.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 if (mPluginManager != null) {
                     updateChannelMap(mPluginManager!!.subscribedChannels)

@@ -2,6 +2,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -11,6 +12,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
+import timber.log.Timber
+import javax.inject.Inject
 
 enum class AddControlStatus() {
     SPECIFY_HOST,
@@ -32,10 +35,9 @@ data class AddControlUiState(
     //val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
 
-class AddControlViewModel : ViewModel() {
+@HiltViewModel
+class AddControlViewModel  @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
     //TODO Inject repository
-    private val sonyControlRepository: SonyControlRepository =
-        SonyControlApplication.get().appComponent.sonyRepository()
 
     private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))
     val addControlUiState: StateFlow<AddControlUiState> = _addControlUiState.asStateFlow()
@@ -51,6 +53,9 @@ class AddControlViewModel : ViewModel() {
 
     var addedControl: SonyControl = SonyControl()
 
+    init {
+        Timber.d("init")
+    }
     fun checkAvailabilityOfHost(host: String) {
         //Timber.d("checkAvailabilityOfHost")
         _addControlUiState.update { it.copy(isLoading = true) }

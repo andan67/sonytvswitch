@@ -23,13 +23,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
         <service
             android:name=".plugin.TVBrowserSonyIPControlPlugin"
             android:exported="true"
@@ -40,15 +33,6 @@
             </intent-filter>
         </service>
 
-        <provider
-            android:name=".ui.GenericFileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
     </application>
 
 </manifest>

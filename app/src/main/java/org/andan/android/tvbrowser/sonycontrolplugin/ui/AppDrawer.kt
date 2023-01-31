@@ -1,27 +1,19 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
@@ -32,7 +24,7 @@ fun AppDrawer(
     navigationActions: NavigationActions,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel = viewModel()
+    viewModel: SonyControlViewModel = hiltViewModel()
 ) {
     ModalDrawerSheet(modifier) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -100,7 +92,7 @@ private fun DrawerHeader(
     modifier: Modifier = Modifier
         .background(color = MaterialTheme.colorScheme.primary)
         .fillMaxWidth(),
-    viewModel: SonyControlViewModel = viewModel()
+    viewModel: SonyControlViewModel = hiltViewModel()
     //noControls : Int,
     //onNoControlsChange: (Int) -> Unit
 ) {

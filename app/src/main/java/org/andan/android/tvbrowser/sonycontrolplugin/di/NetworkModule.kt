@@ -56,9 +56,6 @@ object NetworkModule {
         return client.authenticator(authenticator).build()
     }
 
-    // @Provides tell Dagger how to create instances of the type that this function
-    // returns (i.e. LoginRetrofitService).
-    // Function parameters are the dependencies of this type.
     @Singleton
     @Provides
     fun provideSonyRetrofitService(okHttpClient: OkHttpClient): SonyService {

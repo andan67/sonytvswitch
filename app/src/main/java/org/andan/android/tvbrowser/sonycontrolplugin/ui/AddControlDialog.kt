@@ -1,6 +1,9 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
@@ -39,7 +43,7 @@ fun AddControlDialog(
 
     val context = LocalContext.current
 
-    val addControlViewModel: AddControlViewModel = viewModel()
+    val addControlViewModel: AddControlViewModel = hiltViewModel()
 
     val uiState by addControlViewModel.addControlUiState.collectAsStateWithLifecycle()
 

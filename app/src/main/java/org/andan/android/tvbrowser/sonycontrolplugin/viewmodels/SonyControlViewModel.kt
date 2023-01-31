@@ -1,10 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import android.content.Context
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
@@ -14,14 +14,13 @@ import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepos
 import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import javax.inject.Inject
 import kotlin.collections.set
-
-class SonyControlViewModel : ViewModel() {
+@HiltViewModel
+class SonyControlViewModel  @Inject constructor(private val sonyControlRepository: SonyControlRepository) :ViewModel() {
     // TODO: Implement the ViewModel
-    private val sonyControlRepository: SonyControlRepository =
-        SonyControlApplication.get().appComponent.sonyRepository()
 
-    val requestErrorMessage = sonyControlRepository.responseMessage
+    //val requestErrorMessage = sonyControlRepository.responseMessage
     //val registrationResult = sonyControlRepository.registrationResult
 
     var isCreated: Boolean = false
@@ -78,9 +77,6 @@ class SonyControlViewModel : ViewModel() {
     }
     init {
         Timber.d("init $sonyControlRepository")
-        Timber.d("init ${SonyControlApplication.get()}")
-        Timber.d("init ${SonyControlApplication.get().appComponent}")
-        Timber.d("init ${SonyControlApplication.get().appComponent.sonyRepository()}")
         _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl

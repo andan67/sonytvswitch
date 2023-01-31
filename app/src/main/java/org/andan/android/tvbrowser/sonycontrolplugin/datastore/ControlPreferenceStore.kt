@@ -2,19 +2,25 @@ package org.andan.android.tvbrowser.sonycontrolplugin.datastore
 
 import android.content.Context
 import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class ControlPreferenceStore @Inject constructor(context: Context) : ControlsStore, TokenStore {
+@Singleton
+class ControlPreferenceStore @Inject constructor(@ApplicationContext private val context:Context) : ControlsStore, TokenStore {
     private var controlsPreferences: SharedPreferences = context.getSharedPreferences(
         context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE
     )
     private var tokenPreferences: SharedPreferences =
         context.getSharedPreferences("token_store", Context.MODE_PRIVATE)
 
+    init {
+        Timber.d("init ControlPreferenceStore: $this ")
+    }
     override fun loadControls(): SonyControls {
         val controlConfig = controlsPreferences.getString("controlConfig", "")
         Timber.d("loadControls()")

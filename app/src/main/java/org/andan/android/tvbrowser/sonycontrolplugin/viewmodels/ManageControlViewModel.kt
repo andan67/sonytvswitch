@@ -1,12 +1,10 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
@@ -19,6 +17,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import timber.log.Timber
+import javax.inject.Inject
 
 data class ManageControlUiState(
     val isLoading: Boolean = false,
@@ -29,14 +28,11 @@ data class ManageControlUiState(
     //val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
 
-class ManageControlViewModel : ViewModel() {
+@HiltViewModel
+class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
     //TODO Inject repository
-    private val sonyControlRepository: SonyControlRepository =
-        SonyControlApplication.get().appComponent.sonyRepository()
 
     val selectedSonyControlFlow = sonyControlRepository.selectedSonyControl.asFlow()
-
-
 
     private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
     val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()

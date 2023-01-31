@@ -1,22 +1,21 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SonyControlApp(appComponent: ApplicationComponent) {
+fun SonyControlApp() {
     SonyTVSwitchTheme {
         val navController = rememberNavController()
         val navigationActions = remember(navController) {
@@ -31,7 +30,7 @@ fun SonyControlApp(appComponent: ApplicationComponent) {
 
         val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-        val sonyControlViewModel: SonyControlViewModel = viewModel()
+        val sonyControlViewModel: SonyControlViewModel = hiltViewModel()
 
         ModalNavigationDrawer(
             drawerContent = {
@@ -45,7 +44,6 @@ fun SonyControlApp(appComponent: ApplicationComponent) {
             drawerState = drawerState,
         ) {
             SonyControlNavGraph(
-                appComponent = appComponent,
                 navController = navController,
                 navigationActions = navigationActions,
                 openDrawer = { coroutineScope.launch { drawerState.open() } },

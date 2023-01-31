@@ -9,9 +9,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
@@ -23,7 +21,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNKNOWN
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
-import retrofit2.http.HTTP
 import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
@@ -36,11 +33,11 @@ import javax.inject.Singleton
 class SonyControlRepository @Inject constructor(
     val client: OkHttpClient,
     val api: SonyService,
-    val preferenceStore: ControlPreferenceStore
+    val preferenceStore: ControlPreferenceStore,
+    val sonyServiceContext: SonyServiceClientContext
 ) {
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
-    private val sonyServiceContext = SonyControlApplication.get().appComponent.sonyServiceContext()
 
     companion object {
         const val SUCCESS_CODE = 0

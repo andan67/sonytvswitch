@@ -1,6 +1,5 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,21 +8,15 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.AddControlViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ManageControlUiState
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ManageControlViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +34,7 @@ fun ManageControlScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val manageControlViewModel: ManageControlViewModel = viewModel()
+    val manageControlViewModel: ManageControlViewModel = hiltViewModel()
     val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
 
     Timber.d(uiState.toString())
