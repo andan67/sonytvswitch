@@ -39,10 +39,6 @@ fun SonyControlNavGraph(
             ChannelListScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
         }
 
-        composable(NavDestinations.ChannelListSearch.route) {
-            ChannelSearchListScreen(navActions = navigationActions, viewModel = viewModel)
-        }
-
         composable(NavDestinations.RemoteControl.route) {
             RemoteControlScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
         }
@@ -51,6 +47,10 @@ fun SonyControlNavGraph(
             ManageControlScreen(navActions = navigationActions, deleteSelectedControl = {viewModel.deleteSelectedControl()},
                 //selectedSonyControlState = selectedSonyControlState,
                 openDrawer = openDrawer)
+        }
+
+        composable(NavDestinations.PlayingContentInfoDetails.route) {
+            PlayingContentInfoScreen(navActions = navigationActions, viewModel = viewModel)
         }
 
         dialog(

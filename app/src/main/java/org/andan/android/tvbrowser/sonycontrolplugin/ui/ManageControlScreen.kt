@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ManageControlViewModel
@@ -100,55 +99,55 @@ private fun ManageControlContent(
             .verticalScroll(scrollState)
             .fillMaxWidth()
     ) {
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_host_name),
             value = sonyControl?.ip,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_nick_name),
             value = sonyControl?.nickname,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_device_name),
             value = sonyControl?.devicename,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_uuid),
             value = sonyControl?.uuid,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_model),
             value = sonyControl?.systemModel,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_mac),
             value = sonyControl?.systemMacAddr,
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_wol_mode),
             value = sonyControl?.systemWolMode.toString(),
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_number_channels),
             value = sonyControl?.channelList?.size.toString(),
             showDivider = true
         )
-        ManageControlItem(
+        PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_sources),
             value = sonyControl?.sourceList.toString(),
@@ -158,11 +157,11 @@ private fun ManageControlContent(
 }
 
 @Composable
-fun ManageControlItem(
+fun PropertyItem(
     modifier: Modifier,
     label: String,
     value: String?,
-    showDivider: Boolean
+    showDivider: Boolean = true
 ) {
     Spacer(modifier = Modifier.height(8.dp))
     Text(text = label, style = MaterialTheme.typography.titleLarge)
