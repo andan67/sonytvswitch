@@ -47,8 +47,8 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
 
     // derived variables for selected control
     private var channelMap: MutableMap<String, String> = HashMap()
-    var uriChannelMap: MutableMap<String, SonyChannel> = HashMap()
-    var channelNameList: MutableList<String> = ArrayList()
+    private var uriChannelMap: MutableMap<String, SonyChannel> = HashMap()
+    private var channelNameList: MutableList<String> = ArrayList()
     var selectedChannelName: String = ""
 
     private var currentChannelUri: String = ""
@@ -179,6 +179,12 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
 
     fun getChannelForUri(uri: String): String {
         return channelMap[uri] ?: ""
+    }
+
+    fun getSonyChannelForTvbChannelName(tvbChannelName: String): SonyChannel? {
+        val uri = channelMap[tvbChannelName]
+        val sonyChannel = uriChannelMap[uri]
+        return sonyChannel
     }
 
     fun getFilteredTvbChannelNameList(): LiveData<List<String>> {

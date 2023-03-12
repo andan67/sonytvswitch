@@ -24,7 +24,6 @@ fun ManageControlScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
     deleteSelectedControl: () -> Unit,
-    //selectedSonyControlState: State<SonyControl?>,
     openDrawer: () -> Unit
 ) {
 /*    val sonyControl by remember {

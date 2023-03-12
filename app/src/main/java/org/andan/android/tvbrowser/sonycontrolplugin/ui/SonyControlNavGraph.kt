@@ -39,6 +39,10 @@ fun SonyControlNavGraph(
             ChannelListScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
         }
 
+        composable(NavDestinations.ChannelMap.route) {
+            ChannelMapScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
+        }
+
         composable(NavDestinations.RemoteControl.route) {
             RemoteControlScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
         }
