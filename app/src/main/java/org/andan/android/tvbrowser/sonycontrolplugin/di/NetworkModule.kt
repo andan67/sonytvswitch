@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Logger
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
-import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
+import org.andan.android.tvbrowser.sonycontrolplugin.data.TokenStore
 import org.andan.android.tvbrowser.sonycontrolplugin.network.AddTokenInterceptor
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyService
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceClientContext

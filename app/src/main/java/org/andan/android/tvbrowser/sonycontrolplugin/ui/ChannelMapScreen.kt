@@ -45,7 +45,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewM
 import timber.log.Timber
 import kotlin.reflect.KFunction1
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelMapScreen(
     modifier: Modifier = Modifier,

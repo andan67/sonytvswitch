@@ -344,13 +344,6 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
         }
     }
 
-    fun setSelectedHost(hostAddress: String) {
-        selectedSonyControl.value?.let { control ->
-            control.ip = hostAddress
-            sonyControlRepository.saveControls()
-        }
-    }
-
     fun setSelectedChannelMapChannelUri(channelName: String?, channelUri: String?) {
         Timber.d("setSelectedChannelMapChannelUri()")
         selectedSonyControl.value?.let { control ->

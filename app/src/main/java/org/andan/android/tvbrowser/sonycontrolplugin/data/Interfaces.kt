@@ -1,4 +1,4 @@
-package org.andan.android.tvbrowser.sonycontrolplugin.datastore
+package org.andan.android.tvbrowser.sonycontrolplugin.data
 
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 

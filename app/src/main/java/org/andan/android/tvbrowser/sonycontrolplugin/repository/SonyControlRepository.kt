@@ -2,14 +2,15 @@ package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.andan.android.tvbrowser.sonycontrolplugin.datastore.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntity
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
@@ -34,10 +35,13 @@ class SonyControlRepository @Inject constructor(
     val client: OkHttpClient,
     val api: SonyService,
     val preferenceStore: ControlPreferenceStore,
-    val sonyServiceContext: SonyServiceClientContext
+    val sonyServiceContext: SonyServiceClientContext,
+    val controlDao: ControlDao
 ) {
     var sonyControls = MutableLiveData<SonyControls>()
     var selectedSonyControl = MutableLiveData<SonyControl>()
+
+
 
     companion object {
         const val SUCCESS_CODE = 0
@@ -50,6 +54,34 @@ class SonyControlRepository @Inject constructor(
         sonyServiceContext.sonyService = api
         selectedSonyControl.value = getSelectedControl()
         onSonyControlsChange()
+        val controlEntityList = ArrayList<ControlEntity>()
+        // TODO For backward compatibility: Insert into database if loaded form preferenceStore
+        /*
+        if(sonyControls.value != null) {
+            val sonyControlList = sonyControls.value!!.controls
+            for(sonyControl in sonyControlList) {
+                //val controlEntity =  try {
+                    var controlEntity = controlDao.getControlEntity(sonyControl.uuid)
+                //} catch (e: EmptyResultSetException) {
+                if(controlEntity == null) {
+                    controlEntity = ControlEntity(
+                        sonyControl.uuid,
+                        sonyControl.ip,
+                        sonyControl.nickname,
+                        sonyControl.devicename,
+                        sonyControl.preSharedKey
+                    )
+                    controlDao.insertAll(controlEntity)
+                    controlEntity
+                }
+                controlEntityList.add(controlEntity)
+            }
+        }
+        Timber.d("Control Entities:")
+        for(controlEntity in controlEntityList) {
+            Timber.d("uuid: ${controlEntity.uuid}")
+        }
+        */
     }
 
     private val _responseMessage = MutableLiveData<Event<String>>()

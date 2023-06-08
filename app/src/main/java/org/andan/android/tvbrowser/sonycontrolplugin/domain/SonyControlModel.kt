@@ -6,7 +6,8 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class SonyControls(
+data class
+SonyControls(
     val controls: MutableList<SonyControl> = ArrayList(),
     var selected: Int = -1
 ) {

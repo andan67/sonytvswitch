@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.*
-import org.andan.android.tvbrowser.sonycontrolplugin.datastore.TokenStore
+import org.andan.android.tvbrowser.sonycontrolplugin.data.TokenStore
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -147,9 +147,11 @@ sealed class Resource<T>(
     val status: Status = Status.INIT
 ) {
     class Success<T>(code: Int, data: T) : Resource<T>(data, code, status = Status.SUCCESS)
+
     //class Loading<T>(data: T? = null) : Resource<T>(data, status = Status.LOADING)
     class Error<T>(message: String, code: Int, data: T? = null) :
         Resource<T>(data, code, message, Status.ERROR)
+
     class Loading<T>() : Resource<T>(status = Status.LOADING)
     class Init<T>() : Resource<T>()
 }
@@ -203,6 +205,7 @@ data class RegistrationStatus(val code: Int, val message: String) {
         const val REGISTRATION_ERROR_FATAL = 4
     }
 }
+
 object SonyServiceUtil {
     const val SONY_AV_CONTENT_ENDPOINT = "/sony/avContent"
     const val SONY_ACCESS_CONTROL_ENDPOINT = "/sony/accessControl"
@@ -222,7 +225,6 @@ object SonyServiceUtil {
     val gson = GsonBuilder().create()
 
     inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Resource<T> {
-        //val response: Response<T>
         return try {
             val response = call.invoke()
             if (response.isSuccessful) {
@@ -234,6 +236,7 @@ object SonyServiceUtil {
                             jsonRpcResponse.error.asJsonArray.get(1).asString, response.code()
                         )
                     }
+
                     else -> {
                         Timber.d("evaluate result")
                         Resource.Success(
@@ -243,17 +246,21 @@ object SonyServiceUtil {
                                     jsonRpcResponse?.result?.asJsonArray?.size() == 0 -> {
                                         JsonObject()
                                     }
+
                                     jsonRpcResponse?.result?.asJsonArray?.size()!! > 1 -> {
                                         jsonRpcResponse.result.asJsonArray?.get(1)
                                     }
+
                                     else -> {
                                         when (jsonRpcResponse.result.asJsonArray?.get(0)) {
                                             is JsonObject -> jsonRpcResponse.result.asJsonArray?.get(
                                                 0
                                             )!!.asJsonObject
+
                                             is JsonArray -> jsonRpcResponse.result.asJsonArray?.get(
                                                 0
                                             )!!.asJsonArray
+
                                             else -> jsonRpcResponse.result.asJsonArray.get(0).asJsonObject
                                         }
                                     }
