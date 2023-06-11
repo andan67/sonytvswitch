@@ -97,7 +97,9 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
 
         val sampleSonyControl = SonyControl.fromJson(
             context.assets.open("SonyControl_sample.json").bufferedReader()
-                .use { it.readText() }.replace("android sample",host))
+                .use { it.readText() }
+                .replace("android sample",host)
+                .replace("da02f81c-", "1a02f81c-"))
         addControl(sampleSonyControl)
     }
     fun addControl(control: SonyControl) {

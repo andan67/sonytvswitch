@@ -4,15 +4,17 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import app.cash.turbine.test
+import app.cash.turbine.testIn
 import kotlinx.coroutines.test.runTest
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 import org.junit.After
-import org.junit.AfterClass
+import org.junit.Assert
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class DatabaseTest {
@@ -67,9 +69,9 @@ class DatabaseTest {
             "test", "tv device", "KEY"
         )
         controlEntity.systemModel = "Sony Bravia"
-        controlDao.insertAll(controlEntity)
+        controlDao.insertControls(controlEntity)
 
-        controlDao.getAll().test {
+        controlDao.getControls().test {
             val controlEntityList = awaitItem()
             assert(controlEntityList.contains(controlEntity))
             val controlEntityFromList = controlEntityList[0]
@@ -86,10 +88,10 @@ class DatabaseTest {
             "test", "tv device", "KEY"
         )
         controlEntity.systemModel = "Sony Bravia"
-        controlDao.insertAll(controlEntity)
+        controlDao.insertControls(controlEntity)
         lateinit var control: ControlEntity
 
-        controlDao.getAll().test {
+        controlDao.getControls().test {
             val controlEntityList = awaitItem()
             assert(controlEntityList.contains(controlEntity))
             control = controlEntityList[0]
@@ -137,16 +139,86 @@ class DatabaseTest {
             cancel()
         }
 
-        controlDao.delete(control)
-        controlDao.getAll().test {
+        controlDao.deleteControl(control)
+        controlDao.getControls().test {
             val controlEntityList = awaitItem()
             assert(controlEntityList.size == 0)
         }
 
         // check cascading delete of channels
-        controlDao.getChannelEntities(uuid).test {
+        controlDao.getChannels(uuid).test {
             val channelEntityList = awaitItem()
             assert(channelEntityList.size == 0)
+        }
+    }
+
+    @Test
+    fun changeSelectedControl() = runTest {
+
+        val controlEntity1 = ControlEntity(
+            "1234", "localhost",
+            "test1", "tv device 1", "KEY1"
+        )
+
+        val controlEntity2 = ControlEntity(
+            "5678", "localhost",
+            "test1", "tv device 2", "KEY2"
+        )
+
+        controlDao.insertControls(controlEntity1, controlEntity2)
+        var control: ControlEntity? = null
+
+        var uuid1 = controlEntity1.uuid
+        var uuid2 = controlEntity2.uuid
+
+        controlDao.getControls().test {
+            val controlEntityList = awaitItem()
+            assert(controlEntityList.contains(controlEntity1))
+            assert(controlEntityList.contains(controlEntity2))
+            control = controlEntityList[0]
+            cancel()
+        }
+
+        controlDao.setActiveControl(controlEntity1)
+        val controlEntityList = controlDao.getControls().testIn(backgroundScope).awaitItem()
+        val activeControl =  controlDao.getActiveControl().testIn(backgroundScope).awaitItem()
+        assert(controlEntityList.get(0).isActive == true)
+        assert(controlEntityList.get(1).isActive == false)
+        assert(activeControl.uuid.equals(uuid1))
+        controlDao.getControls().test {
+            val controlEntityList = awaitItem()
+
+            assert(controlEntityList.contains(controlEntity1))
+            assert(controlEntityList.contains(controlEntity2))
+            control = controlEntityList[0]
+            cancel()
+        }
+    }
+
+    @Test
+    fun readFromFile() = runTest {
+        val appContext: Context = InstrumentationRegistry.getInstrumentation().getContext();
+        val sonyControls = SonyControls.fromJson(
+            appContext.assets.open("controls.json").bufferedReader()
+                .use { it.readText() })
+        Assert.assertEquals(2, sonyControls.controls.size)
+        controlDao.insertFromSonyControls(sonyControls)
+        val controlEntityList = controlDao.getControls().testIn(backgroundScope).awaitItem()
+        Assert.assertEquals(2, controlEntityList.size)
+        val channelList1 = controlDao.getChannelEntitiesForControl(controlEntityList.get(0))
+            .testIn(backgroundScope).awaitItem()
+        Assert.assertEquals("ZDF HD", channelList1.get(1).title)
+    }
+
+    fun readFileFromResourceAsString(fileName: String): String {
+        try {
+            val inputStream =
+                javaClass.classLoader?.getResourceAsStream(fileName)
+            return inputStream?.bufferedReader().use {
+                it!!.readText()
+            }
+        } catch (ex: Exception) {
+            return ""
         }
     }
 }

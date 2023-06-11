@@ -19,7 +19,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [ControlEntity::class, ChannelEntity::class], version = 3, exportSchema = false)
+@Database(entities = [ControlEntity::class, ChannelEntity::class], version = 5, exportSchema = false)
 abstract class ControlDatabase : RoomDatabase(){
     abstract  fun controlDao() : ControlDao
 }

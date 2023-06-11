@@ -9,10 +9,10 @@ import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_TABL
 data class ControlEntity(
     @PrimaryKey()
     val uuid: String,
-    val host: String="",
-    val nickname: String="",
-    val devicename: String="",
-    val preSharedKey: String="",
+    val host: String = "",
+    val nickname: String = "",
+    val devicename: String = "",
+    val preSharedKey: String = "",
 ) {
     var cookie = ""
     var systemModel = ""
@@ -20,4 +20,5 @@ data class ControlEntity(
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
+    var isActive : Boolean = false
 }
