@@ -30,7 +30,7 @@ data class ChannelMapUiState(
 class ChannelMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
     //TODO Inject repository
 
-    val selectedSonyControlFlow = sonyControlRepository.selectedSonyControl.asFlow()
+    val selectedSonyControlFlow = sonyControlRepository.selectedSonyControl
 
     private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
     val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()

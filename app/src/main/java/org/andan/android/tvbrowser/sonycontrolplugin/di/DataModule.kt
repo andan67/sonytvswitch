@@ -15,7 +15,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_DATABASE
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDatabase
-import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntity
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.ListMapperImpl
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyChannelDomainMapper
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
 import javax.inject.Singleton
 
 @Module
@@ -40,10 +43,21 @@ class DataModule {
         .allowMainThreadQueries()
         .fallbackToDestructiveMigration()
         .build()
-    //This annotation marks the method provideDao as a provider of noteDoa.
 
     @Provides
     @Singleton
     fun provideDao(db: ControlDatabase) = db.controlDao()
+
+    @Provides
+    @Singleton
+    fun provideSonyChannelDomainMapper() = SonyChannelDomainMapper()
+
+    @Provides
+    @Singleton
+    fun provideSonyControlWithChannelsDomainMapper() = SonyControlWithChannelsDomainMapper(ListMapperImpl(SonyChannelDomainMapper()))
+
+    @Provides
+    @Singleton
+    fun provideSonyControlDomainMapper() = SonyControlDomainMapper()
 
 }

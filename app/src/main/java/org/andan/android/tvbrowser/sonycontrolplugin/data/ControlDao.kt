@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CHANNEL_MAP_TABLE
 import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CHANNEL_TABLE
 import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_TABLE
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
@@ -18,6 +19,28 @@ interface ControlDao {
 
     @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
     fun getControl(uuid : String) : Flow<ControlEntity?>
+
+    @Query("SELECT * FROM $CONTROL_TABLE")
+    fun getControlsWithChannels(): Flow<List<ControlEntityWithChannels>>
+
+    @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
+    fun getControlWithChannels(uuid : String) : Flow<ControlEntityWithChannels?>
+
+    @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
+    fun getActiveControl() : Flow<ControlEntity>
+
+    @Insert
+    suspend fun insertControlWithChannels(controlEntity: ControlEntity,
+                                          channels: List<ChannelEntity>,
+                                          channelMaps: List<ChannelMapEntity>)
+
+    @Transaction
+    @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
+    fun getActiveControlWithChannels() : Flow<ControlEntityWithChannels>
+
+    suspend fun setActiveControl(controlEntity: ControlEntity) {
+        return setActiveControl(controlEntity.uuid)
+    }
 
     @Insert
     suspend fun insertControls(vararg controls: ControlEntity)
@@ -36,6 +59,8 @@ interface ControlDao {
             controlEntity.systemName = sonyControl.systemName
             controlEntity.systemProduct = sonyControl.systemProduct
             controlEntity.systemMacAddr = sonyControl.systemMacAddr
+            controlEntity.sourceList = sonyControl.sourceList
+            controlEntity.commandMap = sonyControl.commandList
             controlEntity.isActive = index == sonyControls.selected
             var channelList : MutableList<ChannelEntity> = mutableListOf()
             for (sonyChannel in sonyControl.channelList) {
@@ -50,8 +75,18 @@ interface ControlDao {
                 )
                 channelList.add(channelEntity)
             }
+            var channelMapList : MutableList<ChannelMapEntity> = mutableListOf()
+            for(entry in sonyControl.channelMap) {
+                val channelMapEntity = ChannelMapEntity(control_uuid = sonyControl.uuid,
+                channelLabel = entry.key, uri = entry.value)
+                channelMapList.add(channelMapEntity)
+            }
+            /*
             insertControls(controlEntity)
             insertChannels(channelList)
+            insertChannelMaps(channelMapList)
+             */
+            insertControlWithChannels(controlEntity, channelList, channelMapList)
         }
     }
 
@@ -70,13 +105,6 @@ interface ControlDao {
 
     @Query("UPDATE $CONTROL_TABLE SET isActive = CASE WHEN uuid = :uuid THEN 1 ELSE 0 END")
     suspend fun setActiveControl(uuid : String)
-
-    @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
-    fun getActiveControl() : Flow<ControlEntity>
-
-    suspend fun setActiveControl(controlEntity: ControlEntity) {
-        return setActiveControl(controlEntity.uuid)
-    }
 
     @Insert
     suspend fun insertChannels( channelList :List<ChannelEntity>)
@@ -98,4 +126,19 @@ interface ControlDao {
         insertChannels(channelList.filter { channelEntity -> channelEntity.control_uuid == controlEntity.uuid })
     }
 
+    @Query("SELECT * FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")
+    fun getChannelMapEntities(uuid : String) : Flow<List<ChannelMapEntity>>
+
+    @Insert
+    suspend fun insertChannelMaps( channelMapList :List<ChannelMapEntity>)
+
+    @Delete
+    suspend fun deleteChannelMaps( channelMapList :List<ChannelMapEntity>)
+
+    @Query("DELETE FROM $CHANNEL_TABLE WHERE control_uuid LIKE :uuid")
+    suspend fun deleteChannelMapsForControlUuid(uuid: String)
+
+    suspend fun deleteChannelMapsForControl(controlEntity: ControlEntity) {
+        deleteChannelMapsForControlUuid(controlEntity.uuid)
+    }
 }

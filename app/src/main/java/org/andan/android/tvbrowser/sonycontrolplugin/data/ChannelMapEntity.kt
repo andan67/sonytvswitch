@@ -7,21 +7,17 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = Constants.CHANNEL_TABLE,
-    indices = arrayOf(Index("control_uuid"), Index("uri")),
+@Entity(tableName = Constants.CHANNEL_MAP_TABLE,
+    indices = arrayOf(Index("control_uuid")),
     foreignKeys = arrayOf(
         ForeignKey(entity = ControlEntity::class,
             parentColumns = arrayOf("uuid"),
             childColumns = arrayOf("control_uuid"),
             onDelete = CASCADE)
     ))
-data class ChannelEntity(
-    val displayNumber: String,
+data class ChannelMapEntity(
     val control_uuid: String,
-    val source: String,
-    val index: Int,
-    val mediaType: String,
-    var title: String,
+    val channelLabel: String,
     val uri: String
 ) {
     @PrimaryKey(autoGenerate = true)

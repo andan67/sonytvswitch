@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
-data class
-SonyControls(
+data class SonyControls(
     val controls: MutableList<SonyControl> = ArrayList(),
     var selected: Int = -1
 ) {
@@ -36,42 +36,44 @@ data class SonyControl(
 
 
     @SerializedName(value = "channelList", alternate = ["programList"])
-    var channelList = mutableListOf<SonyChannel>()
+    var channelList: List<SonyChannel> = listOf()
         set(value) {
-            _channelUriMap = null
+            _uriSonyChannelMap = LinkedHashMap()
             field = value
         }
 
     var cookie = ""
-    var sourceList = mutableListOf<String>()
+    var sourceList: List<String> = listOf()
     var systemModel = ""
     var systemName = ""
     var systemProduct = ""
     var systemMacAddr = ""
     var systemWolMode = true
-    var commandList = LinkedHashMap<String, String>()
-    //var commandList = mutableListOf<RemoteControllerInfoItemResponse>()
+    var commandList: Map<String, String> = mapOf()
 
     @Transient
-    private var _channelUriMap: LinkedHashMap<String, SonyChannel>? = null
+    var isActive = false
+
+    
+    @Transient
+    private var _uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
 
     @Transient
-    val channelUriMap: LinkedHashMap<String, SonyChannel>? = null
+    val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
         get() {
             // lazy construction
-            if (_channelUriMap == null) {
-                _channelUriMap = LinkedHashMap<String, SonyChannel>()
+            if (_uriSonyChannelMap .isEmpty()) {
                 for (channel in channelList) {
-                    _channelUriMap!![channel.uri] = channel
+                    _uriSonyChannelMap[channel.uri] = channel
                 }
             }
             // This is a workaround to allow transient annotation (why?)
             // Note that field as implicit backing field is null, so explicit backing value is returned
-            return field ?: _channelUriMap
+            return field
         }
 
     @SerializedName(value = "channelMap", alternate = ["channelProgramMap"])
-    var channelMap = LinkedHashMap<String, String>()
+    var channelMap: Map<String, String> = mapOf()
 
     override fun toString(): String {
         return "$nickname ($devicename)"

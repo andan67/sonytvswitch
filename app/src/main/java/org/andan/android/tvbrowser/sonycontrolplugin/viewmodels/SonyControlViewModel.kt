@@ -2,12 +2,9 @@ package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import android.content.Context
 import androidx.lifecycle.*
-import dagger.hilt.EntryPoint
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.*
 import org.andan.android.tvbrowser.sonycontrolplugin.network.*
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
@@ -77,11 +74,11 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
     }
     init {
         Timber.d("init $sonyControlRepository")
-        _playingContentInfo.value = PlayingContentInfo()
+/*        _playingContentInfo.value = PlayingContentInfo()
         _sonyControls = sonyControlRepository.sonyControls
         _selectedSonyControl = sonyControlRepository.selectedSonyControl
         _noControls.value = sonyControlRepository.sonyControls.value!!.controls.size;
-        onSelectedIndexChange()
+        onSelectedIndexChange()*/
         //filterChannelNameList("")
     }
 
@@ -147,7 +144,7 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
             for (mappedChannelName in control.channelMap.keys) {
                 tvbChannelNameList.add(mappedChannelName)
                 val channelUri = control.channelMap[mappedChannelName]
-                if (channelUri != null && control.channelUriMap!!.containsKey(
+                if (channelUri != null && control.uriSonyChannelMap!!.containsKey(
                         channelUri
                     )
                 ) {
@@ -348,17 +345,17 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
 
     fun setSelectedChannelMapChannelUri(channelName: String?, channelUri: String?) {
         Timber.d("setSelectedChannelMapChannelUri()")
-        selectedSonyControl.value?.let { control ->
+/*        selectedSonyControl.value?.let { control ->
             selectedChannelMapChannelUri.value = channelUri
             control.channelMap[channelName!!] = channelUri!!
             refreshDerivedVariablesForSelectedControl()
             sonyControlRepository.saveControls()
-        }
+        }*/
     }
 
     internal fun performFuzzyMatchForChannelList() {
         Timber.d("performFuzzyMatchForChannelList()")
-        selectedSonyControl.value?.let { control ->
+        /*selectedSonyControl.value?.let { control ->
             if (tvbChannelNameList.isNotEmpty() && channelNameList.isNotEmpty()) {
                 for (channelName in tvbChannelNameList) {
                     val index1 = ChannelNameFuzzyMatch.matchOne(channelName, channelNameList, true)
@@ -368,17 +365,17 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
                 }
                 sonyControlRepository.saveControls()
             }
-        }
+        }*/
     }
 
     internal fun clearMapping() {
         Timber.d("clearMapping()")
-        selectedSonyControl.value?.let { control ->
+/*        selectedSonyControl.value?.let { control ->
             for (channelName in tvbChannelNameList) {
                 control.channelMap[channelName] = ""
             }
             sonyControlRepository.saveControls()
-        }
+        }*/
     }
 
     fun removeUTFCharacters(data: String): String {
