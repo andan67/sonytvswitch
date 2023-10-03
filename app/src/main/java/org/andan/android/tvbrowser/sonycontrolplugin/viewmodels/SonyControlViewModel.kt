@@ -27,6 +27,8 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
         get() = _selectedSonyControl
 
     private var _sonyControls = MutableLiveData<SonyControls>()
+
+    val controlList = sonyControlRepository.sonyControls
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
     var addedControlHostAddress: String = ""

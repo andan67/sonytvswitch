@@ -11,6 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SelectControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,6 +32,7 @@ fun SonyControlApp() {
         val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
         val sonyControlViewModel: SonyControlViewModel = hiltViewModel()
+        val selectControlViewModel: SelectControlViewModel = hiltViewModel()
 
         ModalNavigationDrawer(
             drawerContent = {
@@ -38,7 +40,7 @@ fun SonyControlApp() {
                     currentRoute = currentRoute,
                     navigationActions = navigationActions,
                     closeDrawer = { coroutineScope.launch { drawerState.close() } },
-                    viewModel = sonyControlViewModel
+                    viewModel = selectControlViewModel
                 )
             },
             drawerState = drawerState,

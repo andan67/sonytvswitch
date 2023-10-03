@@ -39,6 +39,12 @@ class ControlPreferenceStore @Inject constructor(@ApplicationContext private val
         return sonyControls
     }
 
+    fun loadMockControls(): SonyControls {
+        return SonyControls.fromJson(
+            context.assets.open("controls.json").bufferedReader()
+                .use { it.readText() }) ?: SonyControls()
+    }
+
     override fun storeControls(sonyControls: SonyControls) {
         Timber.d("storeControls()")
         reconcileTokenStore(sonyControls)

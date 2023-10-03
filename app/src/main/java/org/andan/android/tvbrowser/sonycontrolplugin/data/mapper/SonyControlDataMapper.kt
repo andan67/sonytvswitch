@@ -34,26 +34,29 @@ class SonyControlWithChannelsDomainMapper(
     }
 }
 
-class SonyControlDomainMapper() : Mapper<ControlEntity, SonyControl>
+class SonyControlDomainMapper() : Mapper<ControlEntity?, SonyControl>
 {
-    override fun map(controlEntity: ControlEntity): SonyControl {
-        val sonyControl: SonyControl = SonyControl(
-            ip = controlEntity.host,
-            devicename = controlEntity.devicename,
-            nickname = controlEntity.nickname,
-            uuid = controlEntity.uuid,
-            preSharedKey = controlEntity.preSharedKey
-        )
-        sonyControl.isActive = controlEntity.isActive
-        sonyControl.cookie = controlEntity.cookie
-        sonyControl.systemModel = controlEntity.systemModel
-        sonyControl.systemName = controlEntity.systemName
-        sonyControl.systemMacAddr = controlEntity.systemMacAddr
-        sonyControl.systemProduct = controlEntity.systemProduct
-        sonyControl.systemWolMode = controlEntity.systemWolMode
-        sonyControl.sourceList = controlEntity.sourceList
-        sonyControl.commandList = controlEntity.commandMap
-        return sonyControl
+    override fun map(controlEntity: ControlEntity?): SonyControl {
+        if (controlEntity != null) {
+            val sonyControl: SonyControl = SonyControl(
+                ip = controlEntity.host,
+                devicename = controlEntity.devicename,
+                nickname = controlEntity.nickname,
+                uuid = controlEntity.uuid,
+                preSharedKey = controlEntity.preSharedKey
+            )
+            sonyControl.isActive = controlEntity.isActive
+            sonyControl.cookie = controlEntity.cookie
+            sonyControl.systemModel = controlEntity.systemModel
+            sonyControl.systemName = controlEntity.systemName
+            sonyControl.systemMacAddr = controlEntity.systemMacAddr
+            sonyControl.systemProduct = controlEntity.systemProduct
+            sonyControl.systemWolMode = controlEntity.systemWolMode
+            sonyControl.sourceList = controlEntity.sourceList
+            sonyControl.commandList = controlEntity.commandMap
+            return sonyControl
+        }
+        return SonyControl()
     }
 }
 

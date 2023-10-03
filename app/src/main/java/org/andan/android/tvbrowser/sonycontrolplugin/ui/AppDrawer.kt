@@ -12,19 +12,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SelectControlUiState
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SelectControlViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawer(
     currentRoute: String,
     navigationActions: NavigationActions,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel = hiltViewModel()
+    viewModel: SelectControlViewModel = hiltViewModel()
 ) {
     ModalDrawerSheet(modifier) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -33,51 +34,93 @@ fun AppDrawer(
             Divider()
             NavigationDrawerItem(
                 label = { Text(stringResource(id = R.string.menu_remote_control)) },
-                icon = { Icon(painterResource(id = R.drawable.ic_settings_remote), null, modifier = Modifier.width(24.dp)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_settings_remote),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = currentRoute == NavDestinations.RemoteControl.route,
                 onClick = { navigationActions.navigateToRemoteControl(); closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             NavigationDrawerItem(
                 label = { Text(stringResource(id = R.string.menu_show_channels)) },
-                icon = { Icon(painterResource(id = R.drawable.ic_action_tv),null, modifier = Modifier.width(24.dp)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_action_tv),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = currentRoute == NavDestinations.ChannelList.route,
                 onClick = { navigationActions.navigateToChannelList(); closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             Divider()
             NavigationDrawerItem(
-                label = { Text (stringResource(id = R.string.menu_add_control)) },
-                icon = { Icon (painterResource(id = R.drawable.ic_action_add),null, modifier = Modifier.width(24.dp)) },
+                label = { Text(stringResource(id = R.string.menu_add_control)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_action_add),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = currentRoute == NavDestinations.AddControl.route,
                 onClick = { navigationActions.openAddControlDialog(); closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             NavigationDrawerItem(
-                label = { Text (stringResource(id = R.string.menu_manage_control)) },
-                icon = { Icon (painterResource(id = R.drawable.ic_action_edit),null, modifier = Modifier.width(24.dp)) },
+                label = { Text(stringResource(id = R.string.menu_manage_control)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_action_edit),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = currentRoute == NavDestinations.ManageControl.route,
                 onClick = { navigationActions.navigateToManageControl(); closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             NavigationDrawerItem(
-                label = { Text (stringResource(id = R.string.menu_channel_map)) },
-                icon = { Icon (painterResource(id =  R.drawable.ic_action_arrow_right),null, modifier = Modifier.width(24.dp)) },
+                label = { Text(stringResource(id = R.string.menu_channel_map)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_action_arrow_right),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = currentRoute == NavDestinations.ChannelMap.route,
                 onClick = { navigationActions.navigateToChannelMap(); closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             Divider()
             NavigationDrawerItem(
-                label = { Text (stringResource(id = R.string.menu_settings)) },
-                icon = { Icon (painterResource(id =  R.drawable.ic_settings),null, modifier = Modifier.width(24.dp)) },
+                label = { Text(stringResource(id = R.string.menu_settings)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_settings),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = false,
                 onClick = { closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
             )
             NavigationDrawerItem(
-                label = { Text (stringResource(id = R.string.menu_help)) },
-                icon = { Icon (painterResource(id =  R.drawable.ic_help_outline),null, modifier = Modifier.width(24.dp)) },
+                label = { Text(stringResource(id = R.string.menu_help)) },
+                icon = {
+                    Icon(
+                        painterResource(id = R.drawable.ic_help_outline),
+                        null,
+                        modifier = Modifier.width(24.dp)
+                    )
+                },
                 selected = false,
                 onClick = { closeDrawer() },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -92,9 +135,7 @@ private fun DrawerHeader(
     modifier: Modifier = Modifier
         .background(color = MaterialTheme.colorScheme.primary)
         .fillMaxWidth(),
-    viewModel: SonyControlViewModel = hiltViewModel()
-    //noControls : Int,
-    //onNoControlsChange: (Int) -> Unit
+    viewModel: SelectControlViewModel = hiltViewModel()
 ) {
     Column()
     {
@@ -121,17 +162,11 @@ private fun DrawerHeader(
             )
         }
 
+        val uiState: SelectControlUiState by viewModel.selectControlUiState.collectAsStateWithLifecycle()
+        //Timber.d("DrawerHeader controlList.size: ${uiState.controlList.size}")
+
         var expanded by remember { mutableStateOf(false) }
-        //val noControls by viewModel.noControls.observeAsState()
-        val controls by viewModel.sonyControls.observeAsState()
-        val controlList = controls!!.controls
-        Timber.d("DrawerHeader controlList.size: ${controlList.size}")
-        //Timber.d("DrawerHeader noControls: $noControls")
-        //var selectedOptionText by remember { mutableStateOf(if (controlList.size > 0) controlList[0].nickname else "") }
-        val selectedControlIndex = controls!!.selected
-        val selectedControlName =
-            if (selectedControlIndex >= 0) controlList[selectedControlIndex].nickname else ""
-// We want to react on tap/press on TextField to show menu
+
         ExposedDropdownMenuBox(
             modifier = modifier.padding(start = 16.dp),
             expanded = expanded,
@@ -145,7 +180,7 @@ private fun DrawerHeader(
                     .fillMaxWidth(),
                 //.padding(start = 16.dp),
                 readOnly = true,
-                value = selectedControlName,
+                value = uiState.selectedControl?.nickname ?: "",
                 onValueChange = { },
                 label = { Text(stringResource(R.string.select_remote_controller_label)) },
                 trailingIcon = {
@@ -153,19 +188,6 @@ private fun DrawerHeader(
                         expanded = expanded
                     )
                 },
-                /*
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                unfocusedLabelColor = Color.Gray,
-                focusedLabelColor = Color.Gray,
-                unfocusedTrailingIconColor = Color.White,
-                focusedTrailingIconColor = Color.White,
-                containerColor = MaterialTheme.colorScheme.primary,
-                textColor = MaterialTheme.colorScheme.secondary,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-
-            )
-             */
             )
             ExposedDropdownMenu(
                 modifier = modifier.fillMaxWidth(),
@@ -174,7 +196,7 @@ private fun DrawerHeader(
                     expanded = false
                 }
             ) {
-                controlList.forEachIndexed { index, selectionOption ->
+                uiState.controlList.forEach { control ->
                     DropdownMenuItem(
                         modifier = modifier
                             .fillMaxWidth()
@@ -182,14 +204,13 @@ private fun DrawerHeader(
                         onClick = {
                             //selectedOptionText = selectionOption.nickname
                             expanded = false
-                            Timber.i("onItemSelected position:$index")
                             // check if new position/control index is set
-                            if (viewModel.sonyControls.value!!.selected != index) {
-                                viewModel.setSelectedControlIndex(index)
-                                Timber.d("onItemSelected setSelectedControlIndex")
+                            if (uiState.selectedControl?.uuid != control.uuid) {
+                                //viewModel.setSelectedControlIndex(index)
+                                Timber.d("onItemSelected ${control.nickname}")
                             }
                         },
-                        text = { Text(text = selectionOption.nickname) }
+                        text = { Text(text = control.nickname) }
                     )
                 }
             }

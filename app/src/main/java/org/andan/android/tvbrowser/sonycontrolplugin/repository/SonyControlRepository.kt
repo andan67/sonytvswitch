@@ -3,12 +3,17 @@ package org.andan.android.tvbrowser.sonycontrolplugin.repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
@@ -36,13 +41,15 @@ class SonyControlRepository @Inject constructor(
     private val preferenceStore: ControlPreferenceStore,
     private val sonyServiceContext: SonyServiceClientContext,
     private val controlDao: ControlDao,
-    private val sonyControlDomainMapper: SonyControlWithChannelsDomainMapper,
+    private val sonyControlDomainMapper: SonyControlDomainMapper,
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
     //var sonyControls = MutableLiveData<SonyControls>()
     //var selectedSonyControl = MutableLiveData<SonyControl>()
 
-    val selectedSonyControl: Flow<SonyControl> = emptyFlow()
+    val selectedSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map {entity  ->  sonyControlDomainMapper.map(entity)}
+    val sonyControls: Flow<List<SonyControl>> =
+        controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
 
     companion object {
         const val SUCCESS_CODE = 0
@@ -52,13 +59,16 @@ class SonyControlRepository @Inject constructor(
     init {
         Timber.d("init")
         // for backward compatibility
-        val sonyControlsFromPreferenceStore = preferenceStore.loadControls()
-        if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
-            externalScope.launch {
-                controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
+        //val sonyControlsFromPreferenceStore = preferenceStore.loadControls()
+        externalScope.launch {
+            sonyControls.collectLatest { controls ->
+                if(controls.isEmpty()) {
+                    val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
+                    if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
+                        controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
+                    }
+                }
             }
-            // store empty controls in preference store
-            preferenceStore.storeControls(SonyControls())
         }
         sonyServiceContext.sonyService = api
 
