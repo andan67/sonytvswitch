@@ -33,4 +33,10 @@ class SelectControlViewModel  @Inject constructor(private val sonyControlReposit
     }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000),
         initialValue = SelectControlUiState())
 
+    fun setActiveControl(uuid: String) {
+        viewModelScope.launch {
+            sonyControlRepository.setActiveControl(uuid)
+        }
+    }
+
 }

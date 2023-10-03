@@ -31,6 +31,7 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.SocketTimeoutException
+import java.util.UUID
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -60,7 +61,7 @@ class SonyControlRepository @Inject constructor(
         Timber.d("init")
         // for backward compatibility
         //val sonyControlsFromPreferenceStore = preferenceStore.loadControls()
-        externalScope.launch {
+        val job = externalScope.launch {
             sonyControls.collectLatest { controls ->
                 if(controls.isEmpty()) {
                     val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
@@ -70,8 +71,12 @@ class SonyControlRepository @Inject constructor(
                 }
             }
         }
+        job.cancel()
         sonyServiceContext.sonyService = api
+    }
 
+    suspend fun setActiveControl(uuid: String) {
+        controlDao.setActiveControl(uuid)
     }
 
 /*    private val _responseMessage = MutableLiveData<Event<String>>()

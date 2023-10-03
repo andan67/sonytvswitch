@@ -207,6 +207,7 @@ private fun DrawerHeader(
                             // check if new position/control index is set
                             if (uiState.selectedControl?.uuid != control.uuid) {
                                 //viewModel.setSelectedControlIndex(index)
+                                viewModel.setActiveControl(control.uuid)
                                 Timber.d("onItemSelected ${control.nickname}")
                             }
                         },
