@@ -4,17 +4,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
-import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
-import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
@@ -31,7 +27,6 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.SocketTimeoutException
-import java.util.UUID
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -48,7 +43,7 @@ class SonyControlRepository @Inject constructor(
     //var sonyControls = MutableLiveData<SonyControls>()
     //var selectedSonyControl = MutableLiveData<SonyControl>()
 
-    val selectedSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map {entity  ->  sonyControlDomainMapper.map(entity)}
+    val activeSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map { entity  ->  sonyControlDomainMapper.map(entity)}
     val sonyControls: Flow<List<SonyControl>> =
         controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
 

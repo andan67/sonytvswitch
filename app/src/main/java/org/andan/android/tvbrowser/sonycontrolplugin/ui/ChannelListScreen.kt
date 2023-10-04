@@ -29,9 +29,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
@@ -40,17 +42,17 @@ import timber.log.Timber
 fun ChannelListScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel,
+    viewModel: ChannelListViewModel,
     openDrawer: () -> Unit
 ) {
-    val channelListState = viewModel.filteredChannelList.observeAsState(initial = emptyList())
-    val playingContentInfoState =
-        viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())
+    val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
+    /*val playingContentInfoState =
+        viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())*/
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
+/*    LaunchedEffect(Unit) {
         viewModel.fetchPlayingContentInfo()
-    }
+    }*/
 
     Scaffold(
         topBar = {
@@ -60,7 +62,7 @@ fun ChannelListScreen(
                 onSearchTextChanged = {
                     Timber.d("onSearchTextChanged: $it")
                     searchText = it
-                    viewModel.filterChannelList(searchText)
+                    //viewModel.filterChannelList(searchText)
                 }
             )
         },
@@ -78,7 +80,7 @@ fun ChannelListScreen(
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            PlayingContentInfoHeaderContent(playingContentInfoState = playingContentInfoState, onclick = {navActions.navigateToPlayingContentInfoDetails()} )
+            //PlayingContentInfoHeaderContent(playingContentInfoState = playingContentInfoState, onclick = {navActions.navigateToPlayingContentInfoDetails()} )
             ChannelListContent(channelListState = channelListState)
         }
     }
@@ -236,7 +238,7 @@ fun PlayingContentInfoHeaderContent(playingContentInfoState: State<PlayingConten
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { Timber.d("Clicked: ${playingContentInfo.source}"); onclick()}) {
+            .clickable { Timber.d("Clicked: ${playingContentInfo.source}"); onclick() }) {
         Column {
             Text(
                 modifier = Modifier

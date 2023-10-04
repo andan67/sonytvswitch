@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -30,13 +31,15 @@ fun SonyControlNavGraph(
 
     val selectedSonyControlState = viewModel.selectedSonyControl.observeAsState()
 
+    val channelListViewModel: ChannelListViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = NavDestinations.ChannelList.route,
         modifier = modifier
     ) {
         composable(NavDestinations.ChannelList.route) {
-            ChannelListScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
+            ChannelListScreen(navActions = navigationActions, viewModel = channelListViewModel, openDrawer = openDrawer)
         }
 
         composable(NavDestinations.ChannelMap.route) {

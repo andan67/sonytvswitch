@@ -1,14 +1,12 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
@@ -32,7 +30,7 @@ data class ManageControlUiState(
 class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
     //TODO Inject repository
 
-    val selectedSonyControlFlow = sonyControlRepository.selectedSonyControl
+    val selectedSonyControlFlow = sonyControlRepository.activeSonyControl
 
     private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
     val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()
