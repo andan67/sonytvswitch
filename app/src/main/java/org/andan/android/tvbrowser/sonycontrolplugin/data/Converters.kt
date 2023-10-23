@@ -24,7 +24,7 @@ class Converters {
      */
     @TypeConverter
     fun stringToMap(string: String): Map<String, String> {
-        return string.split(ENTRY_SEPARATOR).map {
+        if (string.isEmpty()) return emptyMap() else return string.split(ENTRY_SEPARATOR).map {
             val (key, value) = it.split(KEY_VALUE_SEPARATOR)
             key to value
         }.toMap()

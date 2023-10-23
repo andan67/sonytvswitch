@@ -104,8 +104,8 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
     fun addControl(control: SonyControl) {
         Timber.d("addControl(): $control")
         Timber.d("sonyControlViewModel: $this")
-        sonyControlRepository.addControl(control)
-        _noControls.postValue(sonyControls.value!!.controls.size)
+//        sonyControlRepository.addControl(control)
+//        _noControls.postValue(sonyControls.value!!.controls.size)
         Timber.d("_noControls: $_noControls")
         //_sonyControls.notifyObserver()
     }
@@ -228,7 +228,7 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
                 } else {
                     for (i in channelNameList.indices) {
                         val channel = channelNameList[i]
-                        if (channel.toLowerCase().contains(query.toLowerCase())) {
+                        if (channel.lowercase().contains(query.lowercase())) {
                             matchTopSet.add(i)
                             if (matchTopSet.size == 30) break
                         }

@@ -13,13 +13,24 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class ChannelListViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
-    //TODO Inject repository
+class ChannelListViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+    ViewModel() {
 
-    private val activeControlFlow = sonyControlRepository.activeSonyControl
+    private val activeControlFlow = sonyControlRepository.activeSonyControlWithChannels
 
-    val filteredChannelList
-        = activeControlFlow.map {activeControl -> activeControl.channelList.filter { channel -> channel.title.contains("RTL", true) } }
-        .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
+    private val filterFlow = MutableStateFlow("")
 
+    var filter: String
+        get() = filterFlow.value
+        set(value) {
+            filterFlow.value = value
+        }
+
+    val filteredChannelList =
+        activeControlFlow.combine(filterFlow.
+        debounce(500)) { activeControl, filter ->
+            activeControl.channelList.filter { channel ->
+                channel.title.contains(filter, true)
+            }
+        }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
 }

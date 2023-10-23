@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 enum class AddControlStatus() {
@@ -37,7 +39,6 @@ data class AddControlUiState(
 
 @HiltViewModel
 class AddControlViewModel  @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
-    //TODO Inject repository
 
     private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))
     val addControlUiState: StateFlow<AddControlUiState> = _addControlUiState.asStateFlow()
@@ -141,4 +142,22 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
             }
         }
     }
+
+    fun addControl() {
+        viewModelScope.launch(Dispatchers.IO) {
+            sonyControlRepository.addControl(addedControl)
+        }
+    }
+
+    fun addSampleControl(context: Context, host : String) {
+        addedControl = SonyControl.fromJson(
+            context.assets.open("SonyControl_sample.json").bufferedReader()
+                .use { it.readText() }
+                .replace("android sample",host)
+                .replace("sample uuid", UUID.randomUUID().toString()))
+        addControl()
+    }
+
+
+
 }

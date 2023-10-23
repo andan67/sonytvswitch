@@ -14,17 +14,25 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 
 @Dao
 interface ControlDao {
+
+    @Query("SELECT COUNT(*) FROM $CONTROL_TABLE")
+    suspend fun getNumberOfControls(): Int
+
     @Query("SELECT * FROM $CONTROL_TABLE")
     fun getControls(): Flow<List<ControlEntity>>
 
     @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
     fun getControl(uuid : String) : Flow<ControlEntity?>
 
+    @Transaction
     @Query("SELECT * FROM $CONTROL_TABLE")
     fun getControlsWithChannels(): Flow<List<ControlEntityWithChannels>>
 
+    @Transaction
     @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
     fun getControlWithChannels(uuid : String) : Flow<ControlEntityWithChannels?>
+
+
 
     @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
     fun getActiveControl() : Flow<ControlEntity>
@@ -92,6 +100,9 @@ interface ControlDao {
 
     @Delete
     suspend fun deleteControl(control: ControlEntity)
+
+    @Query("DELETE FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
+    suspend fun deleteControl(uuid: String)
 
     @Update
     suspend fun update(control: ControlEntity)

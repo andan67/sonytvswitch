@@ -23,7 +23,7 @@ import timber.log.Timber
 fun ManageControlScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    deleteSelectedControl: () -> Unit,
+    //deleteSelectedControl: () -> Unit,
     openDrawer: () -> Unit
 ) {
 /*    val sonyControl by remember {
@@ -68,7 +68,7 @@ fun ManageControlScreen(
                 actions = {
                     ManageControlMenu(
                         registerControlAction = {manageControlViewModel.registerControl()},
-                        deleteControlAction = { deleteSelectedControl() },
+                        deleteControlAction = { manageControlViewModel.deleteControl() },
                         requestChannelListAction = { manageControlViewModel.fetchChannelList() },
                         enableWOLAction = {manageControlViewModel.wakeOnLan()},
                         checkConnectivityAction = { manageControlViewModel.checkAvailability() },

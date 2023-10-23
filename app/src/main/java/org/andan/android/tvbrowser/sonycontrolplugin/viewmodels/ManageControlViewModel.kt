@@ -30,7 +30,7 @@ data class ManageControlUiState(
 class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
     //TODO Inject repository
 
-    val selectedSonyControlFlow = sonyControlRepository.activeSonyControl
+    val activeSonyControlFlow = sonyControlRepository.activeSonyControl
 
     private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
     val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()
@@ -43,7 +43,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
 
     init {
         viewModelScope.launch {
-            selectedSonyControlFlow.collect { sonyControl ->
+            activeSonyControlFlow.collect { sonyControl ->
                 uiState = uiState.copy(sonyControl = sonyControl)
                 Timber.d("collect flow $sonyControl")
                 }
@@ -131,6 +131,14 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                     }
                     else -> {}
                 }
+            }
+        }
+    }
+
+    fun deleteControl() {
+        uiState.sonyControl?.let {
+            viewModelScope.launch {
+                sonyControlRepository.deleteControl(it)
             }
         }
     }

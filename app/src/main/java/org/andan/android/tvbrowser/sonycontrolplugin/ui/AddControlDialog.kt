@@ -31,7 +31,7 @@ import timber.log.Timber
 @Composable
 fun AddControlDialog(
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel
+    //viewModel: SonyControlViewModel
 ) {
     //var addControlState by rememberSaveable { mutableStateOf(AddControlState.SPECIFY_HOST) }
     var host by rememberSaveable { mutableStateOf("") }
@@ -53,8 +53,8 @@ fun AddControlDialog(
     Timber.d("uiState: $uiState")
 
     if(uiState.status == AddControlStatus.REGISTER_SUCCESS) {
-        viewModel.addControl(addControlViewModel.addedControl)
-        viewModel.postRegistrationFetches()
+        addControlViewModel.addControl()
+        //viewModel.postRegistrationFetches()
         navActions.navigateUp()
     }
 
@@ -84,7 +84,7 @@ fun AddControlDialog(
                         {
 
                             if (host.contains("sample")) {
-                                viewModel.addSampleControl(context, host)
+                                addControlViewModel.addSampleControl(context, host)
                                 navActions.navigateUp()
                             } else {
                                 //viewModel.addedControlHostAddress = host
@@ -146,10 +146,10 @@ fun AddControlDialog(
                 when (uiState.status) {
                     AddControlStatus.SPECIFY_HOST, AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
                         LaunchedEffect(true) {
-                            viewModel.fetchSonyIpAndDeviceList()
+                            //addControlViewModel.fetchSonyIpAndDeviceList()
                         }
                         var expanded by remember { mutableStateOf(false) }
-                        val sonyIpAndDeviceList by viewModel.sonyIpAndDeviceList.observeAsState()
+                        //val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
                         Text(text = stringResource(id = R.string.add_control_host_instructions))
                         ExposedDropdownMenuBox(
                             modifier = Modifier.padding(top = 16.dp),
@@ -187,7 +187,7 @@ fun AddControlDialog(
                                     expanded = false
                                 }
                             ) {
-                                sonyIpAndDeviceList?.forEach {
+                                /*sonyIpAndDeviceList?.forEach {
                                     DropdownMenuItem(
                                         onClick = {
                                             host = it.ip
@@ -195,7 +195,7 @@ fun AddControlDialog(
                                         },
                                         text = { Text(text = it.device) }
                                     )
-                                }
+                                }*/
                             }
                         }
                     }

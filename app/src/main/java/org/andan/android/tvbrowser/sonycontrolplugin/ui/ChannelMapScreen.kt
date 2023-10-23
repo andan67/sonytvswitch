@@ -39,8 +39,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 import kotlin.reflect.KFunction1
@@ -49,10 +52,10 @@ import kotlin.reflect.KFunction1
 fun ChannelMapScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel,
+    viewModel: ChannelMapViewModel,
     openDrawer: () -> Unit
 ) {
-    val tvbChannelNameListState = viewModel.getFilteredTvbChannelNameList().observeAsState(initial = emptyList())
+    val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
 
     var searchText by rememberSaveable { mutableStateOf("") }
 
@@ -62,18 +65,17 @@ fun ChannelMapScreen(
                 openDrawer = { openDrawer() },
                 searchText = searchText,
                 onSearchTextChanged = {
-                    Timber.d("onSearchTextChanged: $it")
                     searchText = it
-                    viewModel.filterChannelList(searchText)
+                    viewModel.filter = it
                 }
             )
         },
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         ChannelMapContent(
-            modifier = Modifier.padding(innerPadding), tvbChannelNameListState = tvbChannelNameListState,
-            tvbChannelNameToUriMapper = {name: String -> viewModel.getSonyChannelForTvbChannelName(name)}
-        )
+//            modifier = Modifier.padding(innerPadding), tvbChannelNameListState = tvbChannelNameListState,
+//            tvbChannelNameToUriMapper = {name: String -> viewModel.getSonyChannelForTvbChannelName(name)}
+            channelMapState = channelMapState)
     }
 }
 
@@ -127,16 +129,14 @@ fun ChannelMapTopAppBar(
 
 @Composable
 private fun ChannelMapContent(
-    modifier: Modifier,
-    tvbChannelNameListState: State<List<String>>,
-    tvbChannelNameToUriMapper: (String) -> SonyChannel?
+    channelMapState: State<Map<String, String>>
 ) {
     LazyColumn() {
-        itemsIndexed(tvbChannelNameListState.value) { index, channelName ->
+        itemsIndexed(channelMapState.value.keys.toList()) {index,  channelName ->
             ChannelMapItem(
-                index = index,
+                index,
                 tvbChannelName = channelName,
-                channel = tvbChannelNameToUriMapper(channelName),
+                channel = channelMapState.value.get(channelName) ?: "",
                 onclick = { Timber.d("Clicked: $channelName") }
             )
         }
@@ -149,7 +149,7 @@ private fun ChannelMapContent(
 fun ChannelMapItem(
     index: Int,
     tvbChannelName: String,
-    channel: SonyChannel?,
+    channel: String,
     onclick: () -> Unit
 )
 {
@@ -183,7 +183,7 @@ fun ChannelMapItem(
                 if(channel != null) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = channel.title,
+                        text = channel,
                         color = MaterialTheme.colorScheme.secondary
                     )
                     Icon(
@@ -194,7 +194,7 @@ fun ChannelMapItem(
                     )
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = channel.shortSource,
+                        text = "dvbs",
                         color = MaterialTheme.colorScheme.secondary
                     )
                 } else {

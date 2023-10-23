@@ -2,15 +2,29 @@ package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
@@ -37,15 +51,18 @@ class SonyControlRepository @Inject constructor(
     private val preferenceStore: ControlPreferenceStore,
     private val sonyServiceContext: SonyServiceClientContext,
     private val controlDao: ControlDao,
-    private val sonyControlDomainMapper: SonyControlDomainMapper,
+    private val sonyControlDataMapper: SonyControlDataMapper,
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
     //var sonyControls = MutableLiveData<SonyControls>()
     //var selectedSonyControl = MutableLiveData<SonyControl>()
 
-    val activeSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map { entity  ->  sonyControlDomainMapper.map(entity)}
+    val activeSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map { entity  ->  sonyControlDataMapper.mapControlEntity2Domain(entity)}
+    val activeSonyControlWithChannels: Flow<SonyControl>
+        = controlDao.getActiveControlWithChannels().map { entity  ->  sonyControlDataMapper.mapControlEntity2Domain(entity)}
     val sonyControls: Flow<List<SonyControl>> =
-        controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
+        controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDataMapper.mapControlEntity2Domain(entityElement)  } }
+    //else entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
 
     companion object {
         const val SUCCESS_CODE = 0
@@ -57,16 +74,35 @@ class SonyControlRepository @Inject constructor(
         // for backward compatibility
         //val sonyControlsFromPreferenceStore = preferenceStore.loadControls()
         val job = externalScope.launch {
-            sonyControls.collectLatest { controls ->
-                if(controls.isEmpty()) {
+            val numberOfControls = controlDao.getNumberOfControls()
+            Timber.d("numberOfControls: ${numberOfControls}");
+/*            controlDao.getControls().collectLatest { entityList ->
+                Timber.d("entitList.size: ${entityList.size}");
+                val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
+                if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
+                    Timber.d("Insert from preference store")
+                    controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
+                }
+            }*/
+                /*            if(sonyControls.lastOrNull() == null) {
+                val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
+                if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
+                    Timber.d("Insert from preference store")
+                    controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
+                }
+            }*/
+            /*sonyControls.collectLatest { controls ->
+                if (controls.isEmpty()) {
                     val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
                     if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
+                        Timber.d("Insert from preference store")
                         controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
                     }
                 }
-            }
+            }*/
         }
-        job.cancel()
+        //job.cancel()
+        Timber.d("end init")
         sonyServiceContext.sonyService = api
     }
 
@@ -500,11 +536,35 @@ class SonyControlRepository @Inject constructor(
         onSonyControlsChange()*/
     }
 
-    fun addControl(control: SonyControl) {
-        /*sonyControls.value!!.controls.add(control)
-        sonyControls.value!!.selected = sonyControls.value!!.controls.size - 1
-        Timber.d("addControl: #${sonyControls.value!!.selected} $control")
-        saveControls()*/
+
+    suspend fun deleteControl(control: SonyControl) {
+        externalScope.launch {
+            val hasBeenActive = control.isActive
+            Timber.d(" deleteControl ${control.uuid}")
+            controlDao.deleteControl(control.uuid)
+            Timber.d(" deleteControl hasBeenActive ${hasBeenActive}")
+            if (hasBeenActive) {
+                sonyControls.cancellable().collect {
+                    val uuid = it.first().uuid
+                    Timber.d(" deleteControl setActive ${uuid}")
+                    setActiveControl(uuid)
+                    currentCoroutineContext().cancel()
+                }
+            }
+        }.join()
+    }
+
+    suspend fun addControl(control: SonyControl)
+    {
+        externalScope.launch {
+            Timber.d("adding control: ${control.uuid}")
+            controlDao.insertControlWithChannels(
+                sonyControlDataMapper.mapControl2Entity(control),
+                sonyControlDataMapper.mapControl2ChannelEntityList(control),
+                sonyControlDataMapper.mapControl2ChannelMapList(control)
+            )
+            controlDao.setActiveControl(control.uuid)
+        }.join()
     }
 
     fun removeControl(index: Int): Boolean {

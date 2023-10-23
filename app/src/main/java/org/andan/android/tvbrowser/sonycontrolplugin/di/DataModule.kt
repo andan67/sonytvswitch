@@ -17,6 +17,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_DATA
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDatabase
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.ListMapperImpl
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyChannelDomainMapper
+import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
 import javax.inject.Singleton
@@ -50,14 +51,6 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideSonyChannelDomainMapper() = SonyChannelDomainMapper()
-
-    @Provides
-    @Singleton
-    fun provideSonyControlWithChannelsDomainMapper() = SonyControlWithChannelsDomainMapper(ListMapperImpl(SonyChannelDomainMapper()))
-
-    @Provides
-    @Singleton
-    fun provideSonyControlDomainMapper() = SonyControlDomainMapper()
+    fun provideSonyControlDataMapper() = SonyControlDataMapper()
 
 }

@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -32,6 +33,7 @@ fun SonyControlNavGraph(
     val selectedSonyControlState = viewModel.selectedSonyControl.observeAsState()
 
     val channelListViewModel: ChannelListViewModel = hiltViewModel()
+    val channelMapViewModel: ChannelMapViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -43,7 +45,7 @@ fun SonyControlNavGraph(
         }
 
         composable(NavDestinations.ChannelMap.route) {
-            ChannelMapScreen(navActions = navigationActions, viewModel = viewModel, openDrawer = openDrawer)
+            ChannelMapScreen(navActions = navigationActions, viewModel = channelMapViewModel, openDrawer = openDrawer)
         }
 
         composable(NavDestinations.RemoteControl.route) {
@@ -51,7 +53,8 @@ fun SonyControlNavGraph(
         }
 
         composable(NavDestinations.ManageControl.route) {
-            ManageControlScreen(navActions = navigationActions, deleteSelectedControl = {viewModel.deleteSelectedControl()},
+            ManageControlScreen(navActions = navigationActions,
+                // deleteSelectedControl = {viewModel.deleteSelectedControl()},
                 //selectedSonyControlState = selectedSonyControlState,
                 openDrawer = openDrawer)
         }
@@ -71,7 +74,7 @@ fun SonyControlNavGraph(
             AddControlDialog(
                 navActions = navigationActions,
                 //initialAddControlStata = AddControlState.SPECIFY_HOST,
-                viewModel = viewModel
+                //viewModel = viewModel
             )
         }
 

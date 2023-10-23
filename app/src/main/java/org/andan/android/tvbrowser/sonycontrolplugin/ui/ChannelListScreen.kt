@@ -60,9 +60,8 @@ fun ChannelListScreen(
                 openDrawer = { openDrawer() },
                 searchText = searchText,
                 onSearchTextChanged = {
-                    Timber.d("onSearchTextChanged: $it")
                     searchText = it
-                    //viewModel.filterChannelList(searchText)
+                    viewModel.filter = it
                 }
             )
         },

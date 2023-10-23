@@ -20,12 +20,27 @@ data class ChannelMapUiState(
 
 @HiltViewModel
 class ChannelMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
-    //TODO Inject repository
-
-    val selectedSonyControlFlow = sonyControlRepository.activeSonyControl
 
     private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
     val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()
+
+    private val activeControlFlow = sonyControlRepository.activeSonyControlWithChannels
+
+    private val filterFlow = MutableStateFlow("")
+
+    var filter: String
+        get() = filterFlow.value
+        set(value) {
+            filterFlow.value = value
+        }
+
+    val filteredChannelMap =
+        activeControlFlow.combine(filterFlow.
+        debounce(500)) { activeControl, filter ->
+            activeControl.channelMap.filter { channelMap ->
+                channelMap.key.contains(filter, true)
+            }
+        }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyMap())
 
     private var uiState: ChannelMapUiState
         get() = _channelMapUiState.value
@@ -35,7 +50,7 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
 
     init {
         viewModelScope.launch {
-            selectedSonyControlFlow.collect { sonyControl ->
+            activeControlFlow.collect { sonyControl ->
                 uiState = uiState.copy(sonyControl = sonyControl)
                 Timber.d("collect flow $sonyControl")
                 }
