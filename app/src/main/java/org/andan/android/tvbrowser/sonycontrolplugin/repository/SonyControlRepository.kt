@@ -46,7 +46,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SonyControlRepository @Inject constructor(
+class
+SonyControlRepository @Inject constructor(
     private val api: SonyService,
     private val preferenceStore: ControlPreferenceStore,
     private val sonyServiceContext: SonyServiceClientContext,

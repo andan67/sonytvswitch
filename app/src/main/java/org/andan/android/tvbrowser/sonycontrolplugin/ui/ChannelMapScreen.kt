@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -72,10 +73,9 @@ fun ChannelMapScreen(
         },
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
-        ChannelMapContent(
-//            modifier = Modifier.padding(innerPadding), tvbChannelNameListState = tvbChannelNameListState,
-//            tvbChannelNameToUriMapper = {name: String -> viewModel.getSonyChannelForTvbChannelName(name)}
-            channelMapState = channelMapState)
+        Column(modifier = Modifier.padding(innerPadding)) {
+            ChannelMapContent(channelMapState = channelMapState)
+        }
     }
 }
 
@@ -134,9 +134,9 @@ private fun ChannelMapContent(
     LazyColumn() {
         itemsIndexed(channelMapState.value.keys.toList()) {index,  channelName ->
             ChannelMapItem(
-                index,
+                index + 1 ,
                 tvbChannelName = channelName,
-                channel = channelMapState.value.get(channelName) ?: "",
+                channel = channelMapState.value[channelName] ?: "",
                 onclick = { Timber.d("Clicked: $channelName") }
             )
         }
@@ -174,21 +174,22 @@ fun ChannelMapItem(
                 text = tvbChannelName
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
+            //Row {
                 Icon(
-                    modifier = Modifier.padding(end = 8.dp).width(24.dp),
-                    painter = painterResource(id = R.drawable.ic_action_tv),
+                    modifier = Modifier.padding(end = 8.dp).width(20.dp),
+                    painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
                 )
-                if(channel != null) {
+                if(!channel.isEmpty()) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
                         text = channel,
                         color = MaterialTheme.colorScheme.secondary
                     )
                     Icon(
-                        modifier = Modifier.padding(end = 8.dp).width(24.dp),
-                        painter = painterResource(id = R.drawable.ic_input),
+                        modifier = Modifier.padding(end = 8.dp).width(20.dp),
+                        painter = painterResource(id = R.drawable.ic_action_input),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
                     )
