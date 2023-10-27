@@ -2,6 +2,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import java.net.URLDecoder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -89,6 +90,20 @@ data class SonyChannel(
     val title: String,
     val uri: String
 ) {
+
+     companion object {
+        fun <T> fromUri(uri: String): SonyChannel {
+            // example uri"tv:dvbs?trip=d1.1107.17500&srvName=dSAT.1"
+            return SonyChannel(
+                uri.substringBefore("?"),
+                "",
+                -1,
+                uri.substringBefore(":"),
+                URLDecoder.decode(uri.substringAfter("srvName="), "UTF-8"),
+                uri
+            )
+        }
+    }
 
     val shortSource: String
         get() {

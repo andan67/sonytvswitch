@@ -59,7 +59,13 @@ class SonyControlRepository @Inject constructor(
 
     val activeSonyControl: Flow<SonyControl> = controlDao.getActiveControl().map { entity  ->  sonyControlDataMapper.mapControlEntity2Domain(entity)}
     val activeSonyControlWithChannels: Flow<SonyControl>
-        = controlDao.getActiveControlWithChannels().map { entity  ->  sonyControlDataMapper.mapControlEntity2Domain(entity)}
+        = controlDao.getActiveControlWithChannels().map { entity  ->
+        val control = sonyControlDataMapper.mapControlEntity2Domain(entity)
+        // lazy creation of uriSonyChannelMap
+        control.uriSonyChannelMap
+        //Timber.d("activeSonyControlWithChannels")
+        control
+        }
     val sonyControls: Flow<List<SonyControl>> =
         controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDataMapper.mapControlEntity2Domain(entityElement)  } }
     //else entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
