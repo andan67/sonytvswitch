@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ChannelMapEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
@@ -529,6 +530,14 @@ SonyControlRepository @Inject constructor(
 
     fun saveControls() {
         saveControls(false)
+    }
+
+    suspend fun saveChannelMap(uuid: String, channelMap: Map<String, String>) {
+        var channelMapEntityList: MutableList<ChannelMapEntity> = ArrayList()
+        channelMap.forEach {
+            channelMapEntityList.add(ChannelMapEntity(uuid,it.key, it.value))
+        }
+        controlDao.setChannelMapForControl(channelMapEntityList, uuid)
     }
 
     private fun saveControls(fromBackground: Boolean) {

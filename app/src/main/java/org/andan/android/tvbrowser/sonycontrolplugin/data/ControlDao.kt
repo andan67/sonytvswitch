@@ -146,10 +146,16 @@ interface ControlDao {
     @Delete
     suspend fun deleteChannelMaps( channelMapList :List<ChannelMapEntity>)
 
-    @Query("DELETE FROM $CHANNEL_TABLE WHERE control_uuid LIKE :uuid")
+    @Query("DELETE FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")
     suspend fun deleteChannelMapsForControlUuid(uuid: String)
 
     suspend fun deleteChannelMapsForControl(controlEntity: ControlEntity) {
         deleteChannelMapsForControlUuid(controlEntity.uuid)
+    }
+
+    @Transaction
+    suspend fun setChannelMapForControl( channelMap :List<ChannelMapEntity>, uuid: String) {
+        deleteChannelMapsForControlUuid(uuid)
+        insertChannelMaps(channelMap)
     }
 }

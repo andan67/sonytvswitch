@@ -62,7 +62,8 @@ fun ChannelMapScreen(
                 onSearchTextChanged = {
                     searchText = it
                     viewModel.filter = it
-                }
+                },
+                onMatchChannels = { viewModel.matchChannels() }
             )
         },
         modifier = modifier.fillMaxSize(),
@@ -78,7 +79,8 @@ fun ChannelMapScreen(
 fun ChannelMapTopAppBar(
     openDrawer: () -> Unit,
     searchText: String,
-    onSearchTextChanged: (String) -> Unit = {}
+    onSearchTextChanged: (String) -> Unit = {},
+    onMatchChannels: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
@@ -117,7 +119,7 @@ fun ChannelMapTopAppBar(
                     )
                 }
             }
-            ChannelMapMenu({}, {})
+            ChannelMapMenu(onMatchChannels, {})
         })
 }
 
