@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -27,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,11 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
-import kotlin.reflect.KFunction1
 
 @Composable
 fun ChannelMapScreen(
@@ -129,14 +123,14 @@ fun ChannelMapTopAppBar(
 
 @Composable
 private fun ChannelMapContent(
-    channelMapState: State<Map<String, String>>
+    channelMapState: State<Map<String, SonyChannel?>>
 ) {
     LazyColumn() {
         itemsIndexed(channelMapState.value.keys.toList()) {index,  channelName ->
             ChannelMapItem(
                 index + 1 ,
                 tvbChannelName = channelName,
-                channel = channelMapState.value[channelName] ?: "",
+                channel = channelMapState.value[channelName],
                 onclick = { Timber.d("Clicked: $channelName") }
             )
         }
@@ -149,7 +143,7 @@ private fun ChannelMapContent(
 fun ChannelMapItem(
     index: Int,
     tvbChannelName: String,
-    channel: String,
+    channel: SonyChannel?,
     onclick: () -> Unit
 )
 {
@@ -181,10 +175,10 @@ fun ChannelMapItem(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
                 )
-                if(!channel.isEmpty()) {
+                if(channel != null) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = channel,
+                        text = channel.title,
                         color = MaterialTheme.colorScheme.secondary
                     )
                     Icon(
@@ -195,7 +189,7 @@ fun ChannelMapItem(
                     )
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = "dvbs",
+                        text = channel.source,
                         color = MaterialTheme.colorScheme.secondary
                     )
                 } else {

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
@@ -39,8 +40,8 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
         debounce(500)) { activeControl, filter ->
             activeControl.channelMap.filter { channelMap ->
                 channelMap.key.contains(filter, true)
-            }
-        }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyMap())
+            }.mapValues {activeControl.uriSonyChannelMap[it.key]}
+        }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyMap<String, SonyChannel>())
 
     private var uiState: ChannelMapUiState
         get() = _channelMapUiState.value

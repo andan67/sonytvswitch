@@ -12,8 +12,6 @@ android {
     def localProperties = new Properties()
     localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
-    println(localProperties)
-
     def keystorePropertiesFile = file(localProperties.getProperty('keystore.properties'))
     def keystoreProperties = new Properties()
     try {
@@ -46,6 +44,7 @@ android {
         }
         compileSdkPreview = "UpsideDownCake"
     }
+
     buildTypes {
         release {
             // debuggable true
