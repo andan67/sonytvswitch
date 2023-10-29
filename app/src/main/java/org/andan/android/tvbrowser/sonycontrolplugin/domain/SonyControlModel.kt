@@ -59,6 +59,18 @@ data class SonyControl(
     @Transient
     private var _uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
 
+/*    @Transient
+    val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> by lazy {
+        val _uriSonyChannelMap = LinkedHashMap()
+        if (_uriSonyChannelMap .isEmpty()) {
+            for (channel in channelList) {
+                _uriSonyChannelMap[channel.uri] = channel
+            }
+        }
+        _uriSonyChannelMap
+
+    }*/
+
     @Transient
     val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
         get() {

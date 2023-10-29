@@ -65,7 +65,7 @@ SonyControlRepository @Inject constructor(
         val control = sonyControlDataMapper.mapControlEntity2Domain(entity)
         // lazy creation of uriSonyChannelMap
         control.uriSonyChannelMap
-        //Timber.d("activeSonyControlWithChannels")
+        Timber.d("activeSonyControlWithChannels  ${control.channelMap["3sat"]} ${control.uriSonyChannelMap}")
         control
         }
     val sonyControls: Flow<List<SonyControl>> =
@@ -537,7 +537,9 @@ SonyControlRepository @Inject constructor(
         channelMap.forEach {
             channelMapEntityList.add(ChannelMapEntity(uuid,it.key, it.value))
         }
-        controlDao.setChannelMapForControl(channelMapEntityList, uuid)
+        externalScope.launch {
+            controlDao.setChannelMapForControl(channelMapEntityList, uuid)
+        }
     }
 
     private fun saveControls(fromBackground: Boolean) {

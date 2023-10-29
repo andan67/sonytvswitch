@@ -44,9 +44,11 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
     val filteredChannelMap =
         activeControlStateFlow.combine(filterFlow.
         debounce(500)) { activeControl, filter ->
+            Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
             activeControl.channelMap.filter { channelMap ->
                 channelMap.key.contains(filter, true)
-            }.mapValues {activeControl.uriSonyChannelMap[it.key]}
+            }.mapValues {Timber.d("it: $it"); Timber.d("activeControl.uriSonyChannelMap[it.value]: ${activeControl.uriSonyChannelMap[it.value]}");
+                activeControl.uriSonyChannelMap[it.value]}
         }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyMap<String, SonyChannel>())
 
     private var uiState: ChannelMapUiState
@@ -61,16 +63,20 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
                 controlChannelNames.clear()
                 uiState = uiState.copy(sonyControl = sonyControl)
                 Timber.d("collect flow $sonyControl")
-                sonyControl.channelList.forEach {channel -> controlChannelNames.add(channel.title) }
+                sonyControl.channelList.forEach { channel ->
+                    controlChannelNames.add(channel.title)
                 }
+                Timber.d("controlChannelNames: ${controlChannelNames.size}")
+                Timber.d("filteredChannelMap: ${filteredChannelMap.value}")
             }
         }
+    }
 
     internal fun matchChannels() {
         val channelMap = filteredChannelMap.value
         Timber.d("Matching ${channelMap} channels")
         if(channelMap.isNotEmpty()) {
-            var channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
+            val channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
             channelMap.keys.forEach {
                 val index1 = ChannelNameFuzzyMatch.matchOne(it, controlChannelNames, true)
                 if(index1 >= 0) {
@@ -78,6 +84,7 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
                     // control.channelMap[channelName] = control.channelList[index1].uri
                 }
             }
+            Timber.d("Matched $channelMatchResult")
             viewModelScope.launch {
                 sonyControlRepository.saveChannelMap(
                     activeControlStateFlow.value.uuid,
