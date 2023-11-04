@@ -11,25 +11,27 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
 import timber.log.Timber
-import java.util.LinkedHashMap
 import javax.inject.Inject
+import kotlin.collections.LinkedHashMap
 
 data class ChannelMapUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val message: EventMessage? = null,
-    val sonyControl:SonyControl? = null
+    val sonyControl: SonyControl? = null
 )
 
 @HiltViewModel
-class ChannelMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
+class ChannelMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+    ViewModel() {
 
     private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
     val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()
 
-    private val activeControlStateFlow = sonyControlRepository.activeSonyControlWithChannels.stateIn(
-        viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl()
-    )
+    private val activeControlStateFlow =
+        sonyControlRepository.activeSonyControlWithChannels.stateIn(
+            viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl()
+        )
 
     private val filterFlow = MutableStateFlow("")
 
@@ -41,15 +43,20 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
             filterFlow.value = value
         }
 
+    private val _filteredChannelMap = MutableStateFlow(emptyMap<String, SonyChannel?>())
+
+
     val filteredChannelMap =
         activeControlStateFlow.combine(filterFlow.
         debounce(500)) { activeControl, filter ->
-            Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
+            //Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
             activeControl.channelMap.filter { channelMap ->
                 channelMap.key.contains(filter, true)
-            }.mapValues {Timber.d("it: $it"); Timber.d("activeControl.uriSonyChannelMap[it.value]: ${activeControl.uriSonyChannelMap[it.value]}");
+            }.mapValues {
+                //Timber.d("it: $it"); Timber.d("activeControl.uriSonyChannelMap[it.value]: ${activeControl.uriSonyChannelMap[it.value]}");
                 activeControl.uriSonyChannelMap[it.value]}
         }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyMap<String, SonyChannel>())
+
 
     private var uiState: ChannelMapUiState
         get() = _channelMapUiState.value
@@ -67,32 +74,59 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
                     controlChannelNames.add(channel.title)
                 }
                 Timber.d("controlChannelNames: ${controlChannelNames.size}")
-                Timber.d("filteredChannelMap: ${filteredChannelMap.value}")
+                //Timber.d("filteredChannelMap: ${filteredChannelMap.value}")
             }
         }
     }
 
     internal fun matchChannels() {
         val channelMap = filteredChannelMap.value
-        Timber.d("Matching ${channelMap} channels")
-        if(channelMap.isNotEmpty()) {
-            val channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
-            channelMap.keys.forEach {
-                val index1 = ChannelNameFuzzyMatch.matchOne(it, controlChannelNames, true)
-                if(index1 >= 0) {
-                    channelMatchResult[it] = activeControlStateFlow.value.channelList[index1].uri
-                    // control.channelMap[channelName] = control.channelList[index1].uri
+        //Timber.d("Matching ${channelMap} channels")
+        if (channelMap.isNotEmpty()) {
+            viewModelScope.launch {
+                val channelMap = filteredChannelMap.value
+                //Timber.d("Matching ${channelMap} channels")
+                if(channelMap.isNotEmpty()) {
+                    val channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
+                    channelMap.keys.forEach {
+                        val index1 = ChannelNameFuzzyMatch.matchOne(it, controlChannelNames, true)
+                        if(index1 >= 0) {
+                            channelMatchResult[it] = activeControlStateFlow.value.channelList[index1].uri
+                            // control.channelMap[channelName] = control.channelList[index1].uri
+                        }
+                    }
+                    // Timber.d("Matched $channelMatchResult")
+                    sonyControlRepository.saveChannelMap(
+                        activeControlStateFlow.value.uuid,
+                        channelMatchResult
+                    )
                 }
             }
-            Timber.d("Matched $channelMatchResult")
+        }
+    }
+
+    internal fun clearChannelMatches() {
+        val channelMap = filteredChannelMap.value
+        Timber.d("Clearing ${channelMap.size} channel matches")
+        if (channelMap.isNotEmpty()) {
+            val channelMatchResult: LinkedHashMap<String, String> = LinkedHashMap()
+            channelMap.keys.forEach {
+                channelMatchResult[it] = ""
+            }
             viewModelScope.launch {
+/*            val channelMap = filteredChannelMap.value
+            Timber.d("Clearing ${channelMap.size} channel matches")
+            if(channelMap.isNotEmpty()) {
+                val channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
+                channelMap.keys.forEach { channelMatchResult[it] = ""
+            }*/
+                // Timber.d("Cleared $channelMatchResult")
                 sonyControlRepository.saveChannelMap(
                     activeControlStateFlow.value.uuid,
                     channelMatchResult
                 )
             }
         }
-
     }
 
     fun onConsumedMessage() {

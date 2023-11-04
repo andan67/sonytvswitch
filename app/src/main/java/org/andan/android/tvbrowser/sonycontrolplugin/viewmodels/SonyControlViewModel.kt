@@ -216,7 +216,7 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
         selectedSonyControl.value?.let { control ->
             if (channelNameList.isNotEmpty()) {
                 var matchTopSet: MutableSet<Int> = LinkedHashSet()
-                if (query == null || query.isEmpty()) {
+                /*if (query == null || query.isEmpty()) {
                     matchTopSet.addAll(
                         ChannelNameFuzzyMatch.matchTop(
                             channelName!!,
@@ -233,7 +233,7 @@ class SonyControlViewModel  @Inject constructor(private val sonyControlRepositor
                             if (matchTopSet.size == 30) break
                         }
                     }
-                }
+                }*/
                 if (!control.channelList.isNullOrEmpty()) {
                     matchTopSet.forEach { channelUriMatchList.add(control.channelList[it].uri) }
                 }

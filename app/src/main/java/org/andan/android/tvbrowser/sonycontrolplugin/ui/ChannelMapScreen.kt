@@ -1,14 +1,18 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -63,7 +67,8 @@ fun ChannelMapScreen(
                     searchText = it
                     viewModel.filter = it
                 },
-                onMatchChannels = { viewModel.matchChannels() }
+                onMatchChannels = { viewModel.matchChannels() },
+                onClearMatches = { viewModel.clearChannelMatches() }
             )
         },
         modifier = modifier.fillMaxSize(),
@@ -80,7 +85,8 @@ fun ChannelMapTopAppBar(
     openDrawer: () -> Unit,
     searchText: String,
     onSearchTextChanged: (String) -> Unit = {},
-    onMatchChannels: () -> Unit
+    onMatchChannels: () -> Unit,
+    onClearMatches: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
@@ -119,7 +125,7 @@ fun ChannelMapTopAppBar(
                     )
                 }
             }
-            ChannelMapMenu(onMatchChannels, {})
+            ChannelMapMenu(onMatchChannels, onClearMatches)
         })
 }
 
@@ -151,7 +157,7 @@ fun ChannelMapItem(
 {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            //.fillMaxWidth()
             .clickable { onclick() }) {
         Column {
             Text(
@@ -165,14 +171,18 @@ fun ChannelMapItem(
         }
         Column() {
             Text(
-                modifier = Modifier.padding(horizontal = 0.dp),
+                modifier = Modifier
+                    .padding(horizontal = 0.dp),
                 style = MaterialTheme.typography.titleLarge,
                 text = tvbChannelName
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically) {
             //Row {
                 Icon(
-                    modifier = Modifier.padding(end = 8.dp).width(20.dp),
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .width(20.dp),
                     painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
@@ -184,7 +194,9 @@ fun ChannelMapItem(
                         color = MaterialTheme.colorScheme.secondary
                     )
                     Icon(
-                        modifier = Modifier.padding(end = 8.dp).width(20.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .width(20.dp),
                         painter = painterResource(id = R.drawable.ic_action_input),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary

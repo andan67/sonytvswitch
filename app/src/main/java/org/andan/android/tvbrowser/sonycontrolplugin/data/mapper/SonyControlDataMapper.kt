@@ -20,19 +20,19 @@ class SonyControlWithChannelsDomainMapper(
                 devicename = controlEntity.devicename,
                 nickname = controlEntity.nickname,
                 uuid = controlEntity.uuid,
-                preSharedKey = controlEntity.preSharedKey
+                preSharedKey = controlEntity.preSharedKey,
+                isActive = controlEntity.isActive,
+                cookie = controlEntity.cookie,
+                systemModel = controlEntity.systemModel,
+                systemName = controlEntity.systemName,
+                systemMacAddr = controlEntity.systemMacAddr,
+                systemProduct = controlEntity.systemProduct,
+                systemWolMode = controlEntity.systemWolMode,
+                sourceList = controlEntity.sourceList,
+                commandList = controlEntity.commandMap,
+                channelList = channelListDomainMapper.map(controlEntityWithChannels.channels),
+                channelMap = controlEntityWithChannels.channelMaps.associate { it.channelLabel to it.uri }
             )
-            sonyControl.isActive = controlEntity.isActive
-            sonyControl.cookie = controlEntity.cookie
-            sonyControl.systemModel = controlEntity.systemModel
-            sonyControl.systemName = controlEntity.systemName
-            sonyControl.systemMacAddr = controlEntity.systemMacAddr
-            sonyControl.systemProduct = controlEntity.systemProduct
-            sonyControl.systemWolMode = controlEntity.systemWolMode
-            sonyControl.sourceList = controlEntity.sourceList
-            sonyControl.commandList = controlEntity.commandMap
-            sonyControl.channelList = channelListDomainMapper.map(controlEntityWithChannels.channels)
-            sonyControl.channelMap = controlEntityWithChannels.channelMaps.associate { it.channelLabel to it.uri }
             return sonyControl
         }
         return SonyControl()
@@ -49,17 +49,17 @@ class SonyControlDomainMapper() : Mapper<ControlEntity?, SonyControl>
                 devicename = controlEntity.devicename,
                 nickname = controlEntity.nickname,
                 uuid = controlEntity.uuid,
-                preSharedKey = controlEntity.preSharedKey
+                preSharedKey = controlEntity.preSharedKey,
+                isActive = controlEntity.isActive,
+                cookie = controlEntity.cookie,
+                systemModel = controlEntity.systemModel,
+                systemName = controlEntity.systemName,
+                systemMacAddr = controlEntity.systemMacAddr,
+                systemProduct = controlEntity.systemProduct,
+                systemWolMode = controlEntity.systemWolMode,
+                sourceList = controlEntity.sourceList,
+                commandList = controlEntity.commandMap
             )
-            sonyControl.isActive = controlEntity.isActive
-            sonyControl.cookie = controlEntity.cookie
-            sonyControl.systemModel = controlEntity.systemModel
-            sonyControl.systemName = controlEntity.systemName
-            sonyControl.systemMacAddr = controlEntity.systemMacAddr
-            sonyControl.systemProduct = controlEntity.systemProduct
-            sonyControl.systemWolMode = controlEntity.systemWolMode
-            sonyControl.sourceList = controlEntity.sourceList
-            sonyControl.commandList = controlEntity.commandMap
             return sonyControl
         }
         return SonyControl()

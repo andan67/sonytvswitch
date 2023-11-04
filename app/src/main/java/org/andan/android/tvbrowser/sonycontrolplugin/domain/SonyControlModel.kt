@@ -7,6 +7,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashMap
+import kotlin.random.Random
 
 data class SonyControls(
     val controls: MutableList<SonyControl> = ArrayList(),
@@ -22,11 +23,25 @@ data class SonyControls(
 }
 
 data class SonyControl(
-    var ip: String = "",
-    var nickname: String = "",
-    var devicename: String= "",
-    var preSharedKey: String = "",
-    val uuid: String = java.util.UUID.randomUUID().toString()
+    val ip: String = "",
+    val nickname: String = "",
+    val devicename: String= "",
+    val preSharedKey: String = "",
+    val uuid: String = java.util.UUID.randomUUID().toString(),
+    val cookie: String = "",
+    @Transient
+    val isActive: Boolean = false,
+    @SerializedName(value = "channelList", alternate = ["programList"])
+    val channelList: List<SonyChannel> = listOf(),
+    @SerializedName(value = "channelMap", alternate = ["channelProgramMap"])
+    val channelMap: Map<String, String> = mapOf(),
+    val sourceList: List<String> = listOf(),
+    val commandList: Map<String, String> = mapOf(),
+    val systemModel: String = "",
+    val systemName: String = "",
+    val systemProduct: String = "",
+    val systemMacAddr: String = "",
+    val systemWolMode: Boolean = true
 ) {
 
     companion object {
@@ -35,67 +50,26 @@ data class SonyControl(
         const val PAGE_SIZE = 50
     }
 
-
-    @SerializedName(value = "channelList", alternate = ["programList"])
-    var channelList: List<SonyChannel> = listOf()
-        set(value) {
-            _uriSonyChannelMap = LinkedHashMap()
-            field = value
-        }
-
-    var cookie = ""
-    var sourceList: List<String> = listOf()
-    var systemModel = ""
-    var systemName = ""
-    var systemProduct = ""
-    var systemMacAddr = ""
-    var systemWolMode = true
-    var commandList: Map<String, String> = mapOf()
-
-    @Transient
-    var isActive = false
-
-    
     @Transient
     private var _uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
 
-/*    @Transient
+    //@Transient
     val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> by lazy {
-        val _uriSonyChannelMap = LinkedHashMap()
-        if (_uriSonyChannelMap .isEmpty()) {
+        val uriMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
+        if (uriMap.isEmpty()) {
             for (channel in channelList) {
-                _uriSonyChannelMap[channel.uri] = channel
+                uriMap[channel.uri] = channel
             }
         }
-        _uriSonyChannelMap
-
-    }*/
-
-    @Transient
-    val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
-        get() {
-            // lazy construction
-            if (_uriSonyChannelMap .isEmpty()) {
-                for (channel in channelList) {
-                    _uriSonyChannelMap[channel.uri] = channel
-                }
-            }
-            // This is a workaround to allow transient annotation (why?)
-            // Note that field as implicit backing field is null, so explicit backing value is returned
-            return field
-        }
-
-    @SerializedName(value = "channelMap", alternate = ["channelProgramMap"])
-    var channelMap: Map<String, String> = mapOf()
+        uriMap
+    }
 
     override fun toString(): String {
         return "$nickname ($devicename)"
     }
-
 }
-
 data class SonyChannel(
-    var source: String,
+    val source: String,
     val dispNumber: String,
     val index: Int,
     val mediaType: String,

@@ -79,7 +79,7 @@ class ControlPreferenceStore @Inject constructor(@ApplicationContext private val
             if (uuid !in controlUuids.keys) {
                 tokenStoreEditor.remove(uuid)
             } else {
-                controlUuids[uuid]!!.cookie = tokenEntry.value as String
+                //controlUuids[uuid]!!.cookie = tokenEntry.value as String
             }
         }
         tokenStoreEditor.commit()

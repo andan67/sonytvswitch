@@ -12,7 +12,7 @@ object ChannelNameFuzzyMatch {
     private val toStringFunction: ToStringFunction<String> =
         NormalizeString()
 
-    fun matchTop(
+   suspend fun matchTop(
         channelName: String,
         channelNameList: List<String>,
         ntop: Int,
@@ -68,7 +68,7 @@ object ChannelNameFuzzyMatch {
         return topChannelNameToChannelNameListMatchIndexSet
     }
 
-    fun matchOne(
+    suspend fun matchOne(
         channelName: String,
         channelNameList: List<String>,
         regExMatch: Boolean

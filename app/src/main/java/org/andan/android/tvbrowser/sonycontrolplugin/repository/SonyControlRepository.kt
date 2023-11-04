@@ -6,6 +6,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
@@ -42,6 +45,7 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.SocketTimeoutException
+import java.util.UUID
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -63,11 +67,8 @@ SonyControlRepository @Inject constructor(
     val activeSonyControlWithChannels: Flow<SonyControl>
         = controlDao.getActiveControlWithChannels().map { entity  ->
         val control = sonyControlDataMapper.mapControlEntity2Domain(entity)
-        // lazy creation of uriSonyChannelMap
-        control.uriSonyChannelMap
-        Timber.d("activeSonyControlWithChannels  ${control.channelMap["3sat"]} ${control.uriSonyChannelMap}")
-        control
-        }
+        //Timber.d("control.channelMap[ARD-alpha]:${control.nickname} ${control.channelMap["ARD-alpha"]}")
+        control}
     val sonyControls: Flow<List<SonyControl>> =
         controlDao.getControls().map { entityList -> entityList.map { entityElement -> sonyControlDataMapper.mapControlEntity2Domain(entityElement)  } }
     //else entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
@@ -164,7 +165,7 @@ SonyControlRepository @Inject constructor(
                     JsonRpcRequest.getWolMode()
                 )
             if (resource.status == Status.SUCCESS) {
-                control.systemWolMode = resource.data!!.enabled
+                //control.systemWolMode = resource.data!!.enabled
                 saveControls(true)
             } else {
                 //_responseMessage.postValue(Event(resource.message))
@@ -194,7 +195,7 @@ SonyControlRepository @Inject constructor(
             )
             Timber.d("remoteControllerInfo(): ${control.toString()}")
             if (resource.status == Status.SUCCESS) {
-                control.commandList = LinkedHashMap()
+                //control.commandList = LinkedHashMap()
                 for (remoteControllerInfoItem in resource.data!!) {
 /*                    control.commandList[remoteControllerInfoItem.name] =
                         remoteControllerInfoItem.value*/
@@ -214,10 +215,10 @@ SonyControlRepository @Inject constructor(
             )
             Timber.d("remoteControllerInfo(): ${control.toString()}")
             if (resource.status == Status.SUCCESS) {
-                control.systemName = resource.data!!.name
-                control.systemProduct = resource.data!!.product
-                control.systemModel = resource.data!!.model
-                control.systemMacAddr = resource.data!!.macAddr
+//                control.systemName = resource.data!!.name
+//                control.systemProduct = resource.data!!.product
+//                control.systemModel = resource.data!!.model
+//                control.systemMacAddr = resource.data!!.macAddr
                 saveControls(true)
             } else {
                 //_responseMessage.postValue(Event(resource.message))
@@ -324,7 +325,7 @@ SonyControlRepository @Inject constructor(
                         return false
                     }
                 }
-                control.channelList = channelList.toImmutableList()
+                //control.channelList = channelList.toImmutableList()
                 saveControls(true)
                 //_responseMessage.postValue(Event("Fetched ${control.channelList.size} channels from TV"))
                 Timber.d("fetchChannelList(): ${control.channelList.size}")
@@ -361,7 +362,8 @@ SonyControlRepository @Inject constructor(
                         && !sonyChannelResponse.title.contains("TEST")
                     ) {
                         val sonyChannel = sonyChannelResponse.asDomainModel()
-                        sonyChannel.source = source
+                        //
+                        // sonyChannel.source = source
                         plist.add(sonyChannel)
                     }
                 }

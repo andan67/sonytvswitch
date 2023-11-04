@@ -29,8 +29,10 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
     val filteredChannelList =
         activeControlFlow.combine(filterFlow.
         debounce(500)) { activeControl, filter ->
+            Timber.d("filteredChannelList")
             activeControl.channelList.filter { channel ->
                 channel.title.contains(filter, true)
             }
+
         }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
 }

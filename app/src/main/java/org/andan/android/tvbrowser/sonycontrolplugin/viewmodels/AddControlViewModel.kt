@@ -69,7 +69,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                         //isHostAvailable = true
                         status = AddControlStatus.REGISTER
                     )
-                    addedControl.ip = host
+                    addedControl = addedControl.copy(ip = host)
                 }
                 is Resource.Error -> {
                     uiState = uiState.copy(
@@ -92,9 +92,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
         if (status < AddControlStatus.REGISTER) {
             return
         }
-        addedControl.nickname = nickname
-        addedControl.devicename = devicename
-        addedControl.preSharedKey = preSharedKey
+        addedControl = SonyControl(nickname = nickname, devicename = devicename, preSharedKey = preSharedKey)
         _addControlUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val registrationStatus = sonyControlRepository.registerControl(addedControl, challengeCode)
