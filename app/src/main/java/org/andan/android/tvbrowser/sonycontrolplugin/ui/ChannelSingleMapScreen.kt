@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -41,71 +42,52 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
 import timber.log.Timber
 
 @Composable
-fun ChannelMapScreen(
+fun ChannelSingleMapScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    navController: NavController,
-    onMapClick: (String) -> Unit,
-    viewModel: ChannelMapViewModel = hiltViewModel(),
-    openDrawer: () -> Unit
+    viewModel: ChannelMapViewModel,
+    channelKey: String = ""
 ) {
-    //val viewModel: ChannelMapViewModel = hiltViewModel()
-    val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
-    //val navController = rememberNavController()
-    //val onClick = remember(navController) {{ s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))}}
-    //val onClick = onMapClick
-    val onClick = remember(navActions) {{s: String -> navActions.navigateToChannelSingleMap(s)}}
-    //val onClick = { s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))}
-    var searchText by rememberSaveable { mutableStateOf("") }
+    //val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
 
-    Timber.d("ChannelMapScreen")
+    //var searchText by rememberSaveable { mutableStateOf("") }
+
+    Timber.d("ChannelSingleMapScreen")
 
     Scaffold(
         topBar = {
-            ChannelMapTopAppBar(
-                openDrawer = { openDrawer() },
-                searchText = searchText,
+            ChannelSingleMapTopAppBar(
+                navigateUp = { navActions.navigateUp() },
+                searchText = "searchText",
                 onSearchTextChanged = {
-                    searchText = it
-                    viewModel.filter = it
-                },
-                onMatchChannels = { viewModel.matchChannels() },
-                onClearMatches = { viewModel.clearChannelMatches() }
+                    //searchText = it
+                    //viewModel.filter = it
+                }
+                //onSingleMatchChannel = { viewModel.matchSingleChannel() },
+                //onClearMatch = { viewModel.clearChannelMatch() }
             )
         },
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
+        Text(modifier = Modifier.padding(innerPadding), text = channelKey)
         Column(modifier = Modifier.padding(innerPadding)) {
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = navActions.navigateToChannelSingleMap())
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = {channelKey: String -> navActions.navigateToChannelSingleMap(channelKey)})
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = { s -> Timber.d(s)})
-            /*ChannelMapContent(
-                channelMapState = channelMapState,
-                onChannelClick = {channelKey: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))})*/
-            ChannelMapContent(channelMapState = channelMapState, onChannelClick = onClick)
-            //ChannelMapContent(onChannelClick = onMapClick)
-        }
+                    ChannelSingleMapContent(channelKey = channelKey)}
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChannelMapTopAppBar(
-    openDrawer: () -> Unit,
+private fun ChannelSingleMapTopAppBar(
+    navigateUp: () -> Unit,
     searchText: String,
-    onSearchTextChanged: (String) -> Unit = {},
-    onMatchChannels: () -> Unit,
-    onClearMatches: () -> Unit
+    onSearchTextChanged: (String) -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
@@ -116,10 +98,10 @@ private fun ChannelMapTopAppBar(
         }
     }
 
-    TopAppBar(title = { Text(text = stringResource(id = R.string.menu_channel_map)) },
+    TopAppBar(title = { Text(text = stringResource(id = R.string.menu_match_single_channel)) },
         navigationIcon = {
-            IconButton(onClick = openDrawer) {
-                Icon(Icons.Filled.Menu, stringResource(id = R.string.open_drawer))
+            IconButton(onClick = navigateUp) {
+                Icon(Icons.Filled.ArrowBack, null)
             }
         },
         actions = {
@@ -144,26 +126,26 @@ private fun ChannelMapTopAppBar(
                     )
                 }
             }
-            ChannelMapMenu(onMatchChannels, onClearMatches)
+            //ChannelMapMenu(onMatchChannels, onClearMatches)
         })
 }
 
 @Composable
-private fun ChannelMapContent(
-    channelMapState: State<Map<String, SonyChannel?>>,
-    onChannelClick: (String) -> Unit
+private fun ChannelSingleMapContent(
+    channelKey: String
 ) {
-    Timber.d("ChannelMapContent")
-    LazyColumn() {
-        itemsIndexed(channelMapState.value.keys.toList()) { index, channelName ->
+    Timber.d("ChannelSingleMapContent")
+    Text(channelKey)
+    /*LazyColumn() {
+        itemsIndexed(channelMapState.value.keys.toList()) {index,  channelName ->
             ChannelMapItem(
-                index + 1,
+                index + 1 ,
                 tvbChannelName = channelName,
                 channel = channelMapState.value[channelName],
-                onChannelClick = { channelKey: String -> Timber.d("channelKey: $channelKey"); onChannelClick(channelKey) }
+                onclick = { Timber.d("Clicked: $channelName") }
             )
         }
-    }
+    }*/
 }
 
 
@@ -173,13 +155,13 @@ private fun ChannelMapItem(
     index: Int,
     tvbChannelName: String,
     channel: SonyChannel?,
-    onChannelClick: (String) -> Unit
+    onclick: () -> Unit
 )
 {
     Row(
         modifier = Modifier
             //.fillMaxWidth()
-            .clickable { onChannelClick(tvbChannelName) }) {
+            .clickable { onclick() }) {
         Column {
             Text(
                 modifier = Modifier
@@ -199,6 +181,7 @@ private fun ChannelMapItem(
             )
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
                 verticalAlignment = Alignment.CenterVertically) {
+            //Row {
                 Icon(
                     modifier = Modifier
                         .padding(end = 8.dp)

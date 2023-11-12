@@ -7,6 +7,7 @@ enum class NavDestinations(
 ) {
     ChannelList(route = "channel_list"),
     ChannelMap(route = "channel_map"),
+    ChannelSingleMap(route = "channel_single_map/{channelKey}"),
     PlayingContentInfoDetails(route = "playing_content_info_details"),
     RemoteControl(route = "remote_control"),
     AddControl(route = "add_control"),
@@ -19,8 +20,6 @@ enum class NavDestinations(
  */
 class NavigationActions(private val navController: NavHostController) {
 
-    val navHostController:  NavHostController = navController
-
     fun navigateToChannelList() {
         navController.navigate(NavDestinations.ChannelList.route)
     }
@@ -28,6 +27,11 @@ class NavigationActions(private val navController: NavHostController) {
     fun navigateToChannelMap() {
         navController.navigate(NavDestinations.ChannelMap.route)
     }
+
+    fun navigateToChannelSingleMap(channelKey: String) {
+        navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))
+    }
+
     fun navigateToPlayingContentInfoDetails() {
         navController.navigate(NavDestinations.PlayingContentInfoDetails.route)
     }

@@ -160,4 +160,5 @@
     <string name="add_control_specify_host_title">Specify host address of control</string>
     <string name="add_control_host_invalid">Host address not valid</string>
     <string name="playing_content_screen_title">Current program</string>
+    <string name="menu_match_single_channel">Map single channel</string>
 </resources>

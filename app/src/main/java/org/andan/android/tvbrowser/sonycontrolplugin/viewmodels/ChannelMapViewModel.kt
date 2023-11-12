@@ -21,6 +21,8 @@ data class ChannelMapUiState(
     val sonyControl: SonyControl? = null
 )
 
+
+
 @HiltViewModel
 class ChannelMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
     ViewModel() {
@@ -35,16 +37,13 @@ class ChannelMapViewModel @Inject constructor(private val sonyControlRepository:
 
     private val filterFlow = MutableStateFlow("")
 
-    private var controlChannelNames: MutableList<String> = ArrayList()
-
     var filter: String
         get() = filterFlow.value
         set(value) {
             filterFlow.value = value
         }
 
-    private val _filteredChannelMap = MutableStateFlow(emptyMap<String, SonyChannel?>())
-
+    private var controlChannelNames: MutableList<String> = ArrayList()
 
     val filteredChannelMap =
         activeControlStateFlow.combine(filterFlow.

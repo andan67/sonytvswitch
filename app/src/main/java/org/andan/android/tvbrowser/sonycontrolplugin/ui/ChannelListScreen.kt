@@ -54,6 +54,8 @@ fun ChannelListScreen(
         viewModel.fetchPlayingContentInfo()
     }*/
 
+    Timber.d("ChannelListScreen")
+
     Scaffold(
         topBar = {
             ChannelTopAppBar(
@@ -220,6 +222,7 @@ fun SearchTextField(modifier: Modifier,
 private fun ChannelListContent(
     channelListState: State<List<SonyChannel>>
 ) {
+    Timber.d("ChannelListContent")
     LazyColumn() {
         items(channelListState.value) { channel ->
             ChannelItem(

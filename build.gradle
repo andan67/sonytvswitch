@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        kotlinVersion = '1.9.10'
+        kotlinVersion = '1.9.20'
         ktlintVersion = '0.44.0'
 
         // Sdk and tools
@@ -25,7 +25,7 @@ buildscript {
 plugins {
     id 'com.google.dagger.hilt.android' version '2.48.1' apply false
     id 'com.autonomousapps.dependency-analysis' version "1.19.0"
-    id("com.google.devtools.ksp") version '1.9.10-1.0.13' apply false
+    id("com.google.devtools.ksp") version '1.9.20-1.0.14' apply false
 }
 
 allprojects {

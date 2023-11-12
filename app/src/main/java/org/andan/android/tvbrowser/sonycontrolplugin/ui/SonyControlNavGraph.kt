@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -11,26 +12,26 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import timber.log.Timber
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SonyControlNavGraph(
-    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    navigationActions: NavigationActions = remember(navController) { NavigationActions(navController)},
+    navigationActions: NavigationActions = rememberSaveable(navController) { NavigationActions(navController)},
     openDrawer: () -> Unit = {},
     startDestination: String = NavDestinations.RemoteControl.route,
     viewModel: SonyControlViewModel = hiltViewModel()
 ) {
-
-    val selectedSonyControlState = viewModel.selectedSonyControl.observeAsState()
 
     val channelListViewModel: ChannelListViewModel = hiltViewModel()
     val channelMapViewModel: ChannelMapViewModel = hiltViewModel()
@@ -38,14 +39,25 @@ fun SonyControlNavGraph(
     NavHost(
         navController = navController,
         startDestination = NavDestinations.ChannelList.route,
-        modifier = modifier
     ) {
         composable(NavDestinations.ChannelList.route) {
             ChannelListScreen(navActions = navigationActions, viewModel = channelListViewModel, openDrawer = openDrawer)
         }
 
         composable(NavDestinations.ChannelMap.route) {
-            ChannelMapScreen(navActions = navigationActions, viewModel = channelMapViewModel, openDrawer = openDrawer)
+            ChannelMapScreen(
+                navActions = navigationActions,
+                navController = navController,
+                onMapClick =
+                //{ s: String -> Timber.d(s)},
+                 { s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))},
+                //viewModel = channelMapViewModel,
+                openDrawer = openDrawer)
+        }
+
+        composable(NavDestinations.ChannelSingleMap.route) {navBackStackEntry ->
+            val channelKey = navBackStackEntry.arguments?.getString("channelKey")
+            channelKey?.let { ChannelSingleMapScreen(navActions = navigationActions, viewModel = channelMapViewModel, channelKey = channelKey)}
         }
 
         composable(NavDestinations.RemoteControl.route) {
