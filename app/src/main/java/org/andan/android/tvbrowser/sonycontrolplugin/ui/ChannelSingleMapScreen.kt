@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
@@ -52,7 +53,7 @@ import timber.log.Timber
 fun ChannelSingleMapScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: ChannelMapViewModel,
+    viewModel: ChannelMapViewModel = hiltViewModel(),
     channelKey: String = ""
 ) {
     //val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()

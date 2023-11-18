@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
@@ -42,7 +43,7 @@ import timber.log.Timber
 fun ChannelListScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: ChannelListViewModel,
+    viewModel: ChannelListViewModel = hiltViewModel(),
     openDrawer: () -> Unit
 ) {
     val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()

@@ -33,31 +33,23 @@ fun SonyControlNavGraph(
     viewModel: SonyControlViewModel = hiltViewModel()
 ) {
 
-    val channelListViewModel: ChannelListViewModel = hiltViewModel()
-    val channelMapViewModel: ChannelMapViewModel = hiltViewModel()
-
     NavHost(
         navController = navController,
         startDestination = NavDestinations.ChannelList.route,
     ) {
         composable(NavDestinations.ChannelList.route) {
-            ChannelListScreen(navActions = navigationActions, viewModel = channelListViewModel, openDrawer = openDrawer)
+            ChannelListScreen(navActions = navigationActions, openDrawer = openDrawer)
         }
 
         composable(NavDestinations.ChannelMap.route) {
             ChannelMapScreen(
                 navActions = navigationActions,
-                navController = navController,
-                onMapClick =
-                //{ s: String -> Timber.d(s)},
-                 { s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))},
-                //viewModel = channelMapViewModel,
                 openDrawer = openDrawer)
         }
 
         composable(NavDestinations.ChannelSingleMap.route) {navBackStackEntry ->
             val channelKey = navBackStackEntry.arguments?.getString("channelKey")
-            channelKey?.let { ChannelSingleMapScreen(navActions = navigationActions, viewModel = channelMapViewModel, channelKey = channelKey)}
+            channelKey?.let { ChannelSingleMapScreen(navActions = navigationActions, channelKey = channelKey)}
         }
 
         composable(NavDestinations.RemoteControl.route) {

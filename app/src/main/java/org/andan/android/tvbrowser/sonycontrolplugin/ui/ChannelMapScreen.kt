@@ -5,12 +5,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -43,8 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
@@ -54,18 +49,12 @@ import timber.log.Timber
 fun ChannelMapScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    navController: NavController,
-    onMapClick: (String) -> Unit,
     viewModel: ChannelMapViewModel = hiltViewModel(),
     openDrawer: () -> Unit
 ) {
     //val viewModel: ChannelMapViewModel = hiltViewModel()
     val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
-    //val navController = rememberNavController()
-    //val onClick = remember(navController) {{ s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))}}
-    //val onClick = onMapClick
-    val onClick = remember(navActions) {{s: String -> navActions.navigateToChannelSingleMap(s)}}
-    //val onClick = { s: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}",s))}
+    val onMapItemClick = remember(navActions) {{ s: String -> navActions.navigateToChannelSingleMap(s)}}
     var searchText by rememberSaveable { mutableStateOf("") }
 
     Timber.d("ChannelMapScreen")
@@ -92,7 +81,7 @@ fun ChannelMapScreen(
             /*ChannelMapContent(
                 channelMapState = channelMapState,
                 onChannelClick = {channelKey: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))})*/
-            ChannelMapContent(channelMapState = channelMapState, onChannelClick = onClick)
+            ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
             //ChannelMapContent(onChannelClick = onMapClick)
         }
     }
