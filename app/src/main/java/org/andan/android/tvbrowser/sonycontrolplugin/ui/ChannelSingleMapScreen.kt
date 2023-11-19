@@ -47,18 +47,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelSingleMapViewModel
 import timber.log.Timber
 
 @Composable
 fun ChannelSingleMapScreen(
     modifier: Modifier = Modifier,
     navActions: NavigationActions,
-    viewModel: ChannelMapViewModel = hiltViewModel(),
+    viewModel: ChannelSingleMapViewModel = hiltViewModel(),
     channelKey: String = ""
 ) {
     //val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
 
     //var searchText by rememberSaveable { mutableStateOf("") }
+
+    val uiState by viewModel.channelSingleMapUiState.collectAsStateWithLifecycle()
 
     Timber.d("ChannelSingleMapScreen")
 
@@ -77,9 +80,8 @@ fun ChannelSingleMapScreen(
         },
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
-        Text(modifier = Modifier.padding(innerPadding), text = channelKey)
         Column(modifier = Modifier.padding(innerPadding)) {
-                    ChannelSingleMapContent(channelKey = channelKey)}
+                    ChannelSingleMapContent(channelMapItem = uiState.channelMapItem)}
     }
 }
 
@@ -133,27 +135,22 @@ private fun ChannelSingleMapTopAppBar(
 
 @Composable
 private fun ChannelSingleMapContent(
-    channelKey: String
+    channelMapItem: Pair<String, SonyChannel?>?
 ) {
-    Timber.d("ChannelSingleMapContent")
-    Text(channelKey)
-    /*LazyColumn() {
-        itemsIndexed(channelMapState.value.keys.toList()) {index,  channelName ->
-            ChannelMapItem(
-                index + 1 ,
-                tvbChannelName = channelName,
-                channel = channelMapState.value[channelName],
-                onclick = { Timber.d("Clicked: $channelName") }
-            )
-        }
-    }*/
+    if(channelMapItem != null) {
+        ChannelSingleMapItem(
+            tvbChannelName = channelMapItem.first,
+            channel = channelMapItem.second,
+            onclick = {} )
+    }
+
 }
 
 
 
 @Composable
-private fun ChannelMapItem(
-    index: Int,
+private fun ChannelSingleMapItem(
+    index: Int = -1,
     tvbChannelName: String,
     channel: SonyChannel?,
     onclick: () -> Unit
@@ -169,7 +166,7 @@ private fun ChannelMapItem(
                     .padding(start = 16.dp, end = 8.dp)
                     .width(56.dp),
                 style = MaterialTheme.typography.titleLarge,
-                text = index.toString(),
+                text = if (index >=0) index.toString() else "",
                 textAlign = TextAlign.Right
             )
         }

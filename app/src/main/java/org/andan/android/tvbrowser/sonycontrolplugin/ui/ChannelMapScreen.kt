@@ -75,14 +75,7 @@ fun ChannelMapScreen(
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = navActions.navigateToChannelSingleMap())
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = {channelKey: String -> navActions.navigateToChannelSingleMap(channelKey)})
-            //ChannelMapContent(channelMapState = channelMapState, onChannelClick = { s -> Timber.d(s)})
-            /*ChannelMapContent(
-                channelMapState = channelMapState,
-                onChannelClick = {channelKey: String -> navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))})*/
             ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
-            //ChannelMapContent(onChannelClick = onMapClick)
         }
     }
 }
