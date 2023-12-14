@@ -48,7 +48,7 @@
     <string name="enable_wol_action">Enable Wake-on-LAN</string>
     <string name="check_set_host">Check connectivity</string>
 
-    <string name="channel_map_select_channel_text">Best matches, click item to change mapping</string>
+    <string name="channel_map_select_channel_text">Click item to change mapping.</string>
     <string name="dialog_ok">OK</string>
     <string name="menu_search">Search</string>
     <string name="menu_match_channels">Match with TV channels</string>

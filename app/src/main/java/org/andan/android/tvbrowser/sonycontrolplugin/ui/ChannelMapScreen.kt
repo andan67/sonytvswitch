@@ -163,27 +163,35 @@ private fun ChannelMapItem(
             //.fillMaxWidth()
             .clickable { onChannelClick(tvbChannelName) }) {
         Column {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 8.dp)
-                    .width(56.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = index.toString(),
-                textAlign = TextAlign.Right
-            )
-        }
-        Column() {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 0.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = tvbChannelName
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 8.dp)
+                        .width(56.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    text = index.toString(),
+                    textAlign = TextAlign.Right
+                )
+/*                Icon(
+                    modifier = Modifier
+                        .padding(end = 8.dp )
+                        .width(24.dp),
+                    painter = painterResource(id = R.drawable.tvb_2),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )*/
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 0.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    text = tvbChannelName
+                )
+            }
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
                 verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     modifier = Modifier
-                        .padding(end = 8.dp)
+                        .padding(end = 8.dp, start =52.dp )
                         .width(20.dp),
                     painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
@@ -205,7 +213,7 @@ private fun ChannelMapItem(
                     )
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = channel.source,
+                        text = channel.shortSource,
                         color = MaterialTheme.colorScheme.secondary
                     )
                 } else {

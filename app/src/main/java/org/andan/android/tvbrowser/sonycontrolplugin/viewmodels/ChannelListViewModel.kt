@@ -20,6 +20,8 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
 
     private val filterFlow = MutableStateFlow("")
 
+    private val mappedChannels = HashMap<String, String>();
+
     var filter: String
         get() = filterFlow.value
         set(value) {
@@ -32,7 +34,9 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
             Timber.d("filteredChannelList")
             activeControl.channelList.filter { channel ->
                 channel.title.contains(filter, true)
-            }
+            }.map {sonyChannel -> Pair(sonyChannel,activeControl.channelReverseMap[sonyChannel.uri])}
 
         }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
+
+
 }

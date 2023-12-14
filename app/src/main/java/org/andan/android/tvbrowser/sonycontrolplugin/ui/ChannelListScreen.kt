@@ -47,6 +47,7 @@ fun ChannelListScreen(
     openDrawer: () -> Unit
 ) {
     val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
+
     /*val playingContentInfoState =
         viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())*/
     var searchText by rememberSaveable { mutableStateOf("") }
@@ -221,13 +222,14 @@ fun SearchTextField(modifier: Modifier,
 
 @Composable
 private fun ChannelListContent(
-    channelListState: State<List<SonyChannel>>
+    channelListState: State<List<Pair<SonyChannel, String?>>>
 ) {
     Timber.d("ChannelListContent")
     LazyColumn() {
         items(channelListState.value) { channel ->
             ChannelItem(
-                channel = channel,
+                channel = channel.first,
+                tvbChannelTitle = channel.second,
                 onclick = { Timber.d("Clicked: $it") }
             )
         }
@@ -304,7 +306,7 @@ fun PlayingContentInfoHeaderContent(playingContentInfoState: State<PlayingConten
 
 
 @Composable
-fun ChannelItem(channel: SonyChannel, onclick: (SonyChannel) -> Unit) {
+private fun ChannelItem(channel: SonyChannel, tvbChannelTitle: String?, onclick: (SonyChannel) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -327,7 +329,7 @@ fun ChannelItem(channel: SonyChannel, onclick: (SonyChannel) -> Unit) {
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(end = 8.dp).width(20.dp),
                     painter = painterResource(id = R.drawable.ic_input),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
@@ -337,6 +339,19 @@ fun ChannelItem(channel: SonyChannel, onclick: (SonyChannel) -> Unit) {
                     text = channel.shortSource,
                     color = MaterialTheme.colorScheme.secondary
                 )
+                if(tvbChannelTitle != null) {
+                    Icon(
+                        modifier = Modifier.padding(horizontal = 8.dp).width(20.dp),
+                        painter = painterResource(id = R.drawable.tvb_2),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        style = MaterialTheme.typography.titleMedium,
+                        text = tvbChannelTitle,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         }
     }

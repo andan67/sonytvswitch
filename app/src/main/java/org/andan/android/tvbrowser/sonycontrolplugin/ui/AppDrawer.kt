@@ -89,7 +89,7 @@ fun AppDrawer(
                 label = { Text(stringResource(id = R.string.menu_channel_map)) },
                 icon = {
                     Icon(
-                        painterResource(id = R.drawable.ic_action_arrow_right),
+                        painterResource(id = R.drawable.tvb_2),
                         null,
                         modifier = Modifier.width(24.dp)
                     )

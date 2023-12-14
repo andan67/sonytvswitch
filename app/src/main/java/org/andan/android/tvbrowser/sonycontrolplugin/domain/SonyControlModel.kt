@@ -6,6 +6,7 @@ import java.net.URLDecoder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 import kotlin.random.Random
 
@@ -63,6 +64,21 @@ data class SonyControl(
         }
         uriMap
     }
+
+    val channelReverseMap: Map<String, String> by lazy {
+        channelMap.map{ (k, v) -> v to k }.toMap()
+    }
+
+    val sonyChannelTitleList: List<String> by lazy {
+        val titleList: MutableList<String> = ArrayList()
+        if (titleList.isEmpty()) {
+            for (channel in channelList) {
+                titleList.add(channel.title)
+            }
+        }
+        titleList
+    }
+
 
     override fun toString(): String {
         return "$nickname ($devicename)"

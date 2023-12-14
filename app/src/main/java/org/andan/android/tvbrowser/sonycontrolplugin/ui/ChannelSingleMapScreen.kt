@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,7 +48,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelMapViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelSingleMapViewModel
 import timber.log.Timber
 
@@ -57,9 +58,9 @@ fun ChannelSingleMapScreen(
     viewModel: ChannelSingleMapViewModel = hiltViewModel(),
     channelKey: String = ""
 ) {
-    //val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
+    val matchedChannelsState = viewModel.matchedChannels.collectAsStateWithLifecycle()
 
-    //var searchText by rememberSaveable { mutableStateOf("") }
+    var searchText by rememberSaveable { mutableStateOf("") }
 
     val uiState by viewModel.channelSingleMapUiState.collectAsStateWithLifecycle()
 
@@ -69,10 +70,10 @@ fun ChannelSingleMapScreen(
         topBar = {
             ChannelSingleMapTopAppBar(
                 navigateUp = { navActions.navigateUp() },
-                searchText = "searchText",
+                searchText = searchText,
                 onSearchTextChanged = {
-                    //searchText = it
-                    //viewModel.filter = it
+                    searchText = it
+                    viewModel.filter = it
                 }
                 //onSingleMatchChannel = { viewModel.matchSingleChannel() },
                 //onClearMatch = { viewModel.clearChannelMatch() }
@@ -81,7 +82,15 @@ fun ChannelSingleMapScreen(
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-                    ChannelSingleMapContent(channelMapItem = uiState.channelMapItem)}
+            ChannelSingleMapContent(
+                channelMapItem = uiState.channelMapItem,
+                matchedChannelsState = matchedChannelsState,
+                onChannelClick = { channel: SonyChannel? ->
+                    Timber.d("Clicked: ${channel?.title ?: ""}");
+                    viewModel.saveNewMap(channel)
+                }
+            )
+        }
     }
 }
 
@@ -96,7 +105,7 @@ private fun ChannelSingleMapTopAppBar(
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if(searchIsActive) {
+        if (searchIsActive) {
             focusRequester.requestFocus()
         }
     }
@@ -108,7 +117,7 @@ private fun ChannelSingleMapTopAppBar(
             }
         },
         actions = {
-            if(searchIsActive) {
+            if (searchIsActive) {
                 SearchTextField(
                     modifier = Modifier
                         //.padding(start = 48.dp)
@@ -135,86 +144,128 @@ private fun ChannelSingleMapTopAppBar(
 
 @Composable
 private fun ChannelSingleMapContent(
-    channelMapItem: Pair<String, SonyChannel?>?
+    channelMapItem: Pair<String, SonyChannel?>?,
+    matchedChannelsState: State<List<SonyChannel?>>,
+    onChannelClick: (SonyChannel?) -> Unit
 ) {
-    if(channelMapItem != null) {
-        ChannelSingleMapItem(
-            tvbChannelName = channelMapItem.first,
-            channel = channelMapItem.second,
-            onclick = {} )
+    if (channelMapItem != null) {
+        Column {
+            ChannelSingleMapItem(
+                tvbChannelName = channelMapItem.first,
+                channel = channelMapItem.second,
+                onChannelClick = {})
+            Text(
+                modifier = Modifier
+                    .padding(all = 4.dp),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                text = stringResource(id = R.string.channel_map_select_channel_text),
+            )
+            Divider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
+            LazyColumn() {
+                itemsIndexed(matchedChannelsState.value) { index, channel ->
+                    ChannelMatchItem(
+                        index = index + 1,
+                        channel = channel,
+                        onChannelClick = onChannelClick
+                    )
+                }
+            }
+        }
     }
 
 }
 
 
-
 @Composable
 private fun ChannelSingleMapItem(
-    index: Int = -1,
     tvbChannelName: String,
     channel: SonyChannel?,
-    onclick: () -> Unit
-)
-{
+    onChannelClick: (SonyChannel?) -> Unit
+) {
+    Row() {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 48.dp, end = 8.dp)
+                        .width(24.dp),
+                    painter = painterResource(id = R.drawable.tvb_2),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 0.dp),
+                    style = MaterialTheme.typography.titleLarge,
+                    text = tvbChannelName
+                )
+            }
+            Row {
+                ChannelMatchItem(channel = channel, onChannelClick = onChannelClick)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChannelMatchItem(
+    index: Int = -1,
+    channel: SonyChannel?,
+    onChannelClick: (SonyChannel?) -> Unit
+) {
     Row(
         modifier = Modifier
-            //.fillMaxWidth()
-            .clickable { onclick() }) {
-        Column {
+            .horizontalScroll(rememberScrollState())
+            .clickable { onChannelClick(channel) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        //Row {
+        if (index >= 0) {
             Text(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 8.dp)
                     .width(56.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = if (index >=0) index.toString() else "",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                text = if (index >= 0) index.toString() else "",
                 textAlign = TextAlign.Right
             )
-        }
-        Column() {
-            Text(
+        } else {
+            Icon(
                 modifier = Modifier
-                    .padding(horizontal = 0.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = tvbChannelName
+                    .padding(start = 52.dp, end = 8.dp)
+                    .width(20.dp),
+                painter = painterResource(id = R.drawable.baseline_tv_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
             )
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
-                verticalAlignment = Alignment.CenterVertically) {
-            //Row {
-                Icon(
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .width(20.dp),
-                    painter = painterResource(id = R.drawable.baseline_tv_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-                if(channel != null) {
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = channel.title,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                    Icon(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .width(20.dp),
-                        painter = painterResource(id = R.drawable.ic_action_input),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = channel.source,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                } else {
-                    Text(
-                        style = MaterialTheme.typography.titleMedium,
-                        text = "--unmapped--",
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            }
+        }
+        if (channel != null) {
+            Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = channel.title,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Icon(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .width(20.dp),
+                painter = painterResource(id = R.drawable.ic_action_input),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = channel.shortSource,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        } else {
+            Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = "--unmapped--",
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }
