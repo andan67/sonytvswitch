@@ -54,7 +54,8 @@ fun ChannelMapScreen(
 ) {
     //val viewModel: ChannelMapViewModel = hiltViewModel()
     val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
-    val onMapItemClick = remember(navActions) {{ s: String -> navActions.navigateToChannelSingleMap(s)}}
+    val onMapItemClick =
+        remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
     var searchText by rememberSaveable { mutableStateOf("") }
 
     Timber.d("ChannelMapScreen")
@@ -93,7 +94,7 @@ private fun ChannelMapTopAppBar(
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if(searchIsActive) {
+        if (searchIsActive) {
             focusRequester.requestFocus()
         }
     }
@@ -105,7 +106,7 @@ private fun ChannelMapTopAppBar(
             }
         },
         actions = {
-            if(searchIsActive) {
+            if (searchIsActive) {
                 SearchTextField(
                     modifier = Modifier
                         //.padding(start = 48.dp)
@@ -142,12 +143,15 @@ private fun ChannelMapContent(
                 index + 1,
                 tvbChannelName = channelName,
                 channel = channelMapState.value[channelName],
-                onChannelClick = { channelKey: String -> Timber.d("channelKey: $channelKey"); onChannelClick(channelKey) }
+                onChannelClick = { channelKey: String ->
+                    Timber.d("channelKey: $channelKey"); onChannelClick(
+                    channelKey
+                )
+                }
             )
         }
     }
 }
-
 
 
 @Composable
@@ -156,8 +160,7 @@ private fun ChannelMapItem(
     tvbChannelName: String,
     channel: SonyChannel?,
     onChannelClick: (String) -> Unit
-)
-{
+) {
     Row(
         modifier = Modifier
             //.fillMaxWidth()
@@ -172,14 +175,14 @@ private fun ChannelMapItem(
                     text = index.toString(),
                     textAlign = TextAlign.Right
                 )
-/*                Icon(
-                    modifier = Modifier
-                        .padding(end = 8.dp )
-                        .width(24.dp),
-                    painter = painterResource(id = R.drawable.tvb_2),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )*/
+                /*                Icon(
+                                    modifier = Modifier
+                                        .padding(end = 8.dp )
+                                        .width(24.dp),
+                                    painter = painterResource(id = R.drawable.tvb_2),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )*/
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 0.dp),
@@ -187,17 +190,19 @@ private fun ChannelMapItem(
                     text = tvbChannelName
                 )
             }
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState()),
-                verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     modifier = Modifier
-                        .padding(end = 8.dp, start =52.dp )
+                        .padding(end = 8.dp, start = 52.dp)
                         .width(20.dp),
                     painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
                 )
-                if(channel != null) {
+                if (channel != null) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
                         text = channel.title,

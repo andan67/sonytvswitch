@@ -5,14 +5,14 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 import me.xdrop.fuzzywuzzy.ToStringFunction
 import me.xdrop.fuzzywuzzy.algorithms.TokenSet
 import me.xdrop.fuzzywuzzy.model.BoundExtractedResult
-import java.util.*
+import java.util.Collections
 
 object ChannelNameFuzzyMatch {
     private val tokenSet: Applicable = TokenSet()
     private val toStringFunction: ToStringFunction<String> =
         NormalizeString()
 
-   fun matchTop(
+    fun matchTop(
         channelName: String,
         channelNameList: List<String>,
         ntop: Int,

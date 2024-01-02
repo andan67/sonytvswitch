@@ -5,10 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.net.URLDecoder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-import kotlin.random.Random
+import java.util.Calendar
 
 data class SonyControls(
     val controls: MutableList<SonyControl> = ArrayList(),
@@ -26,7 +23,7 @@ data class SonyControls(
 data class SonyControl(
     val ip: String = "",
     val nickname: String = "",
-    val devicename: String= "",
+    val devicename: String = "",
     val preSharedKey: String = "",
     val uuid: String = java.util.UUID.randomUUID().toString(),
     val cookie: String = "",
@@ -66,7 +63,7 @@ data class SonyControl(
     }
 
     val channelReverseMap: Map<String, String> by lazy {
-        channelMap.map{ (k, v) -> v to k }.toMap()
+        channelMap.map { (k, v) -> v to k }.toMap()
     }
 
     val sonyChannelTitleList: List<String> by lazy {
@@ -84,6 +81,7 @@ data class SonyControl(
         return "$nickname ($devicename)"
     }
 }
+
 data class SonyChannel(
     val source: String,
     val dispNumber: String,
@@ -93,7 +91,7 @@ data class SonyChannel(
     val uri: String
 ) {
 
-     companion object {
+    companion object {
         fun <T> fromUri(uri: String): SonyChannel {
             // example uri"tv:dvbs?trip=d1.1107.17500&srvName=dSAT.1"
             return SonyChannel(

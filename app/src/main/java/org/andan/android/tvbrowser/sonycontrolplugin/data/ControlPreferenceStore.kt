@@ -11,7 +11,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ControlPreferenceStore @Inject constructor(@ApplicationContext private val context:Context) : ControlsStore, TokenStore {
+class ControlPreferenceStore @Inject constructor(@ApplicationContext private val context: Context) :
+    ControlsStore, TokenStore {
     private var controlsPreferences: SharedPreferences = context.getSharedPreferences(
         context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE
     )
@@ -21,6 +22,7 @@ class ControlPreferenceStore @Inject constructor(@ApplicationContext private val
     init {
         Timber.d("init ControlPreferenceStore: $this ")
     }
+
     override fun loadControls(): SonyControls {
         val controlConfig = controlsPreferences.getString("controlConfig", "")
         Timber.d("loadControls()")

@@ -10,10 +10,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.SonyControlMainActivity
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.SonyControlMainActivity
 import org.tvbrowser.devplugin.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -116,7 +115,8 @@ class TVBrowserSonyIPControlPlugin : Service() {
             override fun openPreferences(subscribedChannels: List<Channel>) {
                 Timber.d("openPreferences:start")
                 // start main activity
-                val startPref = Intent(this@TVBrowserSonyIPControlPlugin, SonyControlMainActivity::class.java)
+                val startPref =
+                    Intent(this@TVBrowserSonyIPControlPlugin, SonyControlMainActivity::class.java)
                 startPref.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 if (mPluginManager != null) {
                     updateChannelMap(mPluginManager!!.subscribedChannels)

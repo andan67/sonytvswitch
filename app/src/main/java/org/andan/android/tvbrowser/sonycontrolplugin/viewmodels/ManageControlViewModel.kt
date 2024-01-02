@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
@@ -21,13 +24,14 @@ data class ManageControlUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val message: EventMessage? = null,
-    val sonyControl:SonyControl? = null
+    val sonyControl: SonyControl? = null
     //val isHostAvailable: Boolean = false,
     //val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
 
 @HiltViewModel
-class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
+class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+    ViewModel() {
     //TODO Inject repository
 
     val activeSonyControlFlow = sonyControlRepository.activeSonyControl
@@ -46,9 +50,9 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
             activeSonyControlFlow.collect { sonyControl ->
                 uiState = uiState.copy(sonyControl = sonyControl)
                 Timber.d("collect flow $sonyControl")
-                }
             }
         }
+    }
 
     fun fetchChannelList() {
         if (uiState.isLoading) return
@@ -63,6 +67,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                         message = StringEventMessage("Fetched ${sonyControlRepository.getSelectedControl()!!.channelList.size} channels from TV")
                     )
                 }
+
                 false -> {
                     uiState = uiState.copy(
                         isLoading = false,
@@ -80,7 +85,10 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
             viewModelScope.launch {
                 uiState = uiState.copy(isLoading = true, isSuccess = false)
                 viewModelScope.launch(Dispatchers.IO) {
-                    val registrationStatus = sonyControlRepository.registerControl(sonyControlRepository.getSelectedControl()!!, null)
+                    val registrationStatus = sonyControlRepository.registerControl(
+                        sonyControlRepository.getSelectedControl()!!,
+                        null
+                    )
                     when (registrationStatus.code) {
                         RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
                             uiState = uiState.copy(
@@ -89,6 +97,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                                 message = StringEventMessage("Registration succeeded")
                             )
                         }
+
                         else -> {
                             uiState = uiState.copy(
                                 isLoading = false,
@@ -122,6 +131,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                             message = IntEventMessage(R.string.add_control_host_success_msg)
                         )
                     }
+
                     is Resource.Error -> {
                         uiState = uiState.copy(
                             isLoading = false,
@@ -129,6 +139,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                             message = IntEventMessage(R.string.add_control_host_failed_msg)
                         )
                     }
+
                     else -> {}
                 }
             }

@@ -5,10 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.SonyControlApplication
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
@@ -38,7 +40,8 @@ data class AddControlUiState(
 )
 
 @HiltViewModel
-class AddControlViewModel  @Inject constructor(private val sonyControlRepository: SonyControlRepository): ViewModel() {
+class AddControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+    ViewModel() {
 
     private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))
     val addControlUiState: StateFlow<AddControlUiState> = _addControlUiState.asStateFlow()
@@ -57,6 +60,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
     init {
         Timber.d("init")
     }
+
     fun checkAvailabilityOfHost(host: String) {
         //Timber.d("checkAvailabilityOfHost")
         _addControlUiState.update { it.copy(isLoading = true) }
@@ -71,6 +75,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                     )
                     addedControl = addedControl.copy(ip = host)
                 }
+
                 is Resource.Error -> {
                     uiState = uiState.copy(
                         isLoading = false,
@@ -78,6 +83,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                         status = AddControlStatus.SPECIFY_HOST_NOT_AVAILABE
                     )
                 }
+
                 else -> {}
             }
         }
@@ -92,10 +98,12 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
         if (status < AddControlStatus.REGISTER) {
             return
         }
-        addedControl = SonyControl(nickname = nickname, devicename = devicename, preSharedKey = preSharedKey)
+        addedControl =
+            SonyControl(nickname = nickname, devicename = devicename, preSharedKey = preSharedKey)
         _addControlUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val registrationStatus = sonyControlRepository.registerControl(addedControl, challengeCode)
+            val registrationStatus =
+                sonyControlRepository.registerControl(addedControl, challengeCode)
             when (registrationStatus.code) {
                 RegistrationStatus.REGISTRATION_REQUIRES_CHALLENGE_CODE -> {
                     uiState = uiState.copy(
@@ -104,12 +112,14 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                         messageId = R.string.dialog_enter_challenge_code_title
                     )
                 }
+
                 RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
                     uiState = uiState.copy(
                         isLoading = false,
                         status = AddControlStatus.REGISTER_SUCCESS
                     )
                 }
+
                 RegistrationStatus.REGISTRATION_UNAUTHORIZED -> {
                     uiState = uiState.copy(
                         isLoading = false,
@@ -117,6 +127,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                         messageId = R.string.add_control_register_unauthorized_challenge_message
                     )
                 }
+
                 RegistrationStatus.REGISTRATION_ERROR_NON_FATAL -> {
                     uiState = uiState.copy(
                         isLoading = false,
@@ -126,6 +137,7 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
                         message = registrationStatus.message
                     )
                 }
+
                 RegistrationStatus.REGISTRATION_ERROR_FATAL -> {
                     uiState = uiState.copy(
                         isLoading = false,
@@ -147,15 +159,23 @@ class AddControlViewModel  @Inject constructor(private val sonyControlRepository
         }
     }
 
-    fun addSampleControl(context: Context, host : String) {
+    fun postRegistrationFetches() = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.fetchRemoteControllerInfo()
+        sonyControlRepository.fetchSourceList()
+        sonyControlRepository.setWolMode(true)
+        sonyControlRepository.fetchWolMode()
+        sonyControlRepository.fetchSystemInformation()
+        sonyControlRepository.fetchChannelList()
+    }
+
+    fun addSampleControl(context: Context, host: String) {
         addedControl = SonyControl.fromJson(
             context.assets.open("SonyControl_sample.json").bufferedReader()
                 .use { it.readText() }
-                .replace("android sample",host)
+                .replace("android sample", host)
                 .replace("sample uuid", UUID.randomUUID().toString()))
         addControl()
     }
-
 
 
 }

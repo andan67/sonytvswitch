@@ -4,7 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.ChannelNameFuzzyMatch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
@@ -13,7 +20,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepos
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.collections.LinkedHashMap
 
 data class ChannelSingleMapUiState(
     val isLoading: Boolean = false,
@@ -23,17 +29,19 @@ data class ChannelSingleMapUiState(
 )
 
 
-
 @HiltViewModel
-class ChannelSingleMapViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository,
-                                                    savedStateHandle: SavedStateHandle
+class ChannelSingleMapViewModel @Inject constructor(
+    private val sonyControlRepository: SonyControlRepository,
+    savedStateHandle: SavedStateHandle
 ) :
     ViewModel() {
 
     private val channelKey = checkNotNull(savedStateHandle.get<String>("channelKey"))
 
-    private val _channelSingleMapUiState = MutableStateFlow(ChannelSingleMapUiState(isLoading = false))
-    val channelSingleMapUiState: StateFlow<ChannelSingleMapUiState> = _channelSingleMapUiState.asStateFlow()
+    private val _channelSingleMapUiState =
+        MutableStateFlow(ChannelSingleMapUiState(isLoading = false))
+    val channelSingleMapUiState: StateFlow<ChannelSingleMapUiState> =
+        _channelSingleMapUiState.asStateFlow()
 
     private val activeControlStateFlow =
         sonyControlRepository.activeSonyControlWithChannels.stateIn(
@@ -49,13 +57,18 @@ class ChannelSingleMapViewModel @Inject constructor(private val sonyControlRepos
         }
 
     val matchedChannels =
-        activeControlStateFlow.combine(filterFlow.
-        debounce(500)) { activeControl, filter ->
+        activeControlStateFlow.combine(
+            filterFlow.debounce(500)
+        ) { activeControl, filter ->
             matchSingleChannel(activeControl, filter).map {
                 //Timber.d("activeControl.uriSonyChannelMap[it] ${activeControl.uriSonyChannelMap[it]}")
                 activeControl.uriSonyChannelMap[it]
             }
-        }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList<SonyChannel>())
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            emptyList<SonyChannel>()
+        )
 
 
     private var uiState: ChannelSingleMapUiState
@@ -67,8 +80,13 @@ class ChannelSingleMapViewModel @Inject constructor(private val sonyControlRepos
     init {
         viewModelScope.launch {
             activeControlStateFlow.collect { sonyControl ->
-                uiState = uiState.copy(channelMapItem =
-                    Pair(channelKey, sonyControl.uriSonyChannelMap[sonyControl.channelMap[channelKey]]))
+                uiState = uiState.copy(
+                    channelMapItem =
+                    Pair(
+                        channelKey,
+                        sonyControl.uriSonyChannelMap[sonyControl.channelMap[channelKey]]
+                    )
+                )
             }
         }
     }
@@ -79,7 +97,7 @@ class ChannelSingleMapViewModel @Inject constructor(private val sonyControlRepos
     ): ArrayList<String> {
         val channelUriMatchList: ArrayList<String> = ArrayList()
         val channelTitleList = activeControl.sonyChannelTitleList
-        if(channelTitleList.isNotEmpty()) {
+        if (channelTitleList.isNotEmpty()) {
             val matchTopSet: MutableSet<Int> = LinkedHashSet()
             if (channelTitleFilter.isEmpty()) {
                 matchTopSet.addAll(
@@ -105,12 +123,15 @@ class ChannelSingleMapViewModel @Inject constructor(private val sonyControlRepos
     }
 
     internal fun saveNewMap(channel: SonyChannel?) {
-        if(channel != null) {
+        if (channel != null) {
             var channelMap = activeControlStateFlow.value.channelMap.toMutableMap()
-            if(channelMap.isNotEmpty()) {
+            if (channelMap.isNotEmpty()) {
                 viewModelScope.launch {
                     channelMap[channelKey] = channel.uri
-                    sonyControlRepository.saveChannelMap(activeControlStateFlow.value.uuid, channelMap)
+                    sonyControlRepository.saveChannelMap(
+                        activeControlStateFlow.value.uuid,
+                        channelMap
+                    )
                 }
             }
         }

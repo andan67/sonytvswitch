@@ -1,8 +1,16 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,6 +18,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
 import org.andan.android.tvbrowser.sonycontrolplugin.data.TokenStore
 import org.andan.android.tvbrowser.sonycontrolplugin.network.AddTokenInterceptor
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SessionManager
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyService
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceClientContext
 import org.andan.android.tvbrowser.sonycontrolplugin.network.TokenAuthenticator
@@ -17,6 +26,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Provider
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 
@@ -24,11 +35,40 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class SessionTokens
+
+    @SessionTokens
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { emptyPreferences() }
+            ),
+            produceFile = { context.preferencesDataStoreFile("token_store") }
+        )
+    }
+
     @Singleton
     @Provides
     fun provideSonyServiceHolder(): SonyServiceClientContext {
         return SonyServiceClientContext()
     }
+
+    @Singleton
+    @Provides
+    fun provideSessionManager(@SessionTokens tokenStore: DataStore<Preferences>, sonyServiceProvider: Provider<SonyService>): SessionManager {
+        return SessionManager(tokenStore, sonyServiceProvider)
+    }
+
+/*    @Singleton
+    @Provides
+    fun provideSessionManager(@SessionTokens tokenStore: DataStore<Preferences>): SessionManager {
+        return SessionManager(tokenStore)
+    }*/
+
 
     @Singleton
     @Provides
@@ -42,14 +82,13 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        serviceClientContext: SonyServiceClientContext,
-        tokenStore: TokenStore,
+        sessionManager: SessionManager,
         authenticator: TokenAuthenticator
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
             .connectTimeout(2, TimeUnit.SECONDS)
-            .addInterceptor(AddTokenInterceptor(serviceClientContext, tokenStore))
+            .addInterceptor(AddTokenInterceptor(sessionManager))
         if (BuildConfig.DEBUG) {
             client.addInterceptor(loggingInterceptor)
         }

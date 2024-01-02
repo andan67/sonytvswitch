@@ -6,14 +6,12 @@ import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlEntityWithChannels
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
 
 class SonyControlWithChannelsDomainMapper(
     private val channelListDomainMapper: ListMapper<ChannelEntity, SonyChannel>
-) : Mapper<ControlEntityWithChannels?, SonyControl>
-{
+) : Mapper<ControlEntityWithChannels?, SonyControl> {
     override fun map(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl {
-        if(controlEntityWithChannels != null) {
+        if (controlEntityWithChannels != null) {
             val controlEntity = controlEntityWithChannels.control
             val sonyControl: SonyControl = SonyControl(
                 ip = controlEntity.host,
@@ -40,8 +38,7 @@ class SonyControlWithChannelsDomainMapper(
     }
 }
 
-class SonyControlDomainMapper() : Mapper<ControlEntity?, SonyControl>
-{
+class SonyControlDomainMapper() : Mapper<ControlEntity?, SonyControl> {
     override fun map(controlEntity: ControlEntity?): SonyControl {
         if (controlEntity != null) {
             val sonyControl: SonyControl = SonyControl(
@@ -120,10 +117,12 @@ class SonyChannelListDTOMapper() : Mapper<SonyControl, List<ChannelEntity>> {
 
 class SonyChanneMapDTOMapper() : Mapper<SonyControl, List<ChannelMapEntity>> {
     override fun map(sonyControl: SonyControl): List<ChannelMapEntity> {
-        var channelMapList : MutableList<ChannelMapEntity> = mutableListOf()
-        for(entry in sonyControl.channelMap) {
-            val channelMapEntity = ChannelMapEntity(control_uuid = sonyControl.uuid,
-                channelLabel = entry.key, uri = entry.value)
+        var channelMapList: MutableList<ChannelMapEntity> = mutableListOf()
+        for (entry in sonyControl.channelMap) {
+            val channelMapEntity = ChannelMapEntity(
+                control_uuid = sonyControl.uuid,
+                channelLabel = entry.key, uri = entry.value
+            )
             channelMapList.add(channelMapEntity)
         }
         return channelMapList
@@ -131,34 +130,35 @@ class SonyChanneMapDTOMapper() : Mapper<SonyControl, List<ChannelMapEntity>> {
 }
 
 class SonyControlDataMapper() {
-    private val sonyControlWithChannelsDomainMapper = SonyControlWithChannelsDomainMapper(ListMapperImpl(SonyChannelDomainMapper()))
+    private val sonyControlWithChannelsDomainMapper =
+        SonyControlWithChannelsDomainMapper(ListMapperImpl(SonyChannelDomainMapper()))
     private val sonyControlMapper = SonyControlDomainMapper()
     private val sonyChannelDomainMapper = SonyChannelDomainMapper()
     private val sonyControlDTOMapper = SonyControlDTOMapper()
     private val sonyChannelListDTOMapper = SonyChannelListDTOMapper()
     private val sonyChanneMapDTOMapper = SonyChanneMapDTOMapper()
 
-    fun mapControlEntity2Domain(controlEntityWithChannels: ControlEntityWithChannels?) : SonyControl {
+    fun mapControlEntity2Domain(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl {
         return sonyControlWithChannelsDomainMapper.map(controlEntityWithChannels)
     }
 
-    fun mapControlEntity2Domain(controlEntity: ControlEntity?) : SonyControl {
+    fun mapControlEntity2Domain(controlEntity: ControlEntity?): SonyControl {
         return sonyControlMapper.map(controlEntity)
     }
 
-    fun mapChannelEntity2Domain(channelEntity: ChannelEntity) : SonyChannel {
+    fun mapChannelEntity2Domain(channelEntity: ChannelEntity): SonyChannel {
         return sonyChannelDomainMapper.map(channelEntity)
     }
 
-    fun mapControl2Entity(sonyControl: SonyControl) : ControlEntity {
+    fun mapControl2Entity(sonyControl: SonyControl): ControlEntity {
         return sonyControlDTOMapper.map(sonyControl)
     }
 
-    fun mapControl2ChannelEntityList(sonyControl: SonyControl) : List<ChannelEntity> {
+    fun mapControl2ChannelEntityList(sonyControl: SonyControl): List<ChannelEntity> {
         return sonyChannelListDTOMapper.map(sonyControl)
     }
 
-    fun mapControl2ChannelMapList(sonyControl: SonyControl) : List<ChannelMapEntity> {
+    fun mapControl2ChannelMapList(sonyControl: SonyControl): List<ChannelMapEntity> {
         return sonyChanneMapDTOMapper.map(sonyControl)
     }
 }

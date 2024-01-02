@@ -20,8 +20,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [ControlEntity::class, ChannelEntity::class, ChannelMapEntity::class], version = 7, exportSchema = false)
+@Database(
+    entities = [ControlEntity::class, ChannelEntity::class, ChannelMapEntity::class],
+    version = 7,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
-abstract class ControlDatabase : RoomDatabase(){
-    abstract  fun controlDao() : ControlDao
+abstract class ControlDatabase : RoomDatabase() {
+    abstract fun controlDao(): ControlDao
 }

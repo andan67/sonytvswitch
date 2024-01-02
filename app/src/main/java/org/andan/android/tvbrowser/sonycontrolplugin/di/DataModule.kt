@@ -15,32 +15,35 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_DATABASE
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDatabase
-import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.ListMapperImpl
-import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyChannelDomainMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
-import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDomainMapper
-import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlWithChannelsDomainMapper
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class UserSettings
+
+    @UserSettings
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context) : DataStore<Preferences> {
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            produceFile = { context.preferencesDataStoreFile("settings") }
+            produceFile = { context.preferencesDataStoreFile("user_settings") }
         )
     }
 
     @Provides
     @Singleton
     fun provide(@ApplicationContext context: Context) = Room.databaseBuilder(
-        context, ControlDatabase::class.java, CONTROL_DATABASE)
+        context, ControlDatabase::class.java, CONTROL_DATABASE
+    )
         .allowMainThreadQueries()
         .fallbackToDestructiveMigration()
         .build()

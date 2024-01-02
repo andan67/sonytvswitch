@@ -29,7 +29,12 @@ class NavigationActions(private val navController: NavHostController) {
     }
 
     fun navigateToChannelSingleMap(channelKey: String) {
-        navController.navigate(NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))
+        navController.navigate(
+            NavDestinations.ChannelSingleMap.route.replace(
+                "{channelKey}",
+                channelKey
+            )
+        )
     }
 
     fun navigateToPlayingContentInfoDetails() {

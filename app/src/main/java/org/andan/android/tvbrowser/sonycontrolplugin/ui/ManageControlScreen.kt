@@ -1,13 +1,37 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,9 +50,9 @@ fun ManageControlScreen(
     //deleteSelectedControl: () -> Unit,
     openDrawer: () -> Unit
 ) {
-/*    val sonyControl by remember {
-        selectedSonyControlState
-    }*/
+    /*    val sonyControl by remember {
+            selectedSonyControlState
+        }*/
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -50,14 +74,15 @@ fun ManageControlScreen(
 
     Scaffold(
         snackbarHost = {
-            SnackbarHost(snackbarHostState) {data ->
+            SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
-                    containerColor = if(uiState.isSuccess) SnackbarDefaults.color else MaterialTheme.colorScheme.errorContainer,
-                    contentColor = if(uiState.isSuccess) SnackbarDefaults.contentColor else MaterialTheme.colorScheme.error
+                    containerColor = if (uiState.isSuccess) SnackbarDefaults.color else MaterialTheme.colorScheme.errorContainer,
+                    contentColor = if (uiState.isSuccess) SnackbarDefaults.contentColor else MaterialTheme.colorScheme.error
                 ) {
                     Text(data.visuals.message)
                 }
-            } },
+            }
+        },
         topBar = {
             TopAppBar(title = { Text(text = stringResource(id = R.string.menu_manage_control)) },
                 navigationIcon = {
@@ -67,12 +92,13 @@ fun ManageControlScreen(
                 },
                 actions = {
                     ManageControlMenu(
-                        registerControlAction = {manageControlViewModel.registerControl()},
+                        registerControlAction = { manageControlViewModel.registerControl() },
                         deleteControlAction = { manageControlViewModel.deleteControl() },
                         requestChannelListAction = { manageControlViewModel.fetchChannelList() },
-                        enableWOLAction = {manageControlViewModel.wakeOnLan()},
+                        enableWOLAction = { manageControlViewModel.wakeOnLan() },
                         checkConnectivityAction = { manageControlViewModel.checkAvailability() },
-                        enabled = uiState.sonyControl != null )
+                        enabled = uiState.sonyControl != null
+                    )
                 })
         },
         modifier = modifier.fillMaxSize()
@@ -196,7 +222,8 @@ fun ManageControlMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.register_control_action)) },
             onClick = { registerControlAction(); closeMenu() },
-            enabled = enabled)
+            enabled = enabled
+        )
         DropdownMenuItem(
             text = {
                 DeleteControlDialog(
@@ -205,19 +232,23 @@ fun ManageControlMenu(
                     { openDialog.value = false; closeMenu() })
             },
             onClick = { openDialog.value = true; /*closeMenu()*/ },
-            enabled = enabled)
+            enabled = enabled
+        )
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.get_tv_channel_list_action)) },
             onClick = { requestChannelListAction(); closeMenu() },
-            enabled = enabled )
+            enabled = enabled
+        )
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.enable_wol_action)) },
             onClick = { enableWOLAction(); closeMenu() },
-            enabled = enabled)
+            enabled = enabled
+        )
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.check_set_host)) },
             onClick = { checkConnectivityAction(); closeMenu() },
-            enabled = enabled)
+            enabled = enabled
+        )
     }
 }
 

@@ -1,6 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.data.mapper
 
-interface DataMapper<DTO,DOMAIN> {
+interface DataMapper<DTO, DOMAIN> {
     fun mapToDomain(): Mapper<DTO, DOMAIN>
     fun mapFromDomain(): Mapper<DOMAIN, DTO>
 }
@@ -10,7 +10,7 @@ interface Mapper<I, O> {
 }
 
 // Non-nullable to Non-nullable
-interface ListMapper<I, O>: Mapper<List<I>, List<O>>
+interface ListMapper<I, O> : Mapper<List<I>, List<O>>
 
 class ListMapperImpl<I, O>(
     private val mapper: Mapper<I, O>
@@ -22,7 +22,7 @@ class ListMapperImpl<I, O>(
 
 
 // Nullable to Non-nullable
-interface NullableInputListMapper<I, O>: Mapper<List<I>?, List<O>>
+interface NullableInputListMapper<I, O> : Mapper<List<I>?, List<O>>
 
 class NullableInputListMapperImpl<I, O>(
     private val mapper: Mapper<I, O>
@@ -33,7 +33,7 @@ class NullableInputListMapperImpl<I, O>(
 }
 
 // Non-nullable to Nullable
-interface NullableOutputListMapper<I, O>: Mapper<List<I>, List<O>?>
+interface NullableOutputListMapper<I, O> : Mapper<List<I>, List<O>?>
 
 class NullableOutputListMapperImpl<I, O>(
     private val mapper: Mapper<I, O>

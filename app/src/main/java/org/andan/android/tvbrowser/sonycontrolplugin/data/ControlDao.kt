@@ -22,7 +22,7 @@ interface ControlDao {
     fun getControls(): Flow<List<ControlEntity>>
 
     @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
-    fun getControl(uuid : String) : Flow<ControlEntity?>
+    fun getControl(uuid: String): Flow<ControlEntity?>
 
     @Transaction
     @Query("SELECT * FROM $CONTROL_TABLE")
@@ -30,21 +30,22 @@ interface ControlDao {
 
     @Transaction
     @Query("SELECT * FROM $CONTROL_TABLE WHERE uuid LIKE :uuid")
-    fun getControlWithChannels(uuid : String) : Flow<ControlEntityWithChannels?>
-
+    fun getControlWithChannels(uuid: String): Flow<ControlEntityWithChannels?>
 
 
     @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
-    fun getActiveControl() : Flow<ControlEntity>
+    fun getActiveControl(): Flow<ControlEntity>
 
     @Insert
-    suspend fun insertControlWithChannels(controlEntity: ControlEntity,
-                                          channels: List<ChannelEntity>,
-                                          channelMaps: List<ChannelMapEntity>)
+    suspend fun insertControlWithChannels(
+        controlEntity: ControlEntity,
+        channels: List<ChannelEntity>,
+        channelMaps: List<ChannelMapEntity>
+    )
 
     @Transaction
     @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
-    fun getActiveControlWithChannels() : Flow<ControlEntityWithChannels>
+    fun getActiveControlWithChannels(): Flow<ControlEntityWithChannels>
 
     suspend fun setActiveControl(controlEntity: ControlEntity) {
         return setActiveControl(controlEntity.uuid)
@@ -55,7 +56,7 @@ interface ControlDao {
 
     @Transaction
     suspend fun insertFromSonyControls(sonyControls: SonyControls) {
-        for ((index ,sonyControl) in sonyControls.controls.withIndex()) {
+        for ((index, sonyControl) in sonyControls.controls.withIndex()) {
             val controlEntity = ControlEntity(
                 uuid = sonyControl.uuid,
                 host = sonyControl.ip,
@@ -70,7 +71,7 @@ interface ControlDao {
             controlEntity.sourceList = sonyControl.sourceList
             controlEntity.commandMap = sonyControl.commandList
             controlEntity.isActive = index == sonyControls.selected
-            var channelList : MutableList<ChannelEntity> = mutableListOf()
+            var channelList: MutableList<ChannelEntity> = mutableListOf()
             for (sonyChannel in sonyControl.channelList) {
                 val channelEntity = ChannelEntity(
                     displayNumber = sonyChannel.dispNumber,
@@ -83,10 +84,12 @@ interface ControlDao {
                 )
                 channelList.add(channelEntity)
             }
-            var channelMapList : MutableList<ChannelMapEntity> = mutableListOf()
-            for(entry in sonyControl.channelMap) {
-                val channelMapEntity = ChannelMapEntity(control_uuid = sonyControl.uuid,
-                channelLabel = entry.key, uri = entry.value)
+            var channelMapList: MutableList<ChannelMapEntity> = mutableListOf()
+            for (entry in sonyControl.channelMap) {
+                val channelMapEntity = ChannelMapEntity(
+                    control_uuid = sonyControl.uuid,
+                    channelLabel = entry.key, uri = entry.value
+                )
                 channelMapList.add(channelMapEntity)
             }
             /*
@@ -108,20 +111,20 @@ interface ControlDao {
     suspend fun update(control: ControlEntity)
 
     @Query("SELECT * FROM $CHANNEL_TABLE WHERE control_uuid LIKE :uuid")
-    fun getChannels(uuid : String) : Flow<List<ChannelEntity>>
+    fun getChannels(uuid: String): Flow<List<ChannelEntity>>
 
-    fun getChannelEntitiesForControl(controlEntity: ControlEntity) : Flow<List<ChannelEntity>> {
+    fun getChannelEntitiesForControl(controlEntity: ControlEntity): Flow<List<ChannelEntity>> {
         return getChannels(controlEntity.uuid)
     }
 
     @Query("UPDATE $CONTROL_TABLE SET isActive = CASE WHEN uuid = :uuid THEN 1 ELSE 0 END")
-    suspend fun setActiveControl(uuid : String)
+    suspend fun setActiveControl(uuid: String)
 
     @Insert
-    suspend fun insertChannels( channelList :List<ChannelEntity>)
+    suspend fun insertChannels(channelList: List<ChannelEntity>)
 
     @Delete
-    suspend fun deleteChannels( channelList :List<ChannelEntity>)
+    suspend fun deleteChannels(channelList: List<ChannelEntity>)
 
 
     @Query("DELETE FROM $CHANNEL_TABLE WHERE control_uuid LIKE :uuid")
@@ -132,19 +135,22 @@ interface ControlDao {
     }
 
     @Transaction
-    suspend fun setChannelsForControl( channelList :List<ChannelEntity>, controlEntity: ControlEntity) {
+    suspend fun setChannelsForControl(
+        channelList: List<ChannelEntity>,
+        controlEntity: ControlEntity
+    ) {
         deleteChannelsForControl(controlEntity)
         insertChannels(channelList.filter { channelEntity -> channelEntity.control_uuid == controlEntity.uuid })
     }
 
     @Query("SELECT * FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")
-    fun getChannelMapEntities(uuid : String) : Flow<List<ChannelMapEntity>>
+    fun getChannelMapEntities(uuid: String): Flow<List<ChannelMapEntity>>
 
     @Insert
-    suspend fun insertChannelMaps( channelMapList :List<ChannelMapEntity>)
+    suspend fun insertChannelMaps(channelMapList: List<ChannelMapEntity>)
 
     @Delete
-    suspend fun deleteChannelMaps( channelMapList :List<ChannelMapEntity>)
+    suspend fun deleteChannelMaps(channelMapList: List<ChannelMapEntity>)
 
     @Query("DELETE FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")
     suspend fun deleteChannelMapsForControlUuid(uuid: String)
@@ -154,7 +160,7 @@ interface ControlDao {
     }
 
     @Transaction
-    suspend fun setChannelMapForControl( channelMap :List<ChannelMapEntity>, uuid: String) {
+    suspend fun setChannelMapForControl(channelMap: List<ChannelMapEntity>, uuid: String) {
         deleteChannelMapsForControlUuid(uuid)
         insertChannelMaps(channelMap)
     }

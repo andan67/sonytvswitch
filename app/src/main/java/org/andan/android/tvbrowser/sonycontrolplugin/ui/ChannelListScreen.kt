@@ -5,17 +5,42 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,7 +60,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,9 +76,9 @@ fun ChannelListScreen(
         viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())*/
     var searchText by rememberSaveable { mutableStateOf("") }
 
-/*    LaunchedEffect(Unit) {
-        viewModel.fetchPlayingContentInfo()
-    }*/
+    /*    LaunchedEffect(Unit) {
+            viewModel.fetchPlayingContentInfo()
+        }*/
 
     Timber.d("ChannelListScreen")
 
@@ -100,7 +124,7 @@ fun ChannelTopAppBar(
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if(searchIsActive) {
+        if (searchIsActive) {
             focusRequester.requestFocus()
         }
     }
@@ -112,7 +136,7 @@ fun ChannelTopAppBar(
             }
         },
         actions = {
-            if(searchIsActive) {
+            if (searchIsActive) {
                 SearchTextField(
                     modifier = Modifier
                         //.padding(start = 48.dp)
@@ -166,25 +190,27 @@ fun ChannelListMenu(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SearchTextField(modifier: Modifier,
-                    searchText: String,
-                    placeholderText: String = "Search...",
-                    onSearchTextChanged: (String) -> Unit = {},
-                    onClose: () -> Unit = {}) {
+fun SearchTextField(
+    modifier: Modifier,
+    searchText: String,
+    placeholderText: String = "Search...",
+    onSearchTextChanged: (String) -> Unit = {},
+    onClose: () -> Unit = {}
+) {
     var showClearButton by remember { mutableStateOf(true) }
     val keyboardController = LocalSoftwareKeyboardController.current
     //val focusRequester = remember { FocusRequester() }
 
-/*    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }*/
+    /*    LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }*/
 
     OutlinedTextField(
         modifier = modifier,
-/*            .onFocusChanged { focusState ->
-                showClearButton = (focusState.isFocused)
-            },
-            .focusRequester(focusRequester),*/
+        /*            .onFocusChanged { focusState ->
+                        showClearButton = (focusState.isFocused)
+                    },
+                    .focusRequester(focusRequester),*/
         value = searchText,
         //TODO: Proper implementation
         //onValueChange = onSearchTextChanged,
@@ -204,7 +230,11 @@ fun SearchTextField(modifier: Modifier,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                IconButton(onClick = { if(searchText.isEmpty()) onClose() else onSearchTextChanged("")}) {
+                IconButton(onClick = {
+                    if (searchText.isEmpty()) onClose() else onSearchTextChanged(
+                        ""
+                    )
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = stringResource(id = R.string.search_clear_content_description)
@@ -215,7 +245,8 @@ fun SearchTextField(modifier: Modifier,
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = {keyboardController?.hide()
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
         }),
     )
 }
@@ -237,7 +268,10 @@ private fun ChannelListContent(
 }
 
 @Composable
-fun PlayingContentInfoHeaderContent(playingContentInfoState: State<PlayingContentInfo>, onclick : () -> Unit) {
+fun PlayingContentInfoHeaderContent(
+    playingContentInfoState: State<PlayingContentInfo>,
+    onclick: () -> Unit
+) {
     val playingContentInfo = playingContentInfoState.value
     Row(
         modifier = Modifier
@@ -306,7 +340,11 @@ fun PlayingContentInfoHeaderContent(playingContentInfoState: State<PlayingConten
 
 
 @Composable
-private fun ChannelItem(channel: SonyChannel, tvbChannelTitle: String?, onclick: (SonyChannel) -> Unit) {
+private fun ChannelItem(
+    channel: SonyChannel,
+    tvbChannelTitle: String?,
+    onclick: (SonyChannel) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -329,7 +367,9 @@ private fun ChannelItem(channel: SonyChannel, tvbChannelTitle: String?, onclick:
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.padding(end = 8.dp).width(20.dp),
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .width(20.dp),
                     painter = painterResource(id = R.drawable.ic_input),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary
@@ -339,9 +379,11 @@ private fun ChannelItem(channel: SonyChannel, tvbChannelTitle: String?, onclick:
                     text = channel.shortSource,
                     color = MaterialTheme.colorScheme.secondary
                 )
-                if(tvbChannelTitle != null) {
+                if (tvbChannelTitle != null) {
                     Icon(
-                        modifier = Modifier.padding(horizontal = 8.dp).width(20.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .width(20.dp),
                         painter = painterResource(id = R.drawable.tvb_2),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary

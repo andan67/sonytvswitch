@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import org.andan.android.tvbrowser.sonycontrolplugin.di.AppModule
 import timber.log.Timber
 
 @HiltAndroidApp

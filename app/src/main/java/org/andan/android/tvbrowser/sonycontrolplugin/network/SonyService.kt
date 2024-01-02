@@ -3,8 +3,10 @@ package org.andan.android.tvbrowser.sonycontrolplugin.network
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import org.andan.android.tvbrowser.sonycontrolplugin.data.TokenStore
+import org.andan.android.tvbrowser.sonycontrolplugin.di.NetworkModule
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -33,8 +35,7 @@ interface SonyService {
 }
 
 class AddTokenInterceptor @Inject constructor(
-    private val serviceClientContext: SonyServiceClientContext,
-    private val tokenStore: TokenStore
+    private val sessionManager: SessionManager
 ) : Interceptor {
 
     /**
@@ -44,13 +45,16 @@ class AddTokenInterceptor @Inject constructor(
         val request = chain.request()
         Timber.d("AddTokenInterceptor request: $request")
         var builder = request.newBuilder()
-        if (serviceClientContext.preSharedKey.isEmpty()) {
+        if (sessionManager.preSharedKey.isEmpty()) {
             // token based authentication
-            builder.addHeader("Cookie", tokenStore.loadToken(serviceClientContext.uuid))
-            if (serviceClientContext.password.isNotEmpty()) {
+            val token = runBlocking {
+                sessionManager.getToken()
+            }
+            builder.addHeader("Cookie", token)
+            if (sessionManager.challenge.isNotEmpty()) {
                 builder.addHeader(
                     "Authorization",
-                    Credentials.basic(serviceClientContext.username, serviceClientContext.password)
+                    Credentials.basic("",sessionManager.challenge)
                 )
             }
             // execute request
@@ -60,28 +64,27 @@ class AddTokenInterceptor @Inject constructor(
                 //  It seems that the Sony TV responses with 403 (FORBIDDEN) code instead of 401 (UNAUTHORIZED)
                 //  if token has expired or is invalid. Thus this case will not be handled by the TokenAuthenticator
                 //  class.
-                Timber.d("AuthorizationInterceptor: handle 403 for control ${serviceClientContext.nickname}")
+                Timber.d("AuthorizationInterceptor: handle 403 for control ${sessionManager.nickname}")
                 builder = newRequest.newBuilder()
                 // get new token and build new request with new cookie value
                 builder.removeHeader("Cookie")
-                builder.addHeader("Cookie", getNewToken(serviceClientContext, tokenStore))
+                builder.addHeader("Cookie", getAndStoreNewToken(sessionManager))
                 newRequest = builder.build()
                 chain.proceed(newRequest)
             } else response
         }
-        builder.addHeader("X-Auth-PSK", serviceClientContext.preSharedKey)
+        builder.addHeader("X-Auth-PSK", sessionManager.preSharedKey)
         return chain.proceed(builder.build())
     }
 }
 
 class TokenAuthenticator @Inject constructor(
-    private val serviceClientContext: SonyServiceClientContext,
-    private val tokenStore: TokenStore
+    private val sessionManager: SessionManager,
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         // This is a synchronous call
-        Timber.d("authenticate(): ${serviceClientContext.nickname}")
+        Timber.d("authenticate(): ${sessionManager.nickname}")
         val request = response.request
         Timber.d("TokenAuthenticator request: $request")
         Timber.d("TokenAuthenticator response: $response")
@@ -89,12 +92,12 @@ class TokenAuthenticator @Inject constructor(
         if (response.request.header("Authorization") != null) {
             return null // Give up, we've already attempted to authenticate.
         }
-        return if (serviceClientContext.password.isEmpty() && request.url.toString()
+        return if (sessionManager.challenge.isBlank() && request.url.toString()
                 .endsWith(SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT)
         ) {
             null
         } else {
-            val updatedToken = getNewToken(serviceClientContext, tokenStore)
+            val updatedToken = getAndStoreNewToken(sessionManager)
             request.newBuilder()
                 .addHeader("Cookie", updatedToken)
                 .build()
@@ -102,17 +105,17 @@ class TokenAuthenticator @Inject constructor(
     }
 }
 
-private fun getNewToken(
-    serviceClientContext: SonyServiceClientContext,
-    tokenStore: TokenStore
+private fun getAndStoreNewToken(
+    sessionManager: SessionManager
 ): String {
     Timber.d("getNewToken: calling registration")
-    val response = serviceClientContext.sonyService!!.refreshToken(
-        "http://" + serviceClientContext.ip + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT,
+    var newToken = "";
+    val response = sessionManager.sonyServiceProvider.get().refreshToken(
+        "http://" + sessionManager.hostname + SonyServiceUtil.SONY_ACCESS_CONTROL_ENDPOINT,
         JsonRpcRequest.actRegister(
-            serviceClientContext.nickname,
-            serviceClientContext.devicename,
-            serviceClientContext.uuid
+            sessionManager.nickname,
+            sessionManager.devicename,
+            sessionManager.activeControlUuid
         )
     ).execute()
     if (response.code() == HTTP_OK) {
@@ -122,22 +125,16 @@ private fun getNewToken(
                 Pattern.compile("auth=([A-Za-z0-9]+)")
             val matcher = pattern.matcher(cookieString)
             if (matcher.find()) {
-                tokenStore.storeToken(serviceClientContext.uuid, "auth=" + matcher.group(1))
-                Timber.d("getNewToken: got new token")
-                /*
-                pattern = Pattern.compile("max-age=([0-9]+)")
-                matcher = pattern.matcher(cookieString)
-                if (matcher.find()) {
-                    tokenRepository.expiryTime =
-                        System.currentTimeMillis() + 1000 * matcher.group(1).toLong()
+                newToken = "auth=" + matcher.group(1)
+                Timber.d("getNewToken: got new token $newToken")
+                runBlocking {
+                    sessionManager.saveToken(newToken)
                 }
-                */
-
             }
 
         }
     }
-    return tokenStore.loadToken(serviceClientContext.uuid)
+    return newToken
 }
 
 sealed class Resource<T>(
