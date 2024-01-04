@@ -43,7 +43,6 @@ class Converters {
      */
     @TypeConverter
     fun stringToList(string: String): List<String> {
-        return string.split(ENTRY_SEPARATOR)
+        return if (string.isEmpty()) emptyList() else string.split(ENTRY_SEPARATOR)
     }
-
 }

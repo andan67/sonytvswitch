@@ -65,7 +65,6 @@ fun SonyControlNavGraph(
         composable(NavDestinations.RemoteControl.route) {
             RemoteControlScreen(
                 navActions = navigationActions,
-                viewModel = viewModel,
                 openDrawer = openDrawer
             )
         }

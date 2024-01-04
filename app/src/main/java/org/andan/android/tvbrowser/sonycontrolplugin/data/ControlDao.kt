@@ -69,7 +69,7 @@ interface ControlDao {
             controlEntity.systemProduct = sonyControl.systemProduct
             controlEntity.systemMacAddr = sonyControl.systemMacAddr
             controlEntity.sourceList = sonyControl.sourceList
-            controlEntity.commandMap = sonyControl.commandList
+            controlEntity.commandMap = sonyControl.commandMap
             controlEntity.isActive = index == sonyControls.selected
             var channelList: MutableList<ChannelEntity> = mutableListOf()
             for (sonyChannel in sonyControl.channelList) {
@@ -141,6 +141,15 @@ interface ControlDao {
     ) {
         deleteChannelsForControl(controlEntity)
         insertChannels(channelList.filter { channelEntity -> channelEntity.control_uuid == controlEntity.uuid })
+    }
+
+    @Transaction
+    suspend fun setChannelsForControl(
+        channelList: List<ChannelEntity>,
+        uuid: String
+    ) {
+        deleteChannelsForControlUuid(uuid)
+        insertChannels(channelList.filter { channelEntity -> channelEntity.control_uuid == uuid })
     }
 
     @Query("SELECT * FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")

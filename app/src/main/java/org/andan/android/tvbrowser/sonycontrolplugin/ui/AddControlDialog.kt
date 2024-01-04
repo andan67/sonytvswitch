@@ -228,7 +228,16 @@ fun AddControlDialog(
                             onValueChange = { devicename = it },
                             label = { Text(stringResource(id = R.string.add_control_device)) },
                             singleLine = true,
-                            enabled = uiState.status < AddControlStatus.REGISTER_CHALLENGE
+                            enabled = uiState.status < AddControlStatus.REGISTER_CHALLENGE,
+                            supportingText = {
+                                if (uiState.isLoading) {
+                                    Text(text = stringResource(id = R.string.add_control_host_registering_msg))
+                                } else if (uiState.status == AddControlStatus.REGISTER_ERROR && uiState.message != null) {
+                                    Text(text = uiState.message!!)
+                                } else {
+                                    Text("")
+                                }
+                            }
                         )
                         if (uiState.status < AddControlStatus.REGISTER_CHALLENGE) {
                             TextField(

@@ -5,17 +5,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.andan.android.tvbrowser.sonycontrolplugin.data.ChannelEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ChannelMapEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
-import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlPreferenceStore
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
@@ -38,7 +39,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SessionManager
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyService
-import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceClientContext
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyServiceUtil.apiCall
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SourceListItemResponse
@@ -64,20 +64,23 @@ SonyControlRepository @Inject constructor(
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
 
-    val activeSonyControl: Flow<SonyControl> = controlDao.getActiveControl()
+    val activeSonyControlFlow: Flow<SonyControl> = controlDao.getActiveControl()
         .map { entity -> sonyControlDataMapper.mapControlEntity2Domain(entity) }
-    val activeSonyControlWithChannels: Flow<SonyControl> =
+    val activeSonyControlWithChannelsFlow: Flow<SonyControl> =
         controlDao.getActiveControlWithChannels().map { entity ->
             val control = sonyControlDataMapper.mapControlEntity2Domain(entity)
-            //Timber.d("control.channelMap[ARD-alpha]:${control.nickname} ${control.channelMap["ARD-alpha"]}")
             control
         }
-    val sonyControls: Flow<List<SonyControl>> =
+    val sonyControlsFlow: Flow<List<SonyControl>> =
         controlDao.getControls().map { entityList ->
             entityList.map { entityElement ->
                 sonyControlDataMapper.mapControlEntity2Domain(entityElement)
             }
         }
+
+    private val _activeSonyControlState = MutableStateFlow(SonyControl())
+    val activeSonyControlState: StateFlow<SonyControl> = _activeSonyControlState
+
     //else entityList.map { entityElement -> sonyControlDomainMapper.map(entityElement)  } }
 
     companion object {
@@ -116,9 +119,12 @@ SonyControlRepository @Inject constructor(
                     }
                 }
             }*/
-            activeSonyControl.collect {
-                control -> sessionManager.setContext(control)
+            activeSonyControlWithChannelsFlow.collect {
+                control ->
+                    sessionManager.setContext(control)
+                    _activeSonyControlState.value = control
             }
+
         }
         //job.cancel()
         Timber.d("end init")
@@ -132,11 +138,6 @@ SonyControlRepository @Inject constructor(
         val responseMessage: LiveData<Event<String>>
             get() = _responseMessage*/
 
-    private fun onSonyControlsChange() {
-        Timber.d("onSonyControlsChange()")
-        //setSonyServiceContextForControl(selectedSonyControl.value)
-        //sonyControls.notifyObserverBackground()
-    }
 
     fun getSelectedControl(): SonyControl? {
         /*        return if (sonyControls.value!!.selected >= 0 && sonyControls.value!!.selected <= sonyControls.value!!.controls.size - 1) {
@@ -186,19 +187,19 @@ SonyControlRepository @Inject constructor(
 
 
     suspend fun fetchRemoteControllerInfo() {
-        getSelectedControl()?.let { control ->
+        withContext(Dispatchers.IO) {
+            val control = activeSonyControlState.value
             val resource = systemService<Array<RemoteControllerInfoItemResponse>>(
                 control.ip,
                 JsonRpcRequest.getRemoteControllerInfo()
             )
             Timber.d("remoteControllerInfo(): ${control.toString()}")
             if (resource.status == Status.SUCCESS) {
-                //control.commandList = LinkedHashMap()
+               val commandMap = LinkedHashMap<String, String>()
                 for (remoteControllerInfoItem in resource.data!!) {
-                    /*                    control.commandList[remoteControllerInfoItem.name] =
-                                            remoteControllerInfoItem.value*/
+                    commandMap[remoteControllerInfoItem.name] = remoteControllerInfoItem.value
                 }
-                //saveControls(true)
+                updateControl(control.copy(commandMap = commandMap))
             } else {
                 //_responseMessage.postValue(Event(resource.message))
             }
@@ -256,37 +257,36 @@ SonyControlRepository @Inject constructor(
     }
 
     suspend fun setPlayContent(uri: String): Int {
-        getSelectedControl()?.let { control ->
-            val resource =
-                avContentService<Unit>(
-                    control.ip,
-                    JsonRpcRequest.setPlayContent(uri)
-                )
-            if (resource.status == Status.ERROR) {
-                //_responseMessage.postValue(Event(resource.message))
-                return ERROR_CODE
-            }
-            return SUCCESS_CODE
+        val control = activeSonyControlState.value
+        val resource =
+            avContentService<Unit>(
+                control.ip,
+                JsonRpcRequest.setPlayContent(uri)
+            )
+        if (resource.status == Status.ERROR) {
+            //_responseMessage.postValue(Event(resource.message))
+            return ERROR_CODE
         }
-        return ERROR_CODE
+        return SUCCESS_CODE
     }
 
     suspend fun fetchSourceList() {
-        getSelectedControl()?.let { control ->
+        withContext(Dispatchers.IO) {
+            val control = activeSonyControlState.value
             val resource = avContentService<Array<SourceListItemResponse>>(
                 control.ip, JsonRpcRequest.getSourceList("tv")
             )
             if (resource.status == Status.SUCCESS) {
-                /* control.sourceList = mutableListOf()
-                 for (sourceItem in resource.data!!) {
-                     if (sourceItem.source == "tv:dvbs") {
-                         control.sourceList.add(sourceItem.source + "#general")
-                         control.sourceList.add(sourceItem.source + "#preferred")
-                     } else {
-                         control.sourceList.add(sourceItem.source)
-                     }
-                 }*/
-                //saveControls(true)
+                val sourceList = mutableListOf<String>()
+                for (sourceItem in resource.data!!) {
+                    if (sourceItem.source == "tv:dvbs") {
+                        sourceList.add(sourceItem.source + "#general")
+                        sourceList.add(sourceItem.source + "#preferred")
+                    } else {
+                        sourceList.add(sourceItem.source)
+                    }
+                }
+                updateControl(control.copy(sourceList = sourceList))
             } else {
                 //_responseMessage.postValue(Event(resource.message))
             }
@@ -294,7 +294,9 @@ SonyControlRepository @Inject constructor(
     }
 
     suspend fun fetchChannelList(): Boolean {
-        getSelectedControl()?.let { control ->
+        var isSuccess = false
+        withContext(Dispatchers.IO) {
+            val control = activeSonyControlState.value
             Timber.d("fetchChannelList(): ${control.sourceList}")
             if (control.sourceList.isNullOrEmpty()) {
                 fetchSourceList()
@@ -320,17 +322,19 @@ SonyControlRepository @Inject constructor(
                     // Break loop over source in case of error
                     if (count == -1) {
                         Timber.d("fetchChannelList(): error")
-                        return false
+                        break;
                     }
                 }
                 //control.channelList = channelList.toImmutableList()
                 //saveControls(true)
                 //_responseMessage.postValue(Event("Fetched ${control.channelList.size} channels from TV"))
-                Timber.d("fetchChannelList(): ${control.channelList.size}")
-                return true
+                isSuccess = true
+                saveChannelList(control.copy(channelList = channelList))
+                Timber.d("fetchChannelList(): ${channelList.size}")
+                isSuccess = true
             }
         }
-        return false
+        return isSuccess
     }
 
     private suspend fun fetchTvContentList(
@@ -461,6 +465,14 @@ SonyControlRepository @Inject constructor(
         }
     }
 
+    suspend fun sendCommand(control: SonyControl, command: String) {
+        val code = control.commandMap[command]
+        Timber.d("sendCommand: $command $code")
+        if(!code.isNullOrBlank()) {
+            sendIRCC(code)
+        }
+    }
+
     suspend fun sendIRCC(code: String) {
 
         withContext(Dispatchers.IO) {
@@ -542,6 +554,14 @@ SonyControlRepository @Inject constructor(
         }
     }
 
+    suspend fun saveChannelList(control: SonyControl) {
+        externalScope.launch {
+            Timber.d("settings channels for control: $control}")
+            controlDao.setChannelsForControl(sonyControlDataMapper.mapControl2ChannelEntityList(control), control.uuid)
+        }.join()
+    }
+
+
     suspend fun deleteControl(control: SonyControl) {
         externalScope.launch {
             val hasBeenActive = control.isActive
@@ -549,7 +569,7 @@ SonyControlRepository @Inject constructor(
             controlDao.deleteControl(control.uuid)
             Timber.d(" deleteControl hasBeenActive ${hasBeenActive}")
             if (hasBeenActive) {
-                sonyControls.cancellable().collect {
+                sonyControlsFlow.cancellable().collect {
                     val uuid = it.first().uuid
                     Timber.d(" deleteControl setActive ${uuid}")
                     setActiveControl(uuid)
@@ -558,6 +578,14 @@ SonyControlRepository @Inject constructor(
             }
         }.join()
     }
+
+    suspend fun updateControl(control: SonyControl) {
+        externalScope.launch {
+            Timber.d("updating control: ${control.uuid}")
+            controlDao.update(sonyControlDataMapper.mapControl2Entity(control))
+        }.join()
+    }
+
 
     suspend fun addControl(control: SonyControl) {
         externalScope.launch {

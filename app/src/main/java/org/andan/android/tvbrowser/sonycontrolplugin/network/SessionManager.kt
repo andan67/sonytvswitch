@@ -31,9 +31,10 @@ class SessionManager  @Inject constructor(
         }
     }
     suspend fun getToken(): String {
+        //return empty token in case no one is stored
         return tokenStore.data
             .map { it[stringPreferencesKey(activeControlUuid)] }.firstOrNull()
-            ?: throw IllegalArgumentException("no token stored")
+            ?: ""
     }
 
     fun setContext(control: SonyControl) {

@@ -27,7 +27,7 @@ class SonyControlWithChannelsDomainMapper(
                 systemProduct = controlEntity.systemProduct,
                 systemWolMode = controlEntity.systemWolMode,
                 sourceList = controlEntity.sourceList,
-                commandList = controlEntity.commandMap,
+                commandMap = controlEntity.commandMap,
                 channelList = channelListDomainMapper.map(controlEntityWithChannels.channels),
                 channelMap = controlEntityWithChannels.channelMaps.associate { it.channelLabel to it.uri }
             )
@@ -55,7 +55,7 @@ class SonyControlDomainMapper() : Mapper<ControlEntity?, SonyControl> {
                 systemProduct = controlEntity.systemProduct,
                 systemWolMode = controlEntity.systemWolMode,
                 sourceList = controlEntity.sourceList,
-                commandList = controlEntity.commandMap
+                commandMap = controlEntity.commandMap
             )
             return sonyControl
         }
@@ -90,7 +90,7 @@ class SonyControlDTOMapper() : Mapper<SonyControl, ControlEntity> {
         controlEntity.systemProduct = sonyControl.systemProduct
         controlEntity.systemMacAddr = sonyControl.systemMacAddr
         controlEntity.sourceList = sonyControl.sourceList
-        controlEntity.commandMap = sonyControl.commandList
+        controlEntity.commandMap = sonyControl.commandMap
         controlEntity.isActive = sonyControl.isActive
         return controlEntity
     }

@@ -106,7 +106,6 @@ fun ManageControlScreen(
     { innerPadding ->
         ManageControlContent(
             modifier = Modifier.padding(innerPadding),
-            //sonyControl = uiState.sonyControl
             sonyControl = uiState.sonyControl
         )
     }

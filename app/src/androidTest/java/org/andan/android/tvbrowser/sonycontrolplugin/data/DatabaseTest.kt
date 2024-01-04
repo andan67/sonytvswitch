@@ -131,6 +131,50 @@ class DatabaseTest {
     }
 
     @Test
+    fun updateControl() = runTest {
+        turbineScope {
+            val controlEntity1 = ControlEntity(
+                "1234", "localhost",
+                "test1", "tv device 1", "KEY1"
+            )
+
+            val controlEntity2 = ControlEntity(
+                "5678", "localhost",
+                "test1", "tv device 2", "KEY2"
+            )
+
+
+            controlDao.insertControls(controlEntity1, controlEntity2)
+
+            controlDao.getControls().test {
+                val controlEntityList = awaitItem()
+                assert(controlEntityList.size == 2)
+                assert(controlEntityList[0].commandMap.isEmpty())
+                assert(controlEntityList[1].commandMap.isEmpty())
+                cancel()
+            }
+
+            val commandMap = LinkedHashMap<String,String>()
+            commandMap["key1"] = "value1"
+            commandMap["key2"] = "value2"
+            controlEntity2.commandMap = commandMap
+            controlDao.update(controlEntity2)
+
+            controlDao.getControls().test {
+                val controlEntityList = awaitItem()
+                assert(controlEntityList.contains(controlEntity1))
+                assert(controlEntityList.size == 2)
+                assert(controlEntityList[0].uuid == controlEntity1.uuid)
+                assert(controlEntityList[0].commandMap.isEmpty())
+                assert(controlEntityList[1].uuid == controlEntity2.uuid)
+                assert(controlEntityList[1].commandMap.isNotEmpty())
+                assert(controlEntityList[1].commandMap["key1"].equals("value1"))
+                cancel()
+            }
+        }
+    }
+
+    @Test
     fun changeSelectedControl() = runTest {
         turbineScope {
             val controlEntity1 = ControlEntity(

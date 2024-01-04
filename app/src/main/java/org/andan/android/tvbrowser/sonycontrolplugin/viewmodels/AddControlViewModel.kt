@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
@@ -40,7 +42,7 @@ data class AddControlUiState(
 )
 
 @HiltViewModel
-class AddControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+class AddControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository,  @ApplicationScope private val externalScope: CoroutineScope) :
     ViewModel() {
 
     private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))
@@ -55,7 +57,7 @@ class AddControlViewModel @Inject constructor(private val sonyControlRepository:
             _addControlUiState.update { newState }
         }
 
-    var addedControl: SonyControl = SonyControl()
+    private var addedControl: SonyControl = SonyControl()
 
     init {
         Timber.d("init")
@@ -95,11 +97,11 @@ class AddControlViewModel @Inject constructor(private val sonyControlRepository:
         preSharedKey: String,
         challengeCode: String
     ) {
+
         if (status < AddControlStatus.REGISTER) {
             return
         }
-        addedControl =
-            SonyControl(nickname = nickname, devicename = devicename, preSharedKey = preSharedKey)
+        addedControl = addedControl.copy(nickname = nickname, devicename = devicename, preSharedKey = preSharedKey)
         _addControlUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val registrationStatus =
@@ -154,18 +156,19 @@ class AddControlViewModel @Inject constructor(private val sonyControlRepository:
     }
 
     fun addControl() {
-        viewModelScope.launch(Dispatchers.IO) {
+        externalScope.launch(Dispatchers.IO) {
             sonyControlRepository.addControl(addedControl)
+            sonyControlRepository.fetchRemoteControllerInfo()
         }
     }
 
-    fun postRegistrationFetches() = viewModelScope.launch(Dispatchers.IO) {
+    fun postRegistrationFetches() = externalScope.launch(Dispatchers.IO) {
         sonyControlRepository.fetchRemoteControllerInfo()
-        sonyControlRepository.fetchSourceList()
+        //sonyControlRepository.fetchSourceList()
         sonyControlRepository.setWolMode(true)
         sonyControlRepository.fetchWolMode()
         sonyControlRepository.fetchSystemInformation()
-        sonyControlRepository.fetchChannelList()
+        //sonyControlRepository.fetchChannelList()
     }
 
     fun addSampleControl(context: Context, host: String) {

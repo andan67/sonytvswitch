@@ -44,7 +44,7 @@ class ChannelSingleMapViewModel @Inject constructor(
         _channelSingleMapUiState.asStateFlow()
 
     private val activeControlStateFlow =
-        sonyControlRepository.activeSonyControlWithChannels.stateIn(
+        sonyControlRepository.activeSonyControlWithChannelsFlow.stateIn(
             viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl()
         )
 

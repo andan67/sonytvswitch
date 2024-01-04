@@ -108,7 +108,7 @@ fun ChannelListScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             //PlayingContentInfoHeaderContent(playingContentInfoState = playingContentInfoState, onclick = {navActions.navigateToPlayingContentInfoDetails()} )
-            ChannelListContent(channelListState = channelListState)
+            ChannelListContent(channelListState = channelListState, onChannelClick = viewModel::switchToChannel )
         }
     }
 }
@@ -253,7 +253,8 @@ fun SearchTextField(
 
 @Composable
 private fun ChannelListContent(
-    channelListState: State<List<Pair<SonyChannel, String?>>>
+    channelListState: State<List<Pair<SonyChannel, String?>>>,
+    onChannelClick: (String) -> Unit
 ) {
     Timber.d("ChannelListContent")
     LazyColumn() {
@@ -261,7 +262,7 @@ private fun ChannelListContent(
             ChannelItem(
                 channel = channel.first,
                 tvbChannelTitle = channel.second,
-                onclick = { Timber.d("Clicked: $it") }
+                onclick = { Timber.d("Clicked: $it"); onChannelClick(it.uri) }
             )
         }
     }

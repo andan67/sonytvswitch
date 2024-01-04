@@ -12,6 +12,8 @@ import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,17 +33,22 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.RemoteControlViewModel
+import timber.log.Timber
+
+val RemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { {_ -> Unit}}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoteControlScreen(
     modifier: Modifier = Modifier,
-    viewModel: SonyControlViewModel,
     navActions: NavigationActions,
     openDrawer: () -> Unit
 ) {
+
+    val remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
 
     Scaffold(
         topBar = {
@@ -51,8 +58,13 @@ fun RemoteControlScreen(
                 )
         },
         content = { contentPadding ->
-            RemoteControlContent(modifier = Modifier.padding(contentPadding))
-        }
+            CompositionLocalProvider(RemoteButtonClickFunction provides {command:String -> remoteControlViewModel.sendCommand(command) }) {
+            //CompositionLocalProvider(RemoteButtonClickFunction provides {command:String -> Timber.d("Clicked command: $command") }) {
+                    RemoteControlContent(
+                        modifier = Modifier.padding(contentPadding)
+                    )
+                }
+            }
     )
 }
 
@@ -75,7 +87,7 @@ fun RemoteControlTopAppBar(
 @SuppressLint("ResourceType")
 @Composable
 private fun RemoteControlContent(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 
@@ -89,22 +101,22 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlIconButton(
-                command = "",
+                command = "Input",
                 painter = painterResource(id = R.drawable.ic_action_input)
             )
             RemoteControlTextButton(
-                command = "",
+                command = "GGuide",
                 text = "GUIDE"
             )
             RemoteControlTextButton(
-                command = "",
+                command = "SEN",
                 backgroundColor = colorResource(id = R.color.buttonBlue),
                 text = "SEN"
             )
             RemoteControlIconButton(
-                command = "",
+                command = "PowerOff",
                 backgroundColor = colorResource(id = R.color.buttonGreen),
-                painter = painterResource(id = R.drawable.ic_action_input)
+                painter = painterResource(id = R.drawable.ic_action_power)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -116,23 +128,23 @@ private fun RemoteControlContent(
         ) {
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.TopStart),
-                command = "",
+                command = "Display",
                 text = "INFO"
             )
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.TopEnd),
                 backgroundColor = colorResource(id = R.color.buttonBlue),
-                command = "",
+                command = "Home",
                 text = "HOME"
             )
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.BottomStart),
-                command = "",
+                command = "Return",
                 text = "RETURN"
             )
             RemoteControlTextButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                command = "",
+                command = "Options",
                 text = "OPTIONS"
             )
             Box(
@@ -145,34 +157,34 @@ private fun RemoteControlContent(
                 RemoteControlIconButton(
                     modifier = Modifier.align(Alignment.TopCenter),
                     width = 68.dp,
-                    command = "",
+                    command = "Up",
                     painter = painterResource(id = R.drawable.ic_keyboard_arrow_up)
                 )
                 RemoteControlIconButton(
                     modifier = Modifier.align(Alignment.CenterStart),
                     width = dimensionResource(id = R.dimen.rc_button_large_height),
                     height = 68.dp,
-                    command = "",
+                    command = "Left",
                     painter = painterResource(id = R.drawable.ic_keyboard_arrow_left)
                 )
                 RemoteControlIconButton(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     width = 68.dp,
-                    command = "",
+                    command = "Down",
                     painter = painterResource(id = R.drawable.ic_keyboard_arrow_down)
                 )
                 RemoteControlIconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     width = dimensionResource(id = R.dimen.rc_button_large_height),
                     height = 68.dp,
-                    command = "",
+                    command = "Right",
                     painter = painterResource(id = R.drawable.ic_keyboard_arrow_right)
                 )
                 RemoteControlTextButton(
                     modifier = Modifier.align(Alignment.Center),
                     width = 68.dp,
                     height = 68.dp,
-                    command = "",
+                    command = "Confirm",
                     text = "OK"
                 )
             }
@@ -183,7 +195,7 @@ private fun RemoteControlContent(
                 Spacer(modifier = Modifier.height(24.dp))
                 RemoteControlIconButton(
                     width = dimensionResource(id = R.dimen.rc_button_small_width),
-                    command = "",
+                    command = "Mute",
                     painter = painterResource(id = R.drawable.ic_action_mute)
                 )
             }
@@ -192,12 +204,12 @@ private fun RemoteControlContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        command = "",
+                        command = "VolumeDown",
                         painter = painterResource(id = R.drawable.ic_remove)
                     )
                     RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        command = "",
+                        command = "VolumeUp",
                         painter = painterResource(id = R.drawable.ic_add)
                     )
                 }
@@ -207,12 +219,12 @@ private fun RemoteControlContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        command = "",
+                        command = "ChannelDown",
                         painter = painterResource(id = R.drawable.ic_remove)
                     )
                     RemoteControlIconButton(
                         width = dimensionResource(id = R.dimen.rc_button_small_width),
-                        command = "",
+                        command = "ChannelUp",
                         painter = painterResource(id = R.drawable.ic_add)
                     )
                 }
@@ -222,19 +234,19 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlTextButton(
-                command = "",
+                command = "SyncMenu",
                 text = "SYNC\nMENU"
             )
             RemoteControlTextButton(
-                command = "",
+                command = "Digital",
                 text = "ANALOG\nDIGITAL"
             )
             RemoteControlTextButton(
-                command = "",
+                command = "Exit",
                 text = "EXIT"
             )
             RemoteControlTextButton(
-                command = "",
+                command = "Tv_Radio",
                 text = "Radio\nTV"
             )
         }
@@ -244,7 +256,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("/")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num1",
                     text = "1"
                 )
             }
@@ -252,7 +264,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("abc")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num2",
                     text = "2"
                 )
             }
@@ -260,7 +272,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("def")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num3",
                     text = "3"
                 )
             }
@@ -271,7 +283,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("ghi")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num4",
                     text = "4"
                 )
             }
@@ -279,7 +291,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("jkl")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num5",
                     text = "5"
                 )
             }
@@ -287,7 +299,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("mno")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num6",
                     text = "6"
                 )
             }
@@ -298,7 +310,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("pqrs")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num7",
                     text = "7"
                 )
             }
@@ -306,7 +318,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("tuv")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num8",
                     text = "8"
                 )
             }
@@ -314,7 +326,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("wxyz")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num9",
                     text = "9"
                 )
             }
@@ -325,7 +337,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "iManual",
                     text = "I-MANUAL"
                 )
             }
@@ -333,7 +345,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("␣")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Num0",
                     text = "0"
                 )
             }
@@ -341,7 +353,7 @@ private fun RemoteControlContent(
                 RemoteControlLabel("")
                 RemoteControlTextButton(
                     width = dimensionResource(id = R.dimen.rc_button_number_width),
-                    command = "",
+                    command = "Enter",
                     text = "ENTER"
                 )
             }
@@ -350,7 +362,7 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlButton(
-                command = "",
+                command = "Red",
                 content = {
                     Box(
                         modifier = Modifier
@@ -362,7 +374,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                command = "",
+                command = "Green",
                 content = {
                     Box(
                         modifier = Modifier
@@ -374,7 +386,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                command = "",
+                command = "Yellow",
                 content = {
                     Box(
                         modifier = Modifier
@@ -386,7 +398,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlButton(
-                command = "",
+                command = "Blue",
                 content = {
                     Box(
                         modifier = Modifier
@@ -402,19 +414,19 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlIconButton(
-                command = "",
+                command = "Prev",
                 painter = painterResource(id = R.drawable.ic_skip_previous)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Pause",
                 painter = painterResource(id = R.drawable.ic_pause)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Stop",
                 painter = painterResource(id = R.drawable.ic_stop)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Next",
                 painter = painterResource(id = R.drawable.ic_skip_next)
             )
         }
@@ -422,16 +434,16 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlIconButton(
-                command = "",
+                command = "Rewind",
                 painter = painterResource(id = R.drawable.ic_fast_rewind)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Play",
                 width = dimensionResource(id = R.dimen.rc_button_play_width),
                 painter = painterResource(id = R.drawable.ic_play_arrow)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Forward",
                 painter = painterResource(id = R.drawable.ic_fast_forward)
             )
         }
@@ -439,7 +451,7 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlTextButton(
-                command = "",
+                command = "TvPause",
                 text = "TV\nPAUSE",
             )
             RemoteControlTextButton(
@@ -447,7 +459,7 @@ private fun RemoteControlContent(
                 text = "TITLE\nLIST",
             )
             RemoteControlButton(
-                command = "",
+                command = "Rec",
                 content = {
                     Box(
                         modifier = Modifier
@@ -459,7 +471,7 @@ private fun RemoteControlContent(
                 }
             )
             RemoteControlTextButton(
-                command = "",
+                command = "Mode3D",
                 text = "3D",
             )
         }
@@ -467,19 +479,19 @@ private fun RemoteControlContent(
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp))
         {
             RemoteControlIconButton(
-                command = "",
+                command = "Wide",
                 painter = painterResource(id = R.drawable.ic_action_aspect)
             )
             RemoteControlIconButton(
-                command = "",
+                command = "ClosedCaption",
                 painter = painterResource(id = R.drawable.ic_action_subtitle)
             )
             RemoteControlTextButton(
-                command = "",
+                command = "Audio",
                 text = "AUDIO",
             )
             RemoteControlIconButton(
-                command = "",
+                command = "Teletext",
                 tint = Color.Green,
                 painter = painterResource(id = R.drawable.ic_action_teletext)
             )
@@ -567,20 +579,21 @@ private fun RemoteControlButton(
     modifier: Modifier = Modifier,
     width: Dp = dimensionResource(id = R.dimen.rc_button_large_width),
     height: Dp = dimensionResource(id = R.dimen.rc_button_large_height),
-    onClick: () -> Unit = {},
     backgroundColor: Color = colorResource(id = R.color.grey_900),
     content: @Composable () -> Unit,
     command: String = ""
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val onRemoteControlButtonClicked = RemoteButtonClickFunction.current
+
 
     Button(
         modifier = modifier
             .width(width)
             .height(height)
             .padding(all = 0.dp),
-        onClick = onClick,
+        onClick = {onRemoteControlButtonClicked(command)},
         contentPadding = PaddingValues(0.dp),
         interactionSource = interactionSource,
         elevation = ButtonDefaults.buttonElevation(

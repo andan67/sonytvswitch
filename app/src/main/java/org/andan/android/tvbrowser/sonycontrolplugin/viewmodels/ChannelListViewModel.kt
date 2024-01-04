@@ -3,11 +3,13 @@ package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,7 +19,7 @@ import javax.inject.Inject
 class ChannelListViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
     ViewModel() {
 
-    private val activeControlFlow = sonyControlRepository.activeSonyControlWithChannels
+    private val activeControlFlow = sonyControlRepository.activeSonyControlWithChannelsFlow
 
     private val filterFlow = MutableStateFlow("")
 
@@ -45,5 +47,9 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
 
         }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
 
-
+    fun switchToChannel(uri: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            sonyControlRepository.setPlayContent(uri)
+        }
+    }
 }

@@ -35,7 +35,7 @@ class SonyControlViewModel @Inject constructor(private val sonyControlRepository
 
     private var _sonyControls = MutableLiveData<SonyControls>()
 
-    val controlList = sonyControlRepository.sonyControls
+    val controlList = sonyControlRepository.sonyControlsFlow
     val sonyControls: LiveData<SonyControls>
         get() = _sonyControls
     var addedControlHostAddress: String = ""
@@ -156,7 +156,7 @@ class SonyControlViewModel @Inject constructor(private val sonyControlRepository
         }
 
     fun postRegistrationFetches() = viewModelScope.launch(Dispatchers.IO) {
-        sonyControlRepository.fetchRemoteControllerInfo()
+        //sonyControlRepository.fetchRemoteControllerInfo()
         sonyControlRepository.fetchSourceList()
         sonyControlRepository.setWolMode(true)
         sonyControlRepository.fetchWolMode()
@@ -170,7 +170,7 @@ class SonyControlViewModel @Inject constructor(private val sonyControlRepository
 
     fun sendIRRCCByName(name: String) = viewModelScope.launch(Dispatchers.IO) {
         selectedSonyControl.value?.let { control ->
-            val code = control.commandList[name]
+            val code = control.commandMap[name]
             if (!code.isNullOrEmpty()) {
                 sonyControlRepository.sendIRCC(code)
             }

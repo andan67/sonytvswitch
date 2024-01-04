@@ -34,7 +34,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
     ViewModel() {
     //TODO Inject repository
 
-    val activeSonyControlFlow = sonyControlRepository.activeSonyControl
+    val activeSonyControlFlow = sonyControlRepository.activeSonyControlFlow
 
     private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
     val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()
@@ -64,7 +64,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
                     uiState = uiState.copy(
                         isLoading = false,
                         isSuccess = true,
-                        message = StringEventMessage("Fetched ${sonyControlRepository.getSelectedControl()!!.channelList.size} channels from TV")
+                        message = StringEventMessage("Fetched ${sonyControlRepository.activeSonyControlState.value.channelList.size} channels from TV")
                     )
                 }
 
