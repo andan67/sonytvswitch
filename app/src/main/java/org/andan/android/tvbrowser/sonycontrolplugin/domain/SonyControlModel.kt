@@ -105,6 +105,14 @@ data class SonyChannel(
         }
     }
 
+    constructor(playingContentInfo: PlayingContentInfo):
+            this(playingContentInfo.source,
+                playingContentInfo.dispNum,
+                0,
+                playingContentInfo.programMediaType,
+                playingContentInfo.title,
+                playingContentInfo.uri)
+
     val shortSource: String
         get() {
             var i2 = source.indexOf("#")
@@ -129,7 +137,7 @@ data class PlayingContentInfo(
     val source: String = "",
     val dispNum: String = "----",
     val programMediaType: String = "",
-    val title: String = "Not available\"",
+    val title: String = "Not available",
     val uri: String = "",
     val programTitle: String = "",
     val startDateTime: String = "",

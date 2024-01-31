@@ -7,10 +7,11 @@ import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.os.RemoteException
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.SonyControlMainActivity
 import org.tvbrowser.devplugin.*
@@ -28,6 +29,11 @@ class TVBrowserSonyIPControlPlugin : Service() {
     /* The plugin manager of TV-Browser */
     @Inject
     lateinit var sonyControlRepository: SonyControlRepository
+
+    @Inject
+    @ApplicationScope
+    lateinit var externalScope: CoroutineScope
+
     private var mPluginManager: PluginManager? = null
 
     /* The set with the marking ids */
@@ -76,15 +82,8 @@ class TVBrowserSonyIPControlPlugin : Service() {
                 if (pluginMenu.id == SWITCH_TO_CHANNEL) {
                     Timber.d(" onProgramContextMenuSelected:switch to channel: $program.channel.channelName")
                     try {
-                        if (sonyControlRepository.getSelectedControl() != null) {
-                            val programUri =
-                                sonyControlRepository.getSelectedControl()!!.channelMap[program.channel.channelName]
-                            if (!programUri.isNullOrEmpty()) {
-                                GlobalScope.launch(Dispatchers.IO) {
-                                    sonyControlRepository.setPlayContent(programUri!!)
-                                    Timber.d("Switched to program uri:$programUri")
-                                }
-                            }
+                        externalScope.launch(Dispatchers.IO) {
+                            sonyControlRepository.setPlayContentFromChannelName(program.channel.channelName)
                         }
                     } catch (ex: java.lang.Exception) {
                         Timber.e(ex)
@@ -200,7 +199,9 @@ class TVBrowserSonyIPControlPlugin : Service() {
             channelNameList.add(channel.channelName)
         }
         Timber.d("updateChannelMap: ${channelNameList.size}")
-        sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
+        externalScope.launch(Dispatchers.IO) {
+            sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
+        }
     }
 
 

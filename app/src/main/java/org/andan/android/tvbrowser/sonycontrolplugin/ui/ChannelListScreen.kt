@@ -59,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListUiState
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 import timber.log.Timber
 
@@ -72,13 +73,13 @@ fun ChannelListScreen(
 ) {
     val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
 
-    /*val playingContentInfoState =
-        viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())*/
+    val channelListUIState = viewModel.channelListUiState.collectAsStateWithLifecycle()
+
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    /*    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
             viewModel.fetchPlayingContentInfo()
-        }*/
+    }
 
     Timber.d("ChannelListScreen")
 
@@ -107,7 +108,7 @@ fun ChannelListScreen(
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            //PlayingContentInfoHeaderContent(playingContentInfoState = playingContentInfoState, onclick = {navActions.navigateToPlayingContentInfoDetails()} )
+            PlayingContentInfoHeaderContent(playingContentInfo = channelListUIState.value.playingContentInfo, onclick = {(_) -> navActions.navigateToPlayingContentInfoDetails()} )
             ChannelListContent(channelListState = channelListState, onChannelClick = viewModel::switchToChannel )
         }
     }
@@ -262,7 +263,7 @@ private fun ChannelListContent(
             ChannelItem(
                 channel = channel.first,
                 tvbChannelTitle = channel.second,
-                onclick = { Timber.d("Clicked: $it"); onChannelClick(it.uri) }
+                onclick = { Timber.d("Clicked: $it"); onChannelClick(it.uri)}
             )
         }
     }
@@ -270,72 +271,15 @@ private fun ChannelListContent(
 
 @Composable
 fun PlayingContentInfoHeaderContent(
-    playingContentInfoState: State<PlayingContentInfo>,
-    onclick: () -> Unit
+    playingContentInfo: PlayingContentInfo,
+    onclick: (SonyChannel) -> Unit
 ) {
-    val playingContentInfo = playingContentInfoState.value
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { Timber.d("Clicked: ${playingContentInfo.source}"); onclick() }) {
-        Column {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 8.dp)
-                    .width(56.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = playingContentInfo.dispNum,
-                textAlign = TextAlign.Right
-            )
-        }
-        Column() {
-            Text(
-                modifier = Modifier.padding(horizontal = 0.dp),
-                style = MaterialTheme.typography.titleLarge,
-                text = playingContentInfo.title
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    painter = painterResource(id = R.drawable.ic_play_arrow),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = playingContentInfo.programTitle,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    painter = painterResource(id = R.drawable.ic_access_time),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = playingContentInfo.getStartEndTimeFormatted()!!,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    painter = painterResource(id = R.drawable.ic_input),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = playingContentInfo.source,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-        }
-    }
+    ChannelItem(channel = SonyChannel(playingContentInfo) ,
+        tvbChannelTitle = "",
+        //onclick = {Timber.d("Clicked ${playingContentInfoState.value}"); onclick},
+        onclick = onclick,
+        isHeader = true,
+        playingContentInfo = playingContentInfo)
     Divider(modifier = Modifier.padding(vertical = 4.dp))
 }
 
@@ -344,7 +288,9 @@ fun PlayingContentInfoHeaderContent(
 private fun ChannelItem(
     channel: SonyChannel,
     tvbChannelTitle: String?,
-    onclick: (SonyChannel) -> Unit
+    onclick: (SonyChannel) -> Unit,
+    isHeader: Boolean = false,
+    playingContentInfo: PlayingContentInfo = PlayingContentInfo()
 ) {
     Row(
         modifier = Modifier
@@ -366,6 +312,39 @@ private fun ChannelItem(
                 style = MaterialTheme.typography.titleLarge,
                 text = channel.title
             )
+            if(isHeader) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .width(20.dp),
+                        painter = painterResource(id = R.drawable.ic_play_arrow),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        style = MaterialTheme.typography.titleMedium,
+                        text = playingContentInfo.programTitle,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .width(20.dp),
+                        painter = painterResource(id = R.drawable.ic_access_time),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        style = MaterialTheme.typography.titleMedium,
+                        text = playingContentInfo.getStartEndTimeFormatted()!!,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     modifier = Modifier

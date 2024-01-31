@@ -21,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -34,15 +34,23 @@ fun SonyControlNavGraph(
     },
     openDrawer: () -> Unit = {},
     startDestination: String = NavDestinations.RemoteControl.route,
-    viewModel: SonyControlViewModel = hiltViewModel()
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = NavDestinations.ChannelList.route,
+        startDestination = startDestination,
     ) {
         composable(NavDestinations.ChannelList.route) {
             ChannelListScreen(navActions = navigationActions, openDrawer = openDrawer)
+        }
+
+        composable(NavDestinations.PlayingContentInfoDetails.route) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(NavDestinations.ChannelList.route)
+            }
+            val parentViewModel = hiltViewModel<ChannelListViewModel>(parentEntry)
+
+            PlayingContentInfoScreen(navActions = navigationActions, viewModel = parentViewModel)
         }
 
         composable(NavDestinations.ChannelMap.route) {
@@ -78,10 +86,6 @@ fun SonyControlNavGraph(
             )
         }
 
-        composable(NavDestinations.PlayingContentInfoDetails.route) {
-            PlayingContentInfoScreen(navActions = navigationActions, viewModel = viewModel)
-        }
-
         dialog(
             route = NavDestinations.AddControl.route,
             dialogProperties = DialogProperties(
@@ -93,7 +97,6 @@ fun SonyControlNavGraph(
             AddControlDialog(
                 navActions = navigationActions,
                 //initialAddControlStata = AddControlState.SPECIFY_HOST,
-                //viewModel = viewModel
             )
         }
 

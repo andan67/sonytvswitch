@@ -14,24 +14,32 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SonyControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.ChannelListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayingContentInfoScreen(
     navActions: NavigationActions,
-    viewModel: SonyControlViewModel
+    viewModel: ChannelListViewModel
+    //= hiltViewModel()
+    //playingContentInfoState: State<PlayingContentInfo> = mutableStateOf(PlayingContentInfo())
 ) {
 
-    val playingContentInfoState =
-        viewModel.playingContentInfo.observeAsState(initial = PlayingContentInfo())
+    val channelListUIState = viewModel.channelListUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchPlayingContentInfo()
+    }
 
     Scaffold(
         topBar = {
@@ -46,7 +54,7 @@ fun PlayingContentInfoScreen(
     ) { innerPadding ->
         PlayingContentInfoContent(
             modifier = Modifier.padding(innerPadding),
-            playingContentInfoState = playingContentInfoState
+            playingContentInfo = channelListUIState.value.playingContentInfo
         )
     }
 }
@@ -54,9 +62,8 @@ fun PlayingContentInfoScreen(
 @Composable
 fun PlayingContentInfoContent(
     modifier: Modifier,
-    playingContentInfoState: State<PlayingContentInfo>
+    playingContentInfo: PlayingContentInfo
 ) {
-    val playingContentInfo = playingContentInfoState.value
 
     val scrollState = rememberScrollState()
     Column(

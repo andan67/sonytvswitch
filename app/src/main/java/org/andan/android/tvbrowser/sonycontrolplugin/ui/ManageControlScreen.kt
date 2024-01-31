@@ -94,6 +94,7 @@ fun ManageControlScreen(
                     ManageControlMenu(
                         registerControlAction = { manageControlViewModel.registerControl() },
                         deleteControlAction = { manageControlViewModel.deleteControl() },
+                        fetchAllDataAction = {manageControlViewModel.fetchAllData()},
                         requestChannelListAction = { manageControlViewModel.fetchChannelList() },
                         enableWOLAction = { manageControlViewModel.wakeOnLan() },
                         checkConnectivityAction = { manageControlViewModel.checkAvailability() },
@@ -203,6 +204,7 @@ fun PropertyItem(
 fun ManageControlMenu(
     registerControlAction: () -> Unit,
     deleteControlAction: () -> Unit,
+    fetchAllDataAction: () -> Unit,
     requestChannelListAction: () -> Unit,
     enableWOLAction: () -> Unit,
     checkConnectivityAction: () -> Unit,
@@ -231,6 +233,11 @@ fun ManageControlMenu(
                     { openDialog.value = false; closeMenu() })
             },
             onClick = { openDialog.value = true; /*closeMenu()*/ },
+            enabled = enabled
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.fetch_all_data_action)) },
+            onClick = { fetchAllDataAction(); closeMenu() },
             enabled = enabled
         )
         DropdownMenuItem(

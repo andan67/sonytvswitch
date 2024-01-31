@@ -42,7 +42,8 @@ data class AddControlUiState(
 )
 
 @HiltViewModel
-class AddControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository,  @ApplicationScope private val externalScope: CoroutineScope) :
+class AddControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository,
+                                              @ApplicationScope private val externalScope: CoroutineScope) :
     ViewModel() {
 
     private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))

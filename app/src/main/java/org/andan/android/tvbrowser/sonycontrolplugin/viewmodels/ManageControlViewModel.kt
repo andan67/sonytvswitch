@@ -3,6 +3,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
@@ -30,7 +32,9 @@ data class ManageControlUiState(
 )
 
 @HiltViewModel
-class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository) :
+class ManageControlViewModel @Inject constructor(private val sonyControlRepository: SonyControlRepository,
+                                                 @ApplicationScope private val externalScope: CoroutineScope
+) :
     ViewModel() {
     //TODO Inject repository
 
@@ -54,57 +58,59 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
         }
     }
 
+    fun fetchAllData() {
+        if (uiState.isLoading) return
+            externalScope.launch(Dispatchers.IO) {
+                sonyControlRepository.fetchSystemInformation()
+                sonyControlRepository.fetchWolMode()
+            }
+    }
+
     fun fetchChannelList() {
         if (uiState.isLoading) return
-        viewModelScope.launch(Dispatchers.IO) {
+        externalScope.launch(Dispatchers.IO) {
             uiState = uiState.copy(isLoading = true, isSuccess = false)
-            val isSuccessResponse = sonyControlRepository.fetchChannelList()
-            when (isSuccessResponse) {
-                true -> {
-                    uiState = uiState.copy(
-                        isLoading = false,
-                        isSuccess = true,
-                        message = StringEventMessage("Fetched ${sonyControlRepository.activeSonyControlState.value.channelList.size} channels from TV")
-                    )
-                }
-
-                false -> {
-                    uiState = uiState.copy(
-                        isLoading = false,
-                        isSuccess = false,
-                        message = StringEventMessage("Failed to fetch channels from TV")
-                    )
-                }
+            val nFetchedChannels = sonyControlRepository.fetchChannelList()
+            uiState = if(nFetchedChannels >= 0) {
+                uiState.copy(
+                    isLoading = false,
+                    isSuccess = true,
+                    message = StringEventMessage("Fetched ${nFetchedChannels} channels from TV")
+                )
+            } else {
+                uiState.copy(
+                    isLoading = false,
+                    isSuccess = false,
+                    message = StringEventMessage("Failed to fetch channels from TV")
+                )
             }
         }
     }
 
     fun registerControl() {
-        if (uiState.isLoading) return
-        sonyControlRepository.getSelectedControl().let {
-            viewModelScope.launch {
-                uiState = uiState.copy(isLoading = true, isSuccess = false)
-                viewModelScope.launch(Dispatchers.IO) {
-                    val registrationStatus = sonyControlRepository.registerControl(
-                        sonyControlRepository.getSelectedControl()!!,
-                        null
-                    )
-                    when (registrationStatus.code) {
-                        RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
-                            uiState = uiState.copy(
-                                isLoading = false,
-                                isSuccess = true,
-                                message = StringEventMessage("Registration succeeded")
-                            )
-                        }
+        if (uiState.isLoading || uiState.sonyControl == null) return
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true, isSuccess = false)
+            viewModelScope.launch(Dispatchers.IO) {
+                val registrationStatus = sonyControlRepository.registerControl(
+                    uiState.sonyControl!!,
+                    null
+                )
+                when (registrationStatus.code) {
+                    RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
+                        uiState = uiState.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            message = StringEventMessage("Registration succeeded")
+                        )
+                    }
 
-                        else -> {
-                            uiState = uiState.copy(
-                                isLoading = false,
-                                isSuccess = false,
-                                message = StringEventMessage("Registration failed")
-                            )
-                        }
+                    else -> {
+                        uiState = uiState.copy(
+                            isLoading = false,
+                            isSuccess = false,
+                            message = StringEventMessage("Registration failed")
+                        )
                     }
                 }
             }
@@ -116,32 +122,28 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
     }
 
     fun checkAvailability() {
-        Timber.d("checkAvailability: $sonyControlRepository ${sonyControlRepository.getSelectedControl()}")
-        if (uiState.isLoading) return
-        sonyControlRepository.getSelectedControl()!!.ip.let {
-            viewModelScope.launch {
-                uiState = uiState.copy(isLoading = true, isSuccess = false)
-                val response =
-                    sonyControlRepository.getPowerStatus(sonyControlRepository.getSelectedControl()!!.ip)
-                when (response) {
-                    is Resource.Success -> {
-                        uiState = uiState.copy(
-                            isLoading = false,
-                            isSuccess = true,
-                            message = IntEventMessage(R.string.add_control_host_success_msg)
-                        )
-                    }
-
-                    is Resource.Error -> {
-                        uiState = uiState.copy(
-                            isLoading = false,
-                            isSuccess = false,
-                            message = IntEventMessage(R.string.add_control_host_failed_msg)
-                        )
-                    }
-
-                    else -> {}
+        if (uiState.isLoading || uiState.sonyControl == null) return
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true, isSuccess = false)
+            val response =
+                sonyControlRepository.getPowerStatus(uiState.sonyControl!!.ip)
+            when (response) {
+                is Resource.Success -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        isSuccess = true,
+                        message = IntEventMessage(R.string.add_control_host_success_msg)
+                    )
                 }
+
+                is Resource.Error -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        isSuccess = false,
+                        message = IntEventMessage(R.string.add_control_host_failed_msg)
+                    )
+                }
+                else -> {}
             }
         }
     }
