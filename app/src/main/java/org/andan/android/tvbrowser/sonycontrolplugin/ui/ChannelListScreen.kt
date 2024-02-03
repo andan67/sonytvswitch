@@ -91,6 +91,12 @@ fun ChannelListScreen(
                 onSearchTextChanged = {
                     searchText = it
                     viewModel.filter = it
+                },
+                menuContent = {
+                    ChannelListMenu(
+                        enableWOLAction = { viewModel.wakeOnLan() },
+                        screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
+                        screenOnAction = { viewModel.setPowerSavingMode("off") })
                 }
             )
         },
@@ -119,7 +125,8 @@ fun ChannelListScreen(
 fun ChannelTopAppBar(
     openDrawer: () -> Unit,
     searchText: String,
-    onSearchTextChanged: (String) -> Unit = {}
+    onSearchTextChanged: (String) -> Unit = {},
+    menuContent: @Composable() () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var searchIsActive by rememberSaveable { mutableStateOf(false) }
@@ -158,15 +165,15 @@ fun ChannelTopAppBar(
                     )
                 }
             }
-            ChannelListMenu({}, {}, {})
+            menuContent()
         })
 }
 
 @Composable
 fun ChannelListMenu(
-    onWakeOnLan: () -> Unit,
-    onScreenOff: () -> Unit,
-    onScreenOn: () -> Unit
+    enableWOLAction: () -> Unit = {},
+    screenOffAction: () -> Unit = {},
+    screenOnAction: () -> Unit = {}
 ) {
     TopAppBarDropdownMenu(
         iconContent = {
@@ -179,13 +186,13 @@ fun ChannelListMenu(
             closeMenu ->
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.wol_action)) },
-            onClick = { onWakeOnLan(); closeMenu() })
+            onClick = { enableWOLAction(); closeMenu() })
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.screen_off_action)) },
-            onClick = { onScreenOff(); closeMenu() })
+            onClick = { screenOffAction(); closeMenu() })
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.screen_on_action)) },
-            onClick = { onScreenOn(); closeMenu() })
+            onClick = { screenOnAction(); closeMenu() })
     }
 }
 

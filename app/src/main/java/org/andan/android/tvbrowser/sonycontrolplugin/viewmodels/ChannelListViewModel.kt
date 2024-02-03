@@ -46,8 +46,6 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
 
     private val filterFlow = MutableStateFlow("")
 
-    private val mappedChannels = HashMap<String, String>();
-
     init {
         Timber.d("Init ChannelListViewModel")
 
@@ -77,7 +75,7 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
 
     fun switchToChannel(uri: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            if(sonyControlRepository.setPlayContent(uri) == SonyControlRepository.SUCCESS_CODE) {
+            if (sonyControlRepository.setPlayContent(uri) == SonyControlRepository.SUCCESS_CODE) {
                 fetchPlayingContentInfo()
             }
         }
@@ -106,5 +104,13 @@ class ChannelListViewModel @Inject constructor(private val sonyControlRepository
                 else -> {}
             }
         }
+    }
+
+    fun setPowerSavingMode(mode: String) = viewModelScope.launch(Dispatchers.IO) {
+            sonyControlRepository.setPowerSavingMode(mode)
+        }
+
+    fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) {
+        sonyControlRepository.wakeOnLan()
     }
 }

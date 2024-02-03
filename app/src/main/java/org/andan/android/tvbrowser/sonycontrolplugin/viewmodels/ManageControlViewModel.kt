@@ -6,8 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
@@ -26,7 +28,7 @@ data class ManageControlUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val message: EventMessage? = null,
-    val sonyControl: SonyControl? = null
+    val sonyControl: SonyControl = SonyControl()
     //val isHostAvailable: Boolean = false,
     //val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
@@ -38,7 +40,10 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
     ViewModel() {
     //TODO Inject repository
 
-    val activeSonyControlFlow = sonyControlRepository.activeSonyControlFlow
+    private val activeControlStateFlow =
+        sonyControlRepository.activeSonyControlWithChannelsFlow.stateIn(
+            viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl()
+        )
 
     private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
     val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()
@@ -51,7 +56,7 @@ class ManageControlViewModel @Inject constructor(private val sonyControlReposito
 
     init {
         viewModelScope.launch {
-            activeSonyControlFlow.collect { sonyControl ->
+            activeControlStateFlow.collect { sonyControl ->
                 uiState = uiState.copy(sonyControl = sonyControl)
                 Timber.d("collect flow $sonyControl")
             }

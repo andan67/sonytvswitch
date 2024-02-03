@@ -37,8 +37,8 @@ data class ContentListItemResponse(
     val uri: String
 )
 
-fun ContentListItemResponse.asDomainModel(): SonyChannel {
-    return SonyChannel("", dispNum, index, programMediaType, title, uri)
+fun ContentListItemResponse.asDomainModel(source: String = ""): SonyChannel {
+    return SonyChannel(source, dispNum, index, programMediaType, title, uri)
 }
 
 data class SourceListItemResponse(val source: String)

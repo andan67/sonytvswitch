@@ -115,7 +115,7 @@ fun ManageControlScreen(
 @Composable
 private fun ManageControlContent(
     modifier: Modifier,
-    sonyControl: SonyControl?
+    sonyControl: SonyControl
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -127,55 +127,55 @@ private fun ManageControlContent(
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_host_name),
-            value = sonyControl?.ip,
+            value = sonyControl.ip,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_nick_name),
-            value = sonyControl?.nickname,
+            value = sonyControl.nickname,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_device_name),
-            value = sonyControl?.devicename,
+            value = sonyControl.devicename,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_uuid),
-            value = sonyControl?.uuid,
+            value = sonyControl.uuid,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_model),
-            value = sonyControl?.systemModel,
+            value = sonyControl.systemModel,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_mac),
-            value = sonyControl?.systemMacAddr,
+            value = sonyControl.systemMacAddr,
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_wol_mode),
-            value = sonyControl?.systemWolMode.toString(),
+            value = sonyControl.systemWolMode.toString(),
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_number_channels),
-            value = sonyControl?.channelList?.size.toString(),
+            value = sonyControl.channelList.size.toString(),
             showDivider = true
         )
         PropertyItem(
             modifier,
             label = stringResource(id = R.string.manage_control_sources),
-            value = sonyControl?.sourceList.toString(),
+            value = sonyControl.sourceList.joinToString { source -> source.substringAfter("tv:")},
             showDivider = false
         )
     }

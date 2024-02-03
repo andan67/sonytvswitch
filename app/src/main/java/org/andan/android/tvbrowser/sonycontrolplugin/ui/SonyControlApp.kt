@@ -16,7 +16,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
 import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SelectControlViewModel
 
 @Composable
-fun SonyControlApp() {
+fun SonyControlApp(startDestination: String) {
     SonyTVSwitchTheme {
         val navController = rememberNavController()
         val navigationActions = remember(navController) {
@@ -47,6 +47,7 @@ fun SonyControlApp() {
             SonyControlNavGraph(
                 navController = navController,
                 navigationActions = navigationActions,
+                startDestination = startDestination,
                 openDrawer = { coroutineScope.launch { drawerState.open() } }
             )
         }

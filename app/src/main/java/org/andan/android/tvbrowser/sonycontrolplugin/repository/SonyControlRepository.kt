@@ -365,13 +365,11 @@ SonyControlRepository @Inject constructor(
                         && sonyChannelResponse.title != "." && !sonyChannelResponse.title.isEmpty()
                         && !sonyChannelResponse.title.contains("TEST")
                     ) {
-                        val sonyChannel = sonyChannelResponse.asDomainModel()
-                        //
-                        // sonyChannel.source = source
+                        val sonyChannel = sonyChannelResponse.asDomainModel(source)
                         plist.add(sonyChannel)
                     }
                 }
-                resource.data!!.size
+                resource.data.size
             } else {
                 //_responseMessage.postValue(Event(resource.message))
                 -1

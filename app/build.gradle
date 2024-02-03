@@ -3,7 +3,9 @@ plugins {
     id 'kotlin-android'
     id 'com.google.dagger.hilt.android'
     id("com.google.devtools.ksp")
+    id 'com.diffplug.spotless'
 }
+
 
 android {
     compileSdk 34
@@ -180,4 +182,36 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+}
+
+spotless {
+    java {
+        target '**/*.java'
+        googleJavaFormat().aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+    kotlin {
+        target '**/*.kt'
+        //ktlint()
+        ktfmt()
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+    format 'misc', {
+        target '**/*.gradle', '**/*.md', '**/.gitignore'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'xml', {
+        target '**/*.xml'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
