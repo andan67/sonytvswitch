@@ -34,20 +34,22 @@ public final class Channel implements Parcelable {
     private String mChannelName;
     private byte[] mChannelIcon;
 
-    public static final Creator<Channel> CREATOR = new Creator<Channel>() {
-        @Override
-        public Channel createFromParcel(Parcel source) {
-            return new Channel(source);
-        }
+    public static final Creator<Channel> CREATOR =
+            new Creator<Channel>() {
+                @Override
+                public Channel createFromParcel(Parcel source) {
+                    return new Channel(source);
+                }
 
-        @Override
-        public Channel[] newArray(int size) {
-            return new Channel[size];
-        }
-    };
+                @Override
+                public Channel[] newArray(int size) {
+                    return new Channel[size];
+                }
+            };
 
     /**
      * Creates an instance of this class from the given Parcel.
+     *
      * <p>
      *
      * @param source The Parcel to read the values of this Channel.
@@ -58,9 +60,10 @@ public final class Channel implements Parcelable {
 
     /**
      * Creates an instance of this class.
+     *
      * <p>
      *
-     * @param id          The unique id of the the TV-Browser channel.
+     * @param id The unique id of the the TV-Browser channel.
      * @param channelName The name of the TV-Browser channel.
      * @param channelIcon The data of the icon of the TV-Browser channel.
      */
@@ -72,6 +75,7 @@ public final class Channel implements Parcelable {
 
     /**
      * Gets the unique id of this Channel.
+     *
      * <p>
      *
      * @return The unique id of this Channel.
@@ -82,6 +86,7 @@ public final class Channel implements Parcelable {
 
     /**
      * Gets the name of this Channel.
+     *
      * <p>
      *
      * @return The name of this Channel.
@@ -92,6 +97,7 @@ public final class Channel implements Parcelable {
 
     /**
      * Gets the data of the icon of this Channel.
+     *
      * <p>
      *
      * @return A byte array with the data of the icon of this channel or <code>null</code>.
@@ -101,8 +107,7 @@ public final class Channel implements Parcelable {
     }
 
     /**
-     * Gets the interface version of this Channel.
-     * <o>
+     * Gets the interface version of this Channel. <o>
      *
      * @return The interface version of this Channel.
      */

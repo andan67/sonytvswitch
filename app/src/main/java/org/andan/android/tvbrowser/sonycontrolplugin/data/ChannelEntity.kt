@@ -9,15 +9,13 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = Constants.CHANNEL_TABLE,
     indices = arrayOf(Index("control_uuid"), Index("uri")),
-    foreignKeys = arrayOf(
-        ForeignKey(
-            entity = ControlEntity::class,
-            parentColumns = arrayOf("uuid"),
-            childColumns = arrayOf("control_uuid"),
-            onDelete = CASCADE
-        )
-    )
-)
+    foreignKeys =
+        arrayOf(
+            ForeignKey(
+                entity = ControlEntity::class,
+                parentColumns = arrayOf("uuid"),
+                childColumns = arrayOf("control_uuid"),
+                onDelete = CASCADE)))
 data class ChannelEntity(
     val displayNumber: String,
     val control_uuid: String,
@@ -27,6 +25,5 @@ data class ChannelEntity(
     var title: String,
     val uri: String
 ) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+  @PrimaryKey(autoGenerate = true) var id: Long = 0
 }

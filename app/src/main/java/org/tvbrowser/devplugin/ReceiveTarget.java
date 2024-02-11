@@ -35,24 +35,25 @@ public class ReceiveTarget implements Parcelable {
     private int mId;
     private String mTitle;
 
-    public static final Creator<ReceiveTarget> CREATOR = new Creator<ReceiveTarget>() {
-        @Override
-        public ReceiveTarget createFromParcel(Parcel source) {
-            return new ReceiveTarget(source);
-        }
+    public static final Creator<ReceiveTarget> CREATOR =
+            new Creator<ReceiveTarget>() {
+                @Override
+                public ReceiveTarget createFromParcel(Parcel source) {
+                    return new ReceiveTarget(source);
+                }
 
-        @Override
-        public ReceiveTarget[] newArray(int size) {
-            return new ReceiveTarget[size];
-        }
-    };
+                @Override
+                public ReceiveTarget[] newArray(int size) {
+                    return new ReceiveTarget[size];
+                }
+            };
 
     /**
      * Creates an instance of this class.
      *
      * @param plugin The service that provides this ReceiveTarget.
-     * @param id     The id of this ReceiveTarget.
-     * @param title  The title of the context menu entry.
+     * @param id The id of this ReceiveTarget.
+     * @param title The title of the context menu entry.
      */
     public ReceiveTarget(Service plugin, String title, int id) {
         mServiceClass = plugin.getClass().getCanonicalName();
@@ -62,6 +63,7 @@ public class ReceiveTarget implements Parcelable {
 
     /**
      * Creates an instance of this class from the given Parcel.
+     *
      * <p>
      *
      * @param source The Parcel to read the values of this Program.
@@ -72,6 +74,7 @@ public class ReceiveTarget implements Parcelable {
 
     /**
      * Gets the title of this ReceiveTarget.
+     *
      * <p>
      *
      * @return The title for the context menu entry.
@@ -82,6 +85,7 @@ public class ReceiveTarget implements Parcelable {
 
     /**
      * Gets the canonical name of the service class.
+     *
      * <p>
      *
      * @return The canonical name of the service class.
@@ -92,6 +96,7 @@ public class ReceiveTarget implements Parcelable {
 
     /**
      * Gets the id of this ReceiveTarget.
+     *
      * <p>
      *
      * @return The id of this ReceiveTarget.
@@ -102,12 +107,13 @@ public class ReceiveTarget implements Parcelable {
 
     /**
      * Checks if this ReceiveTarget is the ReceiveTarget with the given parameter.
+     *
      * <p>
      *
      * @param service The service to check this ReceiveTarget for.
-     * @param id      The id of the ReceiveTarget to check.
-     * @return <code>true</code> if this is the ReceiveTarget with the given parameter,
-     * <code>false</code> otherwise.
+     * @param id The id of the ReceiveTarget to check.
+     * @return <code>true</code> if this is the ReceiveTarget with the given parameter, <code>false
+     *     </code> otherwise.
      */
     public boolean isReceiveTargetOfServiceWithId(Service service, int id) {
         return mId == id && service.getClass().getCanonicalName().equals(mServiceClass);

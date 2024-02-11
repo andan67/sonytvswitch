@@ -3,7 +3,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.network
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 
-
 data class PlayingContentInfoResponse(
     val source: String,
     val dispNum: String,
@@ -16,17 +15,17 @@ data class PlayingContentInfoResponse(
 )
 
 fun PlayingContentInfoResponse.asDomainModel(): PlayingContentInfo {
-    // Elvis operator is used here because parameters can be null as result of GSON not being null safe in the context of Kotlin!
-    return PlayingContentInfo(
-        source ?: "",
-        dispNum ?: "----",
-        programMediaType ?: "",
-        title ?: "Not available",
-        uri ?: "",
-        programTitle ?: "",
-        startDateTime ?: "",
-        durationSec ?: 0
-    )
+  // Elvis operator is used here because parameters can be null as result of GSON not being null
+  // safe in the context of Kotlin!
+  return PlayingContentInfo(
+      source ?: "",
+      dispNum ?: "----",
+      programMediaType ?: "",
+      title ?: "Not available",
+      uri ?: "",
+      programTitle ?: "",
+      startDateTime ?: "",
+      durationSec ?: 0)
 }
 
 data class ContentListItemResponse(
@@ -38,7 +37,7 @@ data class ContentListItemResponse(
 )
 
 fun ContentListItemResponse.asDomainModel(source: String = ""): SonyChannel {
-    return SonyChannel(source, dispNum, index, programMediaType, title, uri)
+  return SonyChannel(source, dispNum, index, programMediaType, title, uri)
 }
 
 data class SourceListItemResponse(val source: String)
@@ -51,8 +50,11 @@ data class SystemInformationResponse(
 )
 
 data class InterfaceInformationResponse(
-    val interfaceVersion: String = "", val modelName: String = "", val productCategory: String = "",
-    val productName: String = "", val serverName: String = ""
+    val interfaceVersion: String = "",
+    val modelName: String = "",
+    val productCategory: String = "",
+    val productName: String = "",
+    val serverName: String = ""
 )
 
 data class WolModeResponse(val enabled: Boolean)

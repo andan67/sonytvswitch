@@ -12,44 +12,43 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.drawer.AppDrawer
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.drawer.SelectControlViewModel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavDestinations
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.SonyControlNavGraph
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
-import org.andan.android.tvbrowser.sonycontrolplugin.viewmodels.SelectControlViewModel
 
 @Composable
 fun SonyControlApp(startDestination: String) {
-    SonyTVSwitchTheme {
-        val navController = rememberNavController()
-        val navigationActions = remember(navController) {
-            NavigationActions(navController)
-        }
+  SonyTVSwitchTheme {
+    val navController = rememberNavController()
+    val navigationActions = remember(navController) { NavigationActions(navController) }
 
-        val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute =
-            navBackStackEntry?.destination?.route ?: NavDestinations.ChannelList.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route ?: NavDestinations.ChannelList.route
 
-        val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-        val selectControlViewModel: SelectControlViewModel = hiltViewModel()
+    val selectControlViewModel: SelectControlViewModel = hiltViewModel()
 
-        ModalNavigationDrawer(
-            drawerContent = {
-                AppDrawer(
-                    currentRoute = currentRoute,
-                    navigationActions = navigationActions,
-                    closeDrawer = { coroutineScope.launch { drawerState.close() } },
-                    viewModel = selectControlViewModel
-                )
-            },
-            drawerState = drawerState,
-        ) {
-            SonyControlNavGraph(
-                navController = navController,
-                navigationActions = navigationActions,
-                startDestination = startDestination,
-                openDrawer = { coroutineScope.launch { drawerState.open() } }
-            )
-        }
+    ModalNavigationDrawer(
+        drawerContent = {
+          AppDrawer(
+              currentRoute = currentRoute,
+              navigationActions = navigationActions,
+              closeDrawer = { coroutineScope.launch { drawerState.close() } },
+              viewModel = selectControlViewModel)
+        },
+        drawerState = drawerState,
+    ) {
+      SonyControlNavGraph(
+          navController = navController,
+          navigationActions = navigationActions,
+          startDestination = startDestination,
+          openDrawer = { coroutineScope.launch { drawerState.open() } })
     }
+  }
 }

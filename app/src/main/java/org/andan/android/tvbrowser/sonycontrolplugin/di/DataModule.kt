@@ -13,47 +13,36 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
+import javax.inject.Singleton
 import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_DATABASE
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDatabase
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
-import javax.inject.Qualifier
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
-    @Qualifier
-    @Retention(AnnotationRetention.BINARY)
-    annotation class UserSettings
+  @Qualifier @Retention(AnnotationRetention.BINARY) annotation class UserSettings
 
-    @UserSettings
-    @Provides
-    @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create(
-            corruptionHandler = ReplaceFileCorruptionHandler(
-                produceNewData = { emptyPreferences() }
-            ),
-            produceFile = { context.preferencesDataStoreFile("user_settings") }
-        )
-    }
+  @UserSettings
+  @Provides
+  @Singleton
+  fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+    return PreferenceDataStoreFactory.create(
+        corruptionHandler = ReplaceFileCorruptionHandler(produceNewData = { emptyPreferences() }),
+        produceFile = { context.preferencesDataStoreFile("user_settings") })
+  }
 
-    @Provides
-    @Singleton
-    fun provide(@ApplicationContext context: Context) = Room.databaseBuilder(
-        context, ControlDatabase::class.java, CONTROL_DATABASE
-    )
-        .allowMainThreadQueries()
-        .fallbackToDestructiveMigration()
-        .build()
+  @Provides
+  @Singleton
+  fun provide(@ApplicationContext context: Context) =
+      Room.databaseBuilder(context, ControlDatabase::class.java, CONTROL_DATABASE)
+          .allowMainThreadQueries()
+          .fallbackToDestructiveMigration()
+          .build()
 
-    @Provides
-    @Singleton
-    fun provideDao(db: ControlDatabase) = db.controlDao()
+  @Provides @Singleton fun provideDao(db: ControlDatabase) = db.controlDao()
 
-    @Provides
-    @Singleton
-    fun provideSonyControlDataMapper() = SonyControlDataMapper()
-
+  @Provides @Singleton fun provideSonyControlDataMapper() = SonyControlDataMapper()
 }

@@ -33,22 +33,23 @@ public final class PluginMenu implements Parcelable {
     private int mId;
     private String mTitle;
 
-    public static final Creator<PluginMenu> CREATOR = new Creator<PluginMenu>() {
-        @Override
-        public PluginMenu createFromParcel(Parcel source) {
-            return new PluginMenu(source);
-        }
+    public static final Creator<PluginMenu> CREATOR =
+            new Creator<PluginMenu>() {
+                @Override
+                public PluginMenu createFromParcel(Parcel source) {
+                    return new PluginMenu(source);
+                }
 
-        @Override
-        public PluginMenu[] newArray(int size) {
-            return new PluginMenu[size];
-        }
-    };
+                @Override
+                public PluginMenu[] newArray(int size) {
+                    return new PluginMenu[size];
+                }
+            };
 
     /**
      * Creates an instance of this class.
      *
-     * @param id    The id of this PluginMenu.
+     * @param id The id of this PluginMenu.
      * @param title The title of the context menu entry.
      */
     public PluginMenu(int id, String title) {
@@ -58,6 +59,7 @@ public final class PluginMenu implements Parcelable {
 
     /**
      * Creates an instance of this class from the given Parcel.
+     *
      * <p>
      *
      * @param source The Parcel to read the values of this PluginMenu.
@@ -73,6 +75,7 @@ public final class PluginMenu implements Parcelable {
 
     /**
      * Gets the id of this PluginMenu.
+     *
      * <p>
      *
      * @return The id of this PluginMenu.
@@ -83,6 +86,7 @@ public final class PluginMenu implements Parcelable {
 
     /**
      * Gets the title for the context menu entry of this PluginMenu.
+     *
      * <p>
      *
      * @return The title for the context menu entry.
@@ -92,8 +96,7 @@ public final class PluginMenu implements Parcelable {
     }
 
     /**
-     * Gets the interface version of this PluginMenu.
-     * <o>
+     * Gets the interface version of this PluginMenu. <o>
      *
      * @return The interface version of this PluginMenu.
      */

@@ -37,20 +37,22 @@ public class TvBrowserSettings implements Parcelable {
     private long mLastKnownProgramId;
     private long mLastKnownDataDate;
 
-    public static final Creator<TvBrowserSettings> CREATOR = new Creator<TvBrowserSettings>() {
-        @Override
-        public TvBrowserSettings createFromParcel(Parcel source) {
-            return new TvBrowserSettings(source);
-        }
+    public static final Creator<TvBrowserSettings> CREATOR =
+            new Creator<TvBrowserSettings>() {
+                @Override
+                public TvBrowserSettings createFromParcel(Parcel source) {
+                    return new TvBrowserSettings(source);
+                }
 
-        @Override
-        public TvBrowserSettings[] newArray(int size) {
-            return new TvBrowserSettings[size];
-        }
-    };
+                @Override
+                public TvBrowserSettings[] newArray(int size) {
+                    return new TvBrowserSettings[size];
+                }
+            };
 
     /**
      * Creates an instance of this class from the given Parcel.
+     *
      * <p>
      *
      * @param source The Parcel to read the values of this TvBrowserSettings.
@@ -61,10 +63,12 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Creates an instance of this class.
+     *
      * <p>
      *
-     * @param usesDarkTheme <code>true</code> if TV-Browser uses the dark theme, <code>false</code> if not.
-     * @param tvbVersion    The version of the TV-Browser.
+     * @param usesDarkTheme <code>true</code> if TV-Browser uses the dark theme, <code>false</code>
+     *     if not.
+     * @param tvbVersion The version of the TV-Browser.
      */
     public TvBrowserSettings(boolean usesDarkTheme, String tvbVersion) {
         this(usesDarkTheme, tvbVersion, -1, -2, -2, 0);
@@ -72,16 +76,24 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Creates an instance of this class.
+     *
      * <p>
      *
-     * @param usesDarkTheme       <code>true</code> if TV-Browser uses the dark theme, <code>false</code> if not.
-     * @param tvbVersion          The version of the TV-Browser.
-     * @param tvbVersionCode      The version code of the TV-Browser.
+     * @param usesDarkTheme <code>true</code> if TV-Browser uses the dark theme, <code>false</code>
+     *     if not.
+     * @param tvbVersion The version of the TV-Browser.
+     * @param tvbVersionCode The version code of the TV-Browser.
      * @param firstKnownProgramId The first known id of the data.
-     * @param lastKnownProgramId  The last known id of the data.
-     * @param lastKnownDataDate   The last known date of the data.
+     * @param lastKnownProgramId The last known id of the data.
+     * @param lastKnownDataDate The last known date of the data.
      */
-    public TvBrowserSettings(boolean usesDarkTheme, String tvbVersion, int tvbVersionCode, long firstKnownProgramId, long lastKnownProgramId, long lastKnownDataDate) {
+    public TvBrowserSettings(
+            boolean usesDarkTheme,
+            String tvbVersion,
+            int tvbVersionCode,
+            long firstKnownProgramId,
+            long lastKnownProgramId,
+            long lastKnownDataDate) {
         mUsesDarkTheme = usesDarkTheme;
         mTvbVersion = tvbVersion;
         mTvbVersionCode = tvbVersionCode;
@@ -92,6 +104,7 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Gets the version of TV-Browser.
+     *
      * <p>
      *
      * @return The version of TV-Browser.
@@ -102,6 +115,7 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Gets the version code of TV-Browser
+     *
      * <p>
      *
      * @return The version code of TV-Browser.
@@ -112,9 +126,9 @@ public class TvBrowserSettings implements Parcelable {
     }
 
     /**
-     * Gets the first known program id of the data.
-     * If <code>-1</code> is returned no data is available,
-     * if <code>-2</code> is returned the state of the data is unknown.
+     * Gets the first known program id of the data. If <code>-1</code> is returned no data is
+     * available, if <code>-2</code> is returned the state of the data is unknown.
+     *
      * <p>
      *
      * @return The the first known id of the data.
@@ -125,9 +139,9 @@ public class TvBrowserSettings implements Parcelable {
     }
 
     /**
-     * Gets the last known program id of the data.
-     * If <code>-1</code> is returned no data is available,
-     * if <code>-2</code> is returned the state of the data is unknown.
+     * Gets the last known program id of the data. If <code>-1</code> is returned no data is
+     * available, if <code>-2</code> is returned the state of the data is unknown.
+     *
      * <p>
      *
      * @return The the last known id of the data.
@@ -139,6 +153,7 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Gets the last known date of the data or <code>0</code> if no data is available.
+     *
      * <p>
      *
      * @return The the last known date of the data.
@@ -150,6 +165,7 @@ public class TvBrowserSettings implements Parcelable {
 
     /**
      * Gets if TV-Browser uses the dark theme.
+     *
      * <p>
      *
      * @return <code>true</code> if TV-Browser uses the dark theme, <code>false</code> if not.

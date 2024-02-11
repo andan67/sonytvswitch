@@ -39,20 +39,22 @@ public final class Program implements Parcelable {
     private String mEpisodeTitle;
     private Channel mChannel;
 
-    public static final Creator<Program> CREATOR = new Creator<Program>() {
-        @Override
-        public Program createFromParcel(Parcel source) {
-            return new Program(source);
-        }
+    public static final Creator<Program> CREATOR =
+            new Creator<Program>() {
+                @Override
+                public Program createFromParcel(Parcel source) {
+                    return new Program(source);
+                }
 
-        @Override
-        public Program[] newArray(int size) {
-            return new Program[size];
-        }
-    };
+                @Override
+                public Program[] newArray(int size) {
+                    return new Program[size];
+                }
+            };
 
     /**
      * Creates an instance of this class from the given Parcel.
+     *
      * <p>
      *
      * @param source The Parcel to read the values of this Program.
@@ -63,18 +65,29 @@ public final class Program implements Parcelable {
 
     /**
      * Creates an instance of this class.
+     *
      * <p>
      *
-     * @param id               The unique id of this TV-Browser program.
-     * @param startTime        The start time of this TV-Browser Program in milliseconds since 1970 in UTC timezone.
-     * @param endTime          The end time of this TV-Browser Program in milliseconds since 1970 in UTC timezone.
-     * @param title            The title of this TV-Browser Program.
+     * @param id The unique id of this TV-Browser program.
+     * @param startTime The start time of this TV-Browser Program in milliseconds since 1970 in UTC
+     *     timezone.
+     * @param endTime The end time of this TV-Browser Program in milliseconds since 1970 in UTC
+     *     timezone.
+     * @param title The title of this TV-Browser Program.
      * @param shortDescription The short description of this TV-Browser Program.
-     * @param description      The full description of this TV-Browser Program.
-     * @param episodeTitle     The episode title of this TV-Browser Program.
-     * @param channel          The {@link Channel} of this TV-Browser Program.
+     * @param description The full description of this TV-Browser Program.
+     * @param episodeTitle The episode title of this TV-Browser Program.
+     * @param channel The {@link Channel} of this TV-Browser Program.
      */
-    public Program(long id, long startTime, long endTime, String title, String shortDescription, String description, String episodeTitle, Channel channel) {
+    public Program(
+            long id,
+            long startTime,
+            long endTime,
+            String title,
+            String shortDescription,
+            String description,
+            String episodeTitle,
+            Channel channel) {
         mId = id;
         mStartTime = startTime;
         mEndTime = endTime;
@@ -87,6 +100,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the unique id of this Program.
+     *
      * <p>
      *
      * @return The unique id of this Program.
@@ -97,6 +111,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the start time of this Program in milliseconds since 1970 in UTC timezone.
+     *
      * <p>
      *
      * @return The start time of this Program in milliseconds since 1970 in UTC timezone.
@@ -107,6 +122,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the end time of this Program in milliseconds since 1970 in UTC timezone.
+     *
      * <p>
      *
      * @return The end time of this Program in milliseconds since 1970 in UTC timezone.
@@ -117,9 +133,11 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the short description for this program.
+     *
      * <p>
      *
-     * @return The short description for this program or <code>null</code> if it has no short description.
+     * @return The short description for this program or <code>null</code> if it has no short
+     *     description.
      */
     public String getShortDescription() {
         return mShortDescription;
@@ -127,9 +145,11 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the full description for this program.
+     *
      * <p>
      *
-     * @return The full description for this program or <code>null</code> if it has no full description.
+     * @return The full description for this program or <code>null</code> if it has no full
+     *     description.
      */
     public String getDescription() {
         return mDescription;
@@ -137,6 +157,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the title for this Program.
+     *
      * <p>
      *
      * @return The title for this Program.
@@ -147,6 +168,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the episode title for this Program.
+     *
      * <p>
      *
      * @return The episode title for this Program or <code>null</code> if it has no episode title.
@@ -157,6 +179,7 @@ public final class Program implements Parcelable {
 
     /**
      * Gets the Channel for this program.
+     *
      * <p>
      *
      * @return The {@link Channel} of this program.
@@ -166,8 +189,7 @@ public final class Program implements Parcelable {
     }
 
     /**
-     * Gets the interface version of this Program.
-     * <o>
+     * Gets the interface version of this Program. <o>
      *
      * @return The interface version of this Program.
      */
