@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="buttonBlue">#3F51B5</color>
+    <color name="buttonBlue">#2196F3</color>
     <color name="buttonGreen">#4CAF50</color>
     <color name="commandRed">#D50000</color>
     <color name="commandGreen">#00D500</color>

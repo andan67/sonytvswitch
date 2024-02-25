@@ -10,7 +10,8 @@ enum class NavDestinations(val route: String, label: String = "") {
   RemoteControl(route = "remote_control"),
   AddControl(route = "add_control"),
   ManageControl(route = "manage_control"),
-  Settings(route = "settings")
+  Settings(route = "settings"),
+  Help(route = "help")
 }
 
 /** Models the navigation actions in the app. */
@@ -47,6 +48,10 @@ class NavigationActions(private val navController: NavHostController) {
 
   fun navigateToSettings() {
     navController.navigate(NavDestinations.Settings.route)
+  }
+
+  fun navigateToHelp() {
+    navController.navigate(NavDestinations.Help.route)
   }
 
   fun navigateUp() {

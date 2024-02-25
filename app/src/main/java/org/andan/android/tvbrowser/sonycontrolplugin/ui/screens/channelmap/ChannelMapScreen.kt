@@ -5,7 +5,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,12 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -154,69 +151,6 @@ private fun ChannelMapContent(
 }
 
 @Composable
-private fun ChannelMapItem2(
-    index: Int,
-    tvbChannelName: String,
-    channel: SonyChannel?,
-    onChannelClick: (String) -> Unit
-) {
-  Column {
-    ListItem(
-        modifier = Modifier.clickable { onChannelClick(tvbChannelName) }.padding(0.dp),
-        // overlineContent = {Box(modifier = Modifier.height(0.dp))},
-        headlineContent = { Text(text = tvbChannelName) },
-        leadingContent = {
-          Text(
-              text = index.toString(),
-              // modifier = Modifier.padding(start = 16.dp, end = 8.dp).width(56.dp),
-              // style = MaterialTheme.typography.titleLarge,
-              textAlign = TextAlign.Right)
-        },
-        supportingContent = {
-          Row(
-              modifier = Modifier.horizontalScroll(rememberScrollState()),
-              verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    modifier = Modifier.padding(end = 4.dp).width(16.dp),
-                    painter = painterResource(id = R.drawable.baseline_tv_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary)
-                if (channel != null) {
-                  Text(
-                      // style = MaterialTheme.typography.titleMedium,
-                      text = channel.title
-                      // color = MaterialTheme.colorScheme.secondary
-                      )
-                  Icon(
-                      modifier = Modifier.padding(horizontal = 4.dp).width(16.dp),
-                      painter = painterResource(id = R.drawable.ic_action_input),
-                      contentDescription = null,
-                      tint = MaterialTheme.colorScheme.secondary)
-                  Text(
-                      // style = MaterialTheme.typography.titleMedium,
-                      text = channel.shortSource
-                      // color = MaterialTheme.colorScheme.secondary
-                      )
-                } else {
-                  Text(
-                      // style = MaterialTheme.typography.titleMedium,
-                      text = "UNMAPPED",
-                      // color = MaterialTheme.colorScheme.secondary)
-                  )
-                }
-              }
-        },
-        trailingContent = {
-          Icon(
-              painter = painterResource(id = R.drawable.baseline_arrow_right_24),
-              contentDescription = null,
-          )
-        })
-    Divider()
-  }
-}
-
-@Composable
 private fun ChannelMapItem(
     index: Int,
     tvbChannelName: String,
@@ -231,7 +165,7 @@ private fun ChannelMapItem(
         Column {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                modifier = Modifier.padding(end = 16.dp).width(32.dp),
+                modifier = Modifier.padding(end = 12.dp).width(40.dp),
                 style = MaterialTheme.typography.bodyLarge,
                 text = index.toString(),
                 textAlign = TextAlign.Right)
@@ -244,7 +178,7 @@ private fun ChannelMapItem(
               modifier = Modifier.horizontalScroll(rememberScrollState()),
               verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.padding(end = 4.dp, start = 48.dp).width(16.dp),
+                    modifier = Modifier.padding(end = 4.dp, start = 52.dp).width(16.dp),
                     painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary)
@@ -271,7 +205,7 @@ private fun ChannelMapItem(
               }
         }
       }
-  Divider(Modifier.height(1.dp))
+  // Divider(Modifier.height(1.dp))
 }
 
 @Composable

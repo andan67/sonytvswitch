@@ -58,7 +58,7 @@ fun AppDrawer(
           label = { Text(stringResource(id = R.string.menu_remote_control)) },
           icon = {
             Icon(
-                painterResource(id = R.drawable.ic_settings_remote),
+                painterResource(id = R.drawable.outline_settings_remote_24),
                 null,
                 modifier = Modifier.width(24.dp))
           },
@@ -87,7 +87,7 @@ fun AppDrawer(
           label = { Text(stringResource(id = R.string.menu_add_control)) },
           icon = {
             Icon(
-                painterResource(id = R.drawable.ic_action_add),
+                painterResource(id = R.drawable.outline_add_24),
                 null,
                 modifier = Modifier.width(24.dp))
           },
@@ -101,7 +101,7 @@ fun AppDrawer(
           label = { Text(stringResource(id = R.string.menu_manage_control)) },
           icon = {
             Icon(
-                painterResource(id = R.drawable.ic_action_edit),
+                painterResource(id = R.drawable.outline_edit_24),
                 null,
                 modifier = Modifier.width(24.dp))
           },
@@ -127,7 +127,7 @@ fun AppDrawer(
           label = { Text(stringResource(id = R.string.menu_settings)) },
           icon = {
             Icon(
-                painterResource(id = R.drawable.ic_settings),
+                painterResource(id = R.drawable.outline_settings_24),
                 null,
                 modifier = Modifier.width(24.dp))
           },
@@ -141,12 +141,15 @@ fun AppDrawer(
           label = { Text(stringResource(id = R.string.menu_help)) },
           icon = {
             Icon(
-                painterResource(id = R.drawable.ic_help_outline),
+                painterResource(id = R.drawable.outline_help_outline_24),
                 null,
                 modifier = Modifier.width(24.dp))
           },
           selected = false,
-          onClick = { closeDrawer() },
+          onClick = {
+            navigationActions.navigateToHelp()
+            closeDrawer()
+          },
           modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding))
     }
   }
@@ -182,54 +185,68 @@ private fun DrawerHeader(
     // Timber.d("DrawerHeader controlList.size: ${uiState.controlList.size}")
 
     var expanded by remember { mutableStateOf(false) }
-    Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.padding(horizontal = 28.dp)) {
-      Icon(painterResource(id = R.drawable.baseline_tv_24), null)
-      ExposedDropdownMenuBox(
-          modifier = modifier.padding(start = 20.dp),
-          expanded = expanded,
-          onExpandedChange = { expanded = !expanded }) {
-            TextField(
-                modifier = modifier.menuAnchor(),
-                // .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
-                // .padding(start = 16.dp),
-                readOnly = true,
-                value = uiState.selectedControl?.nickname ?: "",
-                onValueChange = {},
-                label = {
-                  Text(
-                      stringResource(R.string.select_remote_controller_label),
-                      color = MaterialTheme.colorScheme.primary)
-                },
-                // leadingIcon = { Icon(painterResource(id = R.drawable.baseline_tv_24), null) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                colors =
-                    TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent))
-            ExposedDropdownMenu(
-                // modifier = modifier.fillMaxWidth().padding(start = 28.dp),
-                expanded = expanded,
-                onDismissRequest = { expanded = false }) {
-                  uiState.controlList.forEach { control ->
-                    DropdownMenuItem(
-                        // modifier = modifier.fillMaxWidth().padding(start = 16.dp),
-                        onClick = {
-                          // selectedOptionText = selectionOption.nickname
-                          expanded = false
-                          // check if new position/control index is set
-                          if (uiState.selectedControl?.uuid != control.uuid) {
-                            // viewModel.setSelectedControlIndex(index)
-                            viewModel.setActiveControl(control.uuid)
-                            Timber.d("onItemSelected ${control.nickname}")
-                          }
-                        },
-                        text = { Text(text = control.nickname) })
-                  }
-                }
-          }
-    }
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 28.dp)) {
+          Icon(
+              painterResource(id = R.drawable.baseline_tv_24),
+              null,
+              tint = MaterialTheme.colorScheme.onSurfaceVariant)
+          ExposedDropdownMenuBox(
+              modifier = modifier.padding(start = 20.dp),
+              expanded = expanded,
+              onExpandedChange = { expanded = !expanded }) {
+                TextField(
+                    modifier = modifier.menuAnchor(),
+                    // .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
+                    // .padding(start = 16.dp),
+                    readOnly = true,
+                    value = uiState.selectedControl?.nickname ?: "",
+                    onValueChange = {},
+                    label = {
+                      Text(
+                          stringResource(R.string.select_remote_controller_label),
+                          color = MaterialTheme.colorScheme.primary)
+                    },
+                    // leadingIcon = { Icon(painterResource(id = R.drawable.baseline_tv_24), null)
+                    // },
+                    trailingIcon = {
+                      ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    colors =
+                        TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent))
+                ExposedDropdownMenu(
+                    // modifier = modifier.fillMaxWidth().padding(start = 28.dp),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }) {
+                      uiState.controlList.forEach { control ->
+                        DropdownMenuItem(
+                            // modifier = modifier.fillMaxWidth().padding(start = 16.dp),
+                            onClick = {
+                              // selectedOptionText = selectionOption.nickname
+                              expanded = false
+                              // check if new position/control index is set
+                              if (uiState.selectedControl?.uuid != control.uuid) {
+                                // viewModel.setSelectedControlIndex(index)
+                                viewModel.setActiveControl(control.uuid)
+                                Timber.d("onItemSelected ${control.nickname}")
+                              }
+                            },
+                            text = {
+                              Text(
+                                  text = control.nickname,
+                                  color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            })
+                      }
+                    }
+              }
+        }
   }
 }

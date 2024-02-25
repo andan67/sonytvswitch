@@ -59,12 +59,6 @@ object NetworkModule {
     return SessionManager(tokenStore, sonyServiceProvider)
   }
 
-  /*    @Singleton
-  @Provides
-  fun provideSessionManager(@SessionTokens tokenStore: DataStore<Preferences>): SessionManager {
-      return SessionManager(tokenStore)
-  }*/
-
   @Singleton
   @Provides
   fun provideInterceptor(): HttpLoggingInterceptor =

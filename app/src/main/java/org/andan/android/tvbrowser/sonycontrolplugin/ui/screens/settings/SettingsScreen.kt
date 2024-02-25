@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.settings
 
+import android.widget.TextView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,10 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WebView
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
 
@@ -97,6 +102,46 @@ private fun SettingsContent(
         color = MaterialTheme.colorScheme.primary)
     startScreenPreference(startScreen, startScreenPreferences, onValueChange)
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    Text(
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp),
+        style = MaterialTheme.typography.bodyMedium,
+        text = stringResource(id = R.string.pref_about),
+        color = MaterialTheme.colorScheme.primary)
+    ListItem(
+        headlineContent = { Text(stringResource(id = R.string.app_name_title)) },
+        supportingContent = { Text(stringResource(id = R.string.app_name)) })
+    ListItem(
+        headlineContent = { Text(stringResource(id = R.string.pref_app_version_title)) },
+        supportingContent = { Text(stringResource(id = R.string.app_version)) })
+    ListItem(
+        headlineContent = { Text(stringResource(id = R.string.pref_copyright_title)) },
+        supportingContent = { Text(stringResource(id = R.string.pref_copyright)) })
+    Box() {
+      val openDialog = remember { mutableStateOf(false) }
+      ListItem(
+          modifier =
+              Modifier.clickable {
+                Timber.d("clicked preference")
+                openDialog.value = true
+              },
+          headlineContent = { Text(stringResource(id = R.string.pref_app_license_title)) },
+          supportingContent = { Text(stringResource(id = R.string.pref_app_license_summary)) })
+      if (openDialog.value) {
+        AlertDialog(
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            onDismissRequest = { openDialog.value = false },
+            confirmButton = {},
+            dismissButton = {
+              TextButton(onClick = { openDialog.value = false }) { Text("Dismiss") }
+            },
+            title = { Text(text = stringResource(id = R.string.pref_app_license_title)) },
+            text = {
+              WebView(
+                  pageUrl = "file:///android_asset/license.html",
+                  backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
+            })
+      }
+    }
   }
 }
 
@@ -145,4 +190,12 @@ private fun startScreenPreference(
           })
     }
   }
+}
+
+@Composable
+fun HtmlText(html: String, modifier: Modifier = Modifier) {
+  AndroidView(
+      modifier = modifier,
+      factory = { context -> TextView(context) },
+      update = { it.text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY) })
 }

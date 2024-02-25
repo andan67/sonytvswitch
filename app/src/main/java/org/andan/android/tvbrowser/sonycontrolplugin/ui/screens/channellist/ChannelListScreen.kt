@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,12 +16,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -57,8 +54,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
 import timber.log.Timber
 
 @Composable
@@ -88,7 +85,7 @@ fun ChannelListScreen(
               viewModel.filter = it
             },
             menuContent = {
-              ChannelListMenu(
+              WOLScreenOnOffMenu(
                   enableWOLAction = { viewModel.wakeOnLan() },
                   screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
                   screenOnAction = { viewModel.setPowerSavingMode("off") })
@@ -98,11 +95,11 @@ fun ChannelListScreen(
       floatingActionButton = {
         FloatingActionButton(onClick = { Timber.d("Switch channel") }) {
           Icon(
-              painter = painterResource(id = R.drawable.ic_round_autorenew_24),
+              painter = painterResource(id = R.drawable.baseline_autorenew_24),
               contentDescription = stringResource(id = R.string.switch_channel))
         }
       }) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
           PlayingContentInfoHeaderContent(
               playingContentInfo = channelListUIState.value.playingContentInfo,
               onclick = { (_) -> navActions.navigateToPlayingContentInfoDetails() })
@@ -157,39 +154,6 @@ fun ChannelTopAppBar(
         }
         menuContent()
       })
-}
-
-@Composable
-fun ChannelListMenu(
-    enableWOLAction: () -> Unit = {},
-    screenOffAction: () -> Unit = {},
-    screenOnAction: () -> Unit = {}
-) {
-  TopAppBarDropdownMenu(
-      iconContent = { Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more)) }) {
-          // Here closeMenu stands for the lambda expression parameter that is passed when this
-          // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
-          // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
-          closeMenu ->
-        DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.wol_action)) },
-            onClick = {
-              enableWOLAction()
-              closeMenu()
-            })
-        DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.screen_off_action)) },
-            onClick = {
-              screenOffAction()
-              closeMenu()
-            })
-        DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.screen_on_action)) },
-            onClick = {
-              screenOnAction()
-              closeMenu()
-            })
-      }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -275,7 +239,7 @@ fun PlayingContentInfoHeaderContent(
       onclick = onclick,
       isHeader = true,
       playingContentInfo = playingContentInfo)
-  Divider(modifier = Modifier.padding(vertical = 4.dp))
+  HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 }
 
 @Composable
@@ -286,61 +250,61 @@ private fun ChannelItem(
     isHeader: Boolean = false,
     playingContentInfo: PlayingContentInfo = PlayingContentInfo()
 ) {
-  Row(modifier = Modifier.fillMaxWidth().clickable { onclick(channel) }) {
+  Row(modifier = Modifier.padding(vertical = 4.dp).clickable { onclick(channel) }) {
     Column {
       Text(
-          modifier = Modifier.padding(start = 16.dp, end = 8.dp).width(56.dp),
-          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier.padding(end = 12.dp).width(40.dp),
+          style = MaterialTheme.typography.bodyLarge,
           text = channel.dispNumber,
           textAlign = TextAlign.Right)
     }
     Column() {
       Text(
           modifier = Modifier.padding(horizontal = 0.dp),
-          style = MaterialTheme.typography.titleLarge,
+          style = MaterialTheme.typography.bodyLarge,
           text = channel.title)
       if (isHeader) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Icon(
-              modifier = Modifier.padding(end = 8.dp).width(20.dp),
-              painter = painterResource(id = R.drawable.ic_play_arrow),
+              modifier = Modifier.padding(end = 4.dp).width(16.dp),
+              painter = painterResource(id = R.drawable.outline_play_arrow_24),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.titleMedium,
+              style = MaterialTheme.typography.bodyMedium,
               text = playingContentInfo.programTitle,
               color = MaterialTheme.colorScheme.secondary)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
           Icon(
-              modifier = Modifier.padding(end = 8.dp).width(20.dp),
-              painter = painterResource(id = R.drawable.ic_access_time),
+              modifier = Modifier.padding(end = 4.dp).width(16.dp),
+              painter = painterResource(id = R.drawable.outline_access_time_24),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.titleMedium,
+              style = MaterialTheme.typography.bodyMedium,
               text = playingContentInfo.getStartEndTimeFormatted()!!,
               color = MaterialTheme.colorScheme.secondary)
         }
       }
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            modifier = Modifier.padding(end = 8.dp).width(20.dp),
+            modifier = Modifier.padding(end = 4.dp).width(16.dp),
             painter = painterResource(id = R.drawable.ic_input),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary)
         Text(
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyMedium,
             text = channel.shortSource,
             color = MaterialTheme.colorScheme.secondary)
-        if (tvbChannelTitle != null) {
+        if (!tvbChannelTitle.isNullOrEmpty()) {
           Icon(
-              modifier = Modifier.padding(horizontal = 8.dp).width(20.dp),
+              modifier = Modifier.padding(start = 8.dp, end = 4.dp).width(16.dp),
               painter = painterResource(id = R.drawable.tvb_2),
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.titleMedium,
+              style = MaterialTheme.typography.bodyMedium,
               text = tvbChannelTitle,
               color = MaterialTheme.colorScheme.secondary)
         }

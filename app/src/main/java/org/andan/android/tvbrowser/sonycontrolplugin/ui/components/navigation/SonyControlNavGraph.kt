@@ -27,6 +27,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.Chan
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.PlayingContentInfoScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channelmap.ChannelMapScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channelmap.ChannelSingleMapScreen
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.help.HelpScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.managecontrol.ManageControlScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.remotecontrol.RemoteControlScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.settings.SettingsScreen
@@ -98,6 +99,10 @@ fun SonyControlNavGraph(
 
     composable(NavDestinations.Settings.route) {
       SettingsScreen(navActions = navigationActions, openDrawer = openDrawer)
+    }
+
+    composable(NavDestinations.Help.route) {
+      HelpScreen(navActions = navigationActions, openDrawer = openDrawer)
     }
   }
 }

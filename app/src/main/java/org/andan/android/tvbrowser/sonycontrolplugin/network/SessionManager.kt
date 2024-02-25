@@ -24,6 +24,8 @@ constructor(
   var preSharedKey: String = ""
   var challenge: String = ""
 
+  private var tokens: Preferences? = null
+
   suspend fun saveToken(token: String) {
 
     tokenStore.edit { it[stringPreferencesKey(activeControlUuid)] = token }
@@ -32,6 +34,14 @@ constructor(
   suspend fun getToken(): String {
     // return empty token in case no one is stored
     return tokenStore.data.map { it[stringPreferencesKey(activeControlUuid)] }.firstOrNull() ?: ""
+  }
+
+  suspend fun removeToken(uuid: String) {
+    tokenStore.edit { it.remove(stringPreferencesKey(uuid)) }
+  }
+
+  suspend fun removeToken() {
+    tokenStore.edit { it.remove(stringPreferencesKey(activeControlUuid)) }
   }
 
   fun setContext(control: SonyControl) {

@@ -5,7 +5,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
@@ -156,7 +155,7 @@ private fun ChannelSingleMapContent(
       LazyColumn() {
         itemsIndexed(matchedChannelsState.value) { index, channel ->
           ChannelMatchItem(index = index + 1, channel = channel, onChannelClick = onChannelClick)
-          Divider(Modifier.height(1.dp))
+          // Divider(Modifier.height(1.dp))
         }
       }
     }
@@ -173,7 +172,7 @@ private fun ChannelSingleMapItem(
     Column {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            modifier = Modifier.padding(start = 16.dp, end = 12.dp).requiredWidth(20.dp),
+            modifier = Modifier.padding(start = 20.dp, end = 12.dp).requiredWidth(20.dp),
             painter = painterResource(id = R.drawable.tvb_2),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary)
@@ -201,7 +200,7 @@ private fun ChannelMatchItem(
       verticalAlignment = Alignment.CenterVertically) {
         // Row {
         Text(
-            modifier = Modifier.padding(end = 16.dp).width(32.dp),
+            modifier = Modifier.padding(end = 12.dp).width(40.dp),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.secondary,
             text = if (index >= 0) index.toString() else "",

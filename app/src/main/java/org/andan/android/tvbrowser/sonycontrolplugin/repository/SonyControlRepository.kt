@@ -513,6 +513,7 @@ constructor(
           val hasBeenActive = control.isActive
           Timber.d(" deleteControl ${control.uuid}")
           controlDao.deleteControl(control.uuid)
+          sessionManager.removeToken(control.uuid)
           Timber.d(" deleteControl hasBeenActive ${hasBeenActive}")
           if (hasBeenActive) {
             setActiveControl(sonyControlsStateFlow.value.first().uuid)

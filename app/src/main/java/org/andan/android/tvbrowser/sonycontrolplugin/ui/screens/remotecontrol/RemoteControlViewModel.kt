@@ -29,4 +29,9 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
       activeSonyControlFlow.collect { sonyControl -> _activeControl = sonyControl }
     }
   }
+
+  fun setPowerSavingMode(mode: String) =
+      viewModelScope.launch(Dispatchers.IO) { sonyControlRepository.setPowerSavingMode(mode) }
+
+  fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) { sonyControlRepository.wakeOnLan() }
 }

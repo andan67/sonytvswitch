@@ -7,7 +7,7 @@
     <dimen name="rc_button_large_height">40dp</dimen>
     <dimen name="rc_button_mid_width">72dp</dimen>
     <dimen name="rc_button_mid_height">40dp</dimen>
-    <dimen name="rc_button_small_width">48dp</dimen>
+    <dimen name="rc_button_small_width">56dp</dimen>
     <dimen name="rc_button_small_height">40dp</dimen>
     <dimen name="rc_button_arrow_width">48dp</dimen>
     <dimen name="rc_button_arrow_height">48dp</dimen>

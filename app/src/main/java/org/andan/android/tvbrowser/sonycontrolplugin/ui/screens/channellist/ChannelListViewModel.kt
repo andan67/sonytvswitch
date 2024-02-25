@@ -24,7 +24,8 @@ data class ChannelListUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val message: String? = null,
-    val playingContentInfo: PlayingContentInfo = PlayingContentInfo()
+    val playingContentInfo: PlayingContentInfo = PlayingContentInfo(),
+    val playingTvbChannel: String = ""
 )
 
 @HiltViewModel
