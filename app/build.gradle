@@ -120,8 +120,8 @@ dependencies {
 
 
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
-    implementation 'com.google.dagger:hilt-android:2.50'
-    ksp 'com.google.dagger:hilt-compiler:2.50'
+    implementation 'com.google.dagger:hilt-android:2.51'
+    ksp 'com.google.dagger:hilt-compiler:2.51'
 
     implementation 'com.google.accompanist:accompanist-appcompat-theme:0.34.0'
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.34.0'
