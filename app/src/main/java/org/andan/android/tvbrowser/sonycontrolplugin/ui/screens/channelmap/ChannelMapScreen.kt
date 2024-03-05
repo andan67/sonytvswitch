@@ -23,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,8 +31,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,9 +39,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.SearchTextField
 import timber.log.Timber
 
 @Composable
@@ -91,14 +88,7 @@ private fun ChannelMapTopAppBar(
     onMatchChannels: () -> Unit,
     onClearMatches: () -> Unit
 ) {
-  val focusRequester = remember { FocusRequester() }
   var searchIsActive by rememberSaveable { mutableStateOf(false) }
-
-  LaunchedEffect(Unit) {
-    if (searchIsActive) {
-      focusRequester.requestFocus()
-    }
-  }
 
   TopAppBar(
       title = { Text(text = stringResource(id = R.string.menu_channel_map)) },
@@ -110,12 +100,7 @@ private fun ChannelMapTopAppBar(
       actions = {
         if (searchIsActive) {
           SearchTextField(
-              modifier =
-                  Modifier
-                      // .padding(start = 48.dp)
-                      .padding(vertical = 2.dp)
-                      .width(148.dp)
-                      .focusRequester(focusRequester),
+              modifier = Modifier.padding(vertical = 2.dp).width(148.dp),
               searchText = searchText,
               onSearchTextChanged = onSearchTextChanged,
               onClose = { searchIsActive = false })

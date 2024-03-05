@@ -15,9 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,17 +25,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -44,9 +40,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.SearchTextField
 import timber.log.Timber
 
 @Composable
@@ -98,14 +94,7 @@ private fun ChannelSingleMapTopAppBar(
     searchText: String,
     onSearchTextChanged: (String) -> Unit = {}
 ) {
-  val focusRequester = remember { FocusRequester() }
   var searchIsActive by rememberSaveable { mutableStateOf(false) }
-
-  LaunchedEffect(Unit) {
-    if (searchIsActive) {
-      focusRequester.requestFocus()
-    }
-  }
 
   TopAppBar(
       title = { Text(text = stringResource(id = R.string.menu_match_single_channel)) },
@@ -117,8 +106,7 @@ private fun ChannelSingleMapTopAppBar(
                   Modifier
                       // .padding(start = 48.dp)
                       .padding(vertical = 2.dp)
-                      .width(148.dp)
-                      .focusRequester(focusRequester),
+                      .width(148.dp),
               searchText = searchText,
               onSearchTextChanged = onSearchTextChanged,
               onClose = { searchIsActive = false })
@@ -151,7 +139,7 @@ private fun ChannelSingleMapContent(
           color = MaterialTheme.colorScheme.secondary,
           text = stringResource(id = R.string.channel_map_select_channel_text),
       )
-      Divider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
+      HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
       LazyColumn() {
         itemsIndexed(matchedChannelsState.value) { index, channel ->
           ChannelMatchItem(index = index + 1, channel = channel, onChannelClick = onChannelClick)

@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -123,6 +125,8 @@ fun AddControlDialog(
       dismissButton = { TextButton(onClick = { navActions.navigateUp() }) { Text("Dismiss") } },
       text = {
         Column {
+          val focusRequester = remember { FocusRequester() }
+          LaunchedEffect(uiState.status) { focusRequester.requestFocus() }
           when (uiState.status) {
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
@@ -136,8 +140,10 @@ fun AddControlDialog(
                   modifier = Modifier.padding(top = 16.dp),
                   expanded = expanded,
                   onExpandedChange = { expanded = !expanded }) {
+                    //val focusRequester = remember { FocusRequester() }
+                    //LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     TextField(
-                        modifier = Modifier.menuAnchor(),
+                        modifier = Modifier.menuAnchor().focusRequester(focusRequester),
                         value = host,
                         onValueChange = { host = it },
                         label = { Text(stringResource(id = R.string.add_control_host_title)) },
@@ -176,7 +182,7 @@ fun AddControlDialog(
             else -> {
               Text(text = stringResource(id = R.string.add_control_register_instructions))
               TextField(
-                  modifier = Modifier.padding(top = 16.dp),
+                  modifier = Modifier.padding(top = 16.dp).focusRequester(focusRequester),
                   value = nickname,
                   onValueChange = { nickname = it },
                   label = { Text(stringResource(id = R.string.add_control_nick)) },
@@ -208,7 +214,7 @@ fun AddControlDialog(
                     singleLine = true)
               } else {
                 TextField(
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier.padding(top = 16.dp).focusRequester(focusRequester),
                     value = challengeCode,
                     onValueChange = { challengeCode = it },
                     label = { Text(stringResource(id = R.string.add_control_challenge_hint)) },
