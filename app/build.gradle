@@ -125,6 +125,7 @@ dependencies {
 
     implementation 'com.google.accompanist:accompanist-appcompat-theme:0.34.0'
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.34.0'
+    implementation 'com.google.accompanist:accompanist-drawablepainter:0.34.0'
 
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.1'
 
