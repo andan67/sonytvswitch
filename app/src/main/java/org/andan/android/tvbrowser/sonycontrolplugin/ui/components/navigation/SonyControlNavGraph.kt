@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -21,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.NoControlDialog
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.addcontrol.AddControlDialog
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.ChannelListScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.ChannelListViewModel
@@ -36,8 +36,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.settings.Setting
 @Composable
 fun SonyControlNavGraph(
     navController: NavHostController = rememberNavController(),
-    navigationActions: NavigationActions =
-        rememberSaveable(navController) { NavigationActions(navController) },
+    navigationActions: NavigationActions,
     openDrawer: () -> Unit = {},
     startDestination: String = NavDestinations.RemoteControl.route,
 ) {
@@ -93,7 +92,6 @@ fun SonyControlNavGraph(
     ) {
       AddControlDialog(
           navActions = navigationActions,
-          // initialAddControlStata = AddControlState.SPECIFY_HOST,
       )
     }
 
@@ -103,6 +101,17 @@ fun SonyControlNavGraph(
 
     composable(NavDestinations.Help.route) {
       HelpScreen(navActions = navigationActions, openDrawer = openDrawer)
+    }
+
+    dialog(
+        route = NavDestinations.NoControlDialog.route,
+        dialogProperties =
+            DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false),
+    ) {
+      NoControlDialog(navActions = navigationActions)
     }
   }
 }

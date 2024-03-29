@@ -11,18 +11,31 @@ enum class NavDestinations(val route: String, label: String = "") {
   AddControl(route = "add_control"),
   ManageControl(route = "manage_control"),
   Settings(route = "settings"),
-  Help(route = "help")
+  Help(route = "help"),
+  NoControlDialog(route = "no_control")
 }
 
 /** Models the navigation actions in the app. */
-class NavigationActions(private val navController: NavHostController) {
+class NavigationActions(
+    private val navController: NavHostController,
+    private val hasControls: () -> Boolean,
+    private val finish: () -> Unit
+) {
 
   fun navigateToChannelList() {
-    navController.navigate(NavDestinations.ChannelList.route)
+    if (hasControls()) {
+      navController.navigate(NavDestinations.ChannelList.route)
+    } else {
+      navController.navigate(NavDestinations.NoControlDialog.route)
+    }
   }
 
   fun navigateToChannelMap() {
-    navController.navigate(NavDestinations.ChannelMap.route)
+    if (hasControls()) {
+      navController.navigate(NavDestinations.ChannelMap.route)
+    } else {
+      navController.navigate(NavDestinations.NoControlDialog.route)
+    }
   }
 
   fun navigateToChannelSingleMap(channelKey: String) {
@@ -35,11 +48,19 @@ class NavigationActions(private val navController: NavHostController) {
   }
 
   fun navigateToRemoteControl() {
-    navController.navigate(NavDestinations.RemoteControl.route)
+    if (hasControls()) {
+      navController.navigate(NavDestinations.RemoteControl.route)
+    } else {
+      navController.navigate(NavDestinations.NoControlDialog.route)
+    }
   }
 
   fun navigateToManageControl() {
-    navController.navigate(NavDestinations.ManageControl.route)
+    if (hasControls()) {
+      navController.navigate(NavDestinations.ManageControl.route)
+    } else {
+      navController.navigate(NavDestinations.NoControlDialog.route)
+    }
   }
 
   fun openAddControlDialog() {
@@ -54,7 +75,15 @@ class NavigationActions(private val navController: NavHostController) {
     navController.navigate(NavDestinations.Help.route)
   }
 
+  fun navigateToNoControl() {
+    navController.navigate(NavDestinations.NoControlDialog.route)
+  }
+
   fun navigateUp() {
     navController.navigateUp()
+  }
+
+  fun navigateFinish() {
+    finish()
   }
 }

@@ -20,10 +20,9 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.So
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.theme.SonyTVSwitchTheme
 
 @Composable
-fun SonyControlApp(startDestination: String) {
+fun SonyControlApp(startDestination: String, finish: () -> Unit) {
   SonyTVSwitchTheme {
     val navController = rememberNavController()
-    val navigationActions = remember(navController) { NavigationActions(navController) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -34,6 +33,11 @@ fun SonyControlApp(startDestination: String) {
 
     val selectControlViewModel: SelectControlViewModel = hiltViewModel()
 
+    val navigationActions =
+        remember(navController) {
+          NavigationActions(navController, selectControlViewModel::hasControls, finish)
+        }
+
     ModalNavigationDrawer(
         drawerContent = {
           AppDrawer(
@@ -43,12 +47,15 @@ fun SonyControlApp(startDestination: String) {
               viewModel = selectControlViewModel)
         },
         drawerState = drawerState,
-    ) {
-      SonyControlNavGraph(
-          navController = navController,
-          navigationActions = navigationActions,
-          startDestination = startDestination,
-          openDrawer = { coroutineScope.launch { drawerState.open() } })
-    }
+        // this to prevent conflicts when scrolling the WebView on the Help screen
+        gesturesEnabled = currentRoute != NavDestinations.Help.route || drawerState.isOpen) {
+          SonyControlNavGraph(
+              navController = navController,
+              navigationActions = navigationActions,
+              startDestination =
+                  if (selectControlViewModel.hasControls()) startDestination
+                  else NavDestinations.NoControlDialog.route,
+              openDrawer = { coroutineScope.launch { drawerState.open() } })
+        }
   }
 }

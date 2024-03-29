@@ -20,6 +20,6 @@ class SonyControlMainActivity : ComponentActivity() {
     val startDestination =
         if (intent.getBooleanExtra("startedFromTVBrowser", false)) NavDestinations.ChannelMap.route
         else runBlocking { prefRepository.startScreenFlow.first() }
-    setContent { SonyControlApp(startDestination) }
+    setContent { SonyControlApp(startDestination, this::finish) }
   }
 }

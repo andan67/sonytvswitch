@@ -1,9 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.components.drawer
 
-import android.graphics.drawable.PaintDrawable
-import android.graphics.drawable.VectorDrawable
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,15 +37,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavDestinations
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
 
 @Composable
-fun
-  AppDrawer(
+fun AppDrawer(
     currentRoute: String,
     navigationActions: NavigationActions,
     closeDrawer: () -> Unit,
@@ -177,17 +172,10 @@ private fun DrawerHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth().padding(top = 16.dp)) {
           Icon(
-            painterResource(id = R.drawable.sony_tv_switch_icon_front),
-            modifier = Modifier.padding(start = 16.dp).width(48.dp),
-            tint = Color.Unspecified,
-            contentDescription = null)
-        //tint = MaterialTheme.colorScheme.onSurfaceVariant)
-/*      Image(
-              //painter =  rememberDrawablePainter(drawable = drawable),
-            painter = PainterDrawable()
-              contentDescription = null, // decorative
-              // tint = tintColor,
-              modifier = Modifier.width(64.dp).padding(start = 16.dp))*/
+              painterResource(id = R.drawable.sony_tv_switch_icon_front),
+              modifier = Modifier.padding(start = 16.dp).width(48.dp),
+              tint = Color.Unspecified,
+              contentDescription = null)
           Spacer(Modifier.width(16.dp))
           Text(
               text = stringResource(id = R.string.app_name_nav),

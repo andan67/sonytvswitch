@@ -37,9 +37,7 @@ import timber.log.Timber
 @Composable
 fun AddControlDialog(
     navActions: NavigationActions,
-    // viewModel: SonyControlViewModel
 ) {
-  // var addControlState by rememberSaveable { mutableStateOf(AddControlState.SPECIFY_HOST) }
   var host by rememberSaveable { mutableStateOf("") }
 
   var nickname by rememberSaveable { mutableStateOf("") }
@@ -140,8 +138,8 @@ fun AddControlDialog(
                   modifier = Modifier.padding(top = 16.dp),
                   expanded = expanded,
                   onExpandedChange = { expanded = !expanded }) {
-                    //val focusRequester = remember { FocusRequester() }
-                    //LaunchedEffect(Unit) { focusRequester.requestFocus() }
+                    // val focusRequester = remember { FocusRequester() }
+                    // LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     TextField(
                         modifier = Modifier.menuAnchor().focusRequester(focusRequester),
                         value = host,

@@ -37,9 +37,10 @@ fun HelpScreen(
               }
             })
       },
-      modifier = modifier.fillMaxSize()) { innerPadding ->
-        HelpContent(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp))
-      }
+      modifier = modifier.fillMaxSize(),
+  ) { innerPadding ->
+    HelpContent(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp))
+  }
 }
 
 @SuppressLint("SetJavaScriptEnabled")

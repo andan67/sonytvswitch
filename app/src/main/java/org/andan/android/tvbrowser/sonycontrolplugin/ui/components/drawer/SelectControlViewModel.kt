@@ -39,6 +39,14 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
               started = SharingStarted.WhileSubscribed(5000),
               initialValue = SelectControlUiState())
 
+  fun getNumberOfControls() {
+    controlsFlow.value.size
+  }
+
+  fun hasControls(): Boolean {
+    return controlsFlow.value.isNotEmpty()
+  }
+
   fun setActiveControl(uuid: String) {
     viewModelScope.launch { sonyControlRepository.setActiveControl(uuid) }
   }
