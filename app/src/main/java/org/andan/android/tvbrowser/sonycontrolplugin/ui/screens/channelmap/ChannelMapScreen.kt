@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -40,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
 import timber.log.Timber
@@ -61,15 +63,16 @@ fun ChannelMapScreen(
 
   Scaffold(
       topBar = {
-        ChannelMapTopAppBar(
-            openDrawer = { openDrawer() },
-            searchText = searchText,
-            onSearchTextChanged = {
-              searchText = it
-              viewModel.filter = it
-            },
-            onMatchChannels = { viewModel.matchChannels() },
-            onClearMatches = { viewModel.clearChannelMatches() })
+        TopAppBarWithSearch(
+          title = stringResource(id = R.string.channel_map_title),
+          onIconClick = { openDrawer() },
+          searchText = searchText,
+          onSearchTextChanged = {
+            searchText = it
+            viewModel.filter = it
+          },
+          menuContent = { ChannelMapMenu({viewModel.matchChannels()}, {viewModel.clearChannelMatches()})}
+        )
       },
       modifier = modifier.fillMaxSize(),
   ) { innerPadding ->
@@ -77,42 +80,6 @@ fun ChannelMapScreen(
       ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
     }
   }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ChannelMapTopAppBar(
-    openDrawer: () -> Unit,
-    searchText: String,
-    onSearchTextChanged: (String) -> Unit = {},
-    onMatchChannels: () -> Unit,
-    onClearMatches: () -> Unit
-) {
-  var searchIsActive by rememberSaveable { mutableStateOf(false) }
-
-  TopAppBar(
-      title = { Text(text = stringResource(id = R.string.menu_channel_map)) },
-      navigationIcon = {
-        IconButton(onClick = openDrawer) {
-          Icon(Icons.Filled.Menu, stringResource(id = R.string.open_drawer))
-        }
-      },
-      actions = {
-        if (searchIsActive) {
-          SearchTextField(
-              modifier = Modifier.padding(vertical = 2.dp).width(148.dp),
-              searchText = searchText,
-              onSearchTextChanged = onSearchTextChanged,
-              onClose = { searchIsActive = false })
-        } else {
-          IconButton(modifier = Modifier, onClick = { searchIsActive = true }) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = stringResource(id = R.string.search_channels))
-          }
-        }
-        ChannelMapMenu(onMatchChannels, onClearMatches)
-      })
 }
 
 @Composable

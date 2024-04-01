@@ -7,11 +7,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
-val Typography =
+val typography =
     Typography(
-        bodyLarge =
+        titleLarge =
             TextStyle(
-                fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp)
+                fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 20.sp, lineHeight = 26.sp)
         /* Other default text styles to override
         button = TextStyle(
             fontFamily = FontFamily.Default,

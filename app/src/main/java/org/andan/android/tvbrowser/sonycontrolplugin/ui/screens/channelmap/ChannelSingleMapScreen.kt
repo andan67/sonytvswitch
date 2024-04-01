@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -41,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
 import timber.log.Timber
@@ -62,16 +64,15 @@ fun ChannelSingleMapScreen(
 
   Scaffold(
       topBar = {
-        ChannelSingleMapTopAppBar(
-            navigateUp = { navActions.navigateUp() },
+        TopAppBarWithSearch(
+            title = stringResource(id = R.string.menu_match_single_channel),
+            onIconClick = { navActions.navigateUp() },
+            iconImage = Icons.AutoMirrored.Filled.ArrowBack,
             searchText = searchText,
             onSearchTextChanged = {
               searchText = it
               viewModel.filter = it
-            }
-            // onSingleMatchChannel = { viewModel.matchSingleChannel() },
-            // onClearMatch = { viewModel.clearChannelMatch() }
-            )
+            })
       },
       modifier = modifier.fillMaxSize(),
   ) { innerPadding ->

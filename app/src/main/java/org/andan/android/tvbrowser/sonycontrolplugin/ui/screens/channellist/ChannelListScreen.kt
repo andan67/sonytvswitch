@@ -4,11 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +41,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
@@ -62,19 +65,21 @@ fun ChannelListScreen(
 
   Scaffold(
       topBar = {
-        ChannelTopAppBar(
-            openDrawer = { openDrawer() },
-            searchText = searchText,
-            onSearchTextChanged = {
-              searchText = it
-              viewModel.filter = it
-            },
-            menuContent = {
-              WOLScreenOnOffMenu(
-                  enableWOLAction = { viewModel.wakeOnLan() },
-                  screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
-                  screenOnAction = { viewModel.setPowerSavingMode("off") })
-            })
+        TopAppBarWithSearch(
+          title = stringResource(id = R.string.channel_list_title),
+          onIconClick = { openDrawer() },
+          searchText = searchText,
+          onSearchTextChanged = {
+            searchText = it
+            viewModel.filter = it
+          },
+          menuContent = {
+            WOLScreenOnOffMenu(
+              enableWOLAction = { viewModel.wakeOnLan() },
+              screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
+              screenOnAction = { viewModel.setPowerSavingMode("off") })
+          }
+        )
       },
       modifier = modifier.fillMaxSize(),
       floatingActionButton = {
@@ -92,41 +97,6 @@ fun ChannelListScreen(
               channelListState = channelListState, onChannelClick = viewModel::switchToChannel)
         }
       }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChannelTopAppBar(
-    openDrawer: () -> Unit,
-    searchText: String,
-    onSearchTextChanged: (String) -> Unit = {},
-    menuContent: @Composable() () -> Unit
-) {
-  var searchIsActive by rememberSaveable { mutableStateOf(false) }
-
-  TopAppBar(
-      title = { Text(text = stringResource(id = R.string.menu_list_channels)) },
-      navigationIcon = {
-        IconButton(onClick = openDrawer) {
-          Icon(Icons.Filled.Menu, stringResource(id = R.string.open_drawer))
-        }
-      },
-      actions = {
-        if (searchIsActive) {
-          SearchTextField(
-              modifier = Modifier.padding(vertical = 2.dp).width(148.dp),
-              searchText = searchText,
-              onSearchTextChanged = onSearchTextChanged,
-              onClose = { searchIsActive = false })
-        } else {
-          IconButton(modifier = Modifier, onClick = { searchIsActive = true }) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = stringResource(id = R.string.search_channels))
-          }
-        }
-        menuContent()
-      })
 }
 
 @Composable
@@ -171,18 +141,18 @@ private fun ChannelItem(
     isHeader: Boolean = false,
     playingContentInfo: PlayingContentInfo = PlayingContentInfo()
 ) {
-  Row(modifier = Modifier.padding(vertical = 4.dp).clickable { onclick(channel) }) {
+  Row(modifier = Modifier.padding(vertical = 2.dp).fillMaxWidth().clickable { onclick(channel) }) {
     Column {
       Text(
-          modifier = Modifier.padding(end = 12.dp).width(40.dp),
-          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(end = 8.dp).width(40.dp),
+          style = MaterialTheme.typography.titleSmall,
           text = channel.dispNumber,
           textAlign = TextAlign.Right)
     }
     Column {
       Text(
           modifier = Modifier.padding(horizontal = 0.dp),
-          style = MaterialTheme.typography.bodyLarge,
+          style = MaterialTheme.typography.titleSmall,
           text = channel.title)
       if (isHeader) {
         Row(verticalAlignment = Alignment.CenterVertically) {

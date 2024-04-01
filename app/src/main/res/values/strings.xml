@@ -61,9 +61,10 @@
     <string name="open_help">Open help</string>
     <string name="menu_add_control">Add control</string>
     <string name="menu_manage_control">Manage control</string>
-    <string name="menu_show_channels">TV channel list</string>
-    <string name="menu_channel_map">TV Browser channel map</string>
-    <string name="menu_channel_map_fragment_label">TV Browser channel map</string>
+    <string name="menu_show_channels">TV channels</string>
+    <string name="channel_list_title">TV channels</string>
+    <string name="menu_channel_map">TVB channel mappings</string>
+    <string name="channel_map_title">Channel mappings</string>
     <string name="menu_help">Help</string>
     <string name="menu_settings">Settings</string>
 
@@ -151,9 +152,9 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="switch_channel">Switch channels</string>
     <string name="open_drawer">Open Drawer</string>
-    <string name="search_clear_content_description">Clear Search</string>
-    <string name="search_content_description">Filter Channels</string>
-    <string name="menu_list_channels">Channel List</string>
+    <string name="search_clear_content_description">Clear search</string>
+    <string name="search_content_description">Search</string>
+    <string name="menu_list_channels">Channels</string>
     <string name="search_channels">Search Channels</string>
     <string name="back_search_channels">Exit Search View</string>
     <string name="menu_more">More</string>
@@ -165,4 +166,5 @@
     <string name="menu_match_single_channel">Map single channel</string>
     <string name="add_control_host_registering_msg">Registering control</string>
     <string name="fetch_all_data_action">Fetch data from TV</string>
+    <string name="search_placeholder">Search...</string>
 </resources>

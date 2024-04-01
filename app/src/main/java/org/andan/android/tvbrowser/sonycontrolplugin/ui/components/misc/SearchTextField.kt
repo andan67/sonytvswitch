@@ -10,13 +10,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,13 +30,12 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 
 @Composable
 fun SearchTextField(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     searchText: String,
-    placeholderText: String = "Search...",
     onSearchTextChanged: (String) -> Unit = {},
-    onClose: () -> Unit = {}
+    onClose: () -> Unit = {},
+    showClearButton: Boolean = false
 ) {
-  var showClearButton by remember { mutableStateOf(true) }
   val keyboardController = LocalSoftwareKeyboardController.current
   val focusRequester = remember { FocusRequester() }
 
@@ -44,15 +43,12 @@ fun SearchTextField(
 
   OutlinedTextField(
       modifier = modifier.focusRequester(focusRequester),
-      /*            .onFocusChanged { focusState ->
-          showClearButton = (focusState.isFocused)
-      },
-      .focusRequester(focusRequester),*/
+      textStyle = MaterialTheme.typography.titleSmall,
       value = searchText,
       // TODO: Proper implementation
       // onValueChange = onSearchTextChanged,
       onValueChange = { onSearchTextChanged(it) },
-      placeholder = { Text(text = placeholderText) },
+      placeholder = { Text(text = stringResource(id = R.string.search_placeholder)) },
       colors =
           TextFieldDefaults.colors(
               focusedIndicatorColor = Color.Transparent,

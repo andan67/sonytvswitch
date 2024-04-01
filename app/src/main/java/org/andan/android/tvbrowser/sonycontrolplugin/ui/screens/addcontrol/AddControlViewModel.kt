@@ -3,6 +3,8 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.addcontrol
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ivanempire.lighthouse.LighthouseClient
+import com.ivanempire.lighthouse.models.devices.AbridgedMediaDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
@@ -18,6 +20,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 
@@ -36,7 +39,8 @@ data class AddControlUiState(
     val isLoading: Boolean = false,
     val status: AddControlStatus = AddControlStatus.SPECIFY_HOST,
     val messageId: Int? = null,
-    val message: String? = null
+    val message: String? = null,
+    val discoveredDevices: List<SSDP.IpDeviceItem> = emptyList()
     // val isHostAvailable: Boolean = false,
     // val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
@@ -46,6 +50,7 @@ class AddControlViewModel
 @Inject
 constructor(
     private val sonyControlRepository: SonyControlRepository,
+    private val lighthouseClient: LighthouseClient,
     @ApplicationScope private val externalScope: CoroutineScope
 ) : ViewModel() {
 
@@ -91,6 +96,20 @@ constructor(
         else -> {}
       }
     }
+  }
+
+  suspend fun fetchSonyIpAndDeviceList() {
+    //viewModelScope.launch(Dispatchers.IO) {
+      uiState =
+        uiState.copy(discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList())
+    //}
+  }
+
+  suspend fun startDiscovery() {
+    lighthouseClient.discoverDevices()
+      .collect { deviceList: List<AbridgedMediaDevice> ->
+        Timber.d("Got an updated device list: $deviceList")
+      }
   }
 
   fun registerControl(

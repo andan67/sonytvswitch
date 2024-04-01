@@ -84,5 +84,5 @@ fun SonyTVSwitchTheme(
         DarkColors
       }
 
-  MaterialTheme(colorScheme = colors, content = content)
+  MaterialTheme(colorScheme = colors, content = content, typography = typography)
 }

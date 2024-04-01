@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
@@ -129,8 +131,8 @@ fun AddControlDialog(
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
               LaunchedEffect(true) {
-                // addControlViewModel.fetchSonyIpAndDeviceList()
-              }
+                //addControlViewModel.fetchSonyIpAndDeviceList()
+                addControlViewModel.startDiscovery()}
               var expanded by remember { mutableStateOf(false) }
               // val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
               Text(text = stringResource(id = R.string.add_control_host_instructions))
@@ -165,15 +167,14 @@ fun AddControlDialog(
                         )
                     ExposedDropdownMenu(
                         expanded = expanded, onDismissRequest = { expanded = false }) {
-                          /*sonyIpAndDeviceList?.forEach {
-                              DropdownMenuItem(
-                                  onClick = {
-                                      host = it.ip
-                                      expanded = false
-                                  },
-                                  text = { Text(text = it.device) }
-                              )
-                          }*/
+                          uiState.discoveredDevices.forEach {
+                            DropdownMenuItem(
+                                onClick = {
+                                  host = it.ip
+                                  expanded = false
+                                },
+                                text = { Text(text = it.device) })
+                          }
                         }
                   }
             }
