@@ -39,7 +39,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNAUTHORIZED
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus.Companion.REGISTRATION_UNKNOWN
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RemoteControllerInfoItemResponse
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SessionManager
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SonyService
@@ -145,118 +145,98 @@ constructor(
     controlDao.setActiveControl(uuid)
   }
 
-  suspend fun setWolMode(enabled: Boolean) {
-    val control = _activeSonyControl
-    val resource = systemService<Any>(control.ip, JsonRpcRequest.setWolMode(enabled))
-    if (resource.status == Status.ERROR) {
-      // _responseMessage.postValue(Event(resource.message))
+  suspend fun setWolMode(enabled: Boolean): Result<Any> {
+    return withContext(Dispatchers.IO) {
+      systemService<Any>(_activeSonyControl.ip, JsonRpcRequest.setWolMode(enabled))
     }
   }
 
-  suspend fun fetchWolMode() {
-    withContext(Dispatchers.IO) {
-      val resource =
+  suspend fun fetchWolMode(): Result<WolModeResponse> {
+    return withContext(Dispatchers.IO) {
+      val result =
           systemService<WolModeResponse>(_activeSonyControl.ip, JsonRpcRequest.getWolMode())
-      if (resource.status == Status.SUCCESS) {
-        updateControl(_activeSonyControl.copy(systemWolMode = resource.data!!.enabled))
-      } else {
-        // _responseMessage.postValue(Event(resource.message))
+      if (result.status == Status.SUCCESS) {
+        updateControl(_activeSonyControl.copy(systemWolMode = result.data!!.enabled))
       }
+      result
     }
   }
 
-  suspend fun setPowerSavingMode(mode: String) {
-    val resource =
-        systemService<Any>(_activeSonyControl.ip, JsonRpcRequest.setPowerSavingMode(mode))
-    if (resource.status == Status.ERROR) {
-      // _responseMessage.postValue(Event(resource.message))
+  suspend fun setPowerSavingMode(mode: String): Result<Any> {
+    return withContext(Dispatchers.IO) {
+      systemService<Any>(_activeSonyControl.ip, JsonRpcRequest.setPowerSavingMode(mode))
     }
   }
 
-  suspend fun fetchRemoteControllerInfo() {
-    withContext(Dispatchers.IO) {
-      val resource =
+  suspend fun fetchRemoteControllerInfo(): Result<Array<RemoteControllerInfoItemResponse>> {
+    return withContext(Dispatchers.IO) {
+      val result =
           systemService<Array<RemoteControllerInfoItemResponse>>(
               _activeSonyControl.ip, JsonRpcRequest.getRemoteControllerInfo())
       Timber.d("remoteControllerInfo(): ${_activeSonyControl.toString()}")
-      if (resource.status == Status.SUCCESS) {
+      if (result.status == Status.SUCCESS) {
         val commandMap = LinkedHashMap<String, String>()
-        for (remoteControllerInfoItem in resource.data!!) {
+        for (remoteControllerInfoItem in result.data!!) {
           commandMap[remoteControllerInfoItem.name] = remoteControllerInfoItem.value
         }
         updateControl(_activeSonyControl.copy(commandMap = commandMap))
-      } else {
-        // _responseMessage.postValue(Event(resource.message))
       }
+      result
     }
   }
 
-  suspend fun fetchSystemInformation() {
-    withContext(Dispatchers.IO) {
+  suspend fun fetchSystemInformation(): Result<SystemInformationResponse> {
+    return withContext(Dispatchers.IO) {
       val control = _activeSonyControl
-      val resource =
+      val result =
           systemService<SystemInformationResponse>(
               control.ip, JsonRpcRequest.getSystemInformation())
       Timber.d("remoteControllerInfo(): ${control.toString()}")
-      if (resource.status == Status.SUCCESS) {
+      if (result.status == Status.SUCCESS) {
         updateControl(
             control.copy(
-                systemName = resource.data!!.name,
-                systemProduct = resource.data!!.product,
-                systemModel = resource.data!!.model,
-                systemMacAddr = resource.data!!.macAddr))
-      } else {
-        // _responseMessage.postValue(Event(resource.message))
+                systemName = result.data!!.name,
+                systemProduct = result.data!!.product,
+                systemModel = result.data!!.model,
+                systemMacAddr = result.data!!.macAddr))
       }
+      result
     }
   }
 
-  suspend fun getPlayingContentInfo(): Resource<PlayingContentInfoResponse> {
+  suspend fun fetchPlayingContentInfo(): Result<PlayingContentInfoResponse> {
     return withContext(Dispatchers.IO) {
       avContentService<PlayingContentInfoResponse>(
           _activeSonyControl.ip, JsonRpcRequest.getPlayingContentInfo())
     }
-
-    /*        fun fetchPlayingContentInfo() = viewModelScope.launch(Dispatchers.IO) {
-        val response = sonyControlRepository.getPlayingContentInfo()
-        if (response is Resource.Success) {
-            val value: PlayingContentInfo =
-                if (response.data != null) response.data.asDomainModel() else PlayingContentInfo()
-            _playingContentInfo.postValue(value)
-            updateCurrentChannel(value.uri)
-        }
-    }*/
   }
 
-  suspend fun getInterfaceInformation(host: String): Resource<InterfaceInformationResponse> {
+  suspend fun fetchInterfaceInformation(host: String): Result<InterfaceInformationResponse> {
     return withContext(Dispatchers.IO) {
       systemService<InterfaceInformationResponse>(host, JsonRpcRequest.getInterfaceInformation())
     }
   }
 
-  suspend fun getPowerStatus(host: String): Resource<PowerStatusResponse> {
+  suspend fun fetchPowerStatus(host: String): Result<PowerStatusResponse> {
     return withContext(Dispatchers.IO) {
       systemService<PowerStatusResponse>(host, JsonRpcRequest.getPowerStatus())
     }
   }
 
-  suspend fun setPlayContent(uri: String): Int {
-    val resource = avContentService<Unit>(_activeSonyControl.ip, JsonRpcRequest.setPlayContent(uri))
-    if (resource.status == Status.ERROR) {
-      // _responseMessage.postValue(Event(resource.message))
-      return ERROR_CODE
+  suspend fun setPlayContent(uri: String): Result<Any> {
+    return withContext(Dispatchers.IO) {
+      avContentService<Any>(_activeSonyControl.ip, JsonRpcRequest.setPlayContent(uri))
     }
-    return SUCCESS_CODE
   }
 
-  suspend fun fetchSourceList() {
-    withContext(Dispatchers.IO) {
-      val resource =
+  suspend fun fetchSourceList(): Result<Array<SourceListItemResponse>> {
+    return withContext(Dispatchers.IO) {
+      val result =
           avContentService<Array<SourceListItemResponse>>(
               _activeSonyControl.ip, JsonRpcRequest.getSourceList("tv"))
-      if (resource.status == Status.SUCCESS) {
+      if (result.status == Status.SUCCESS) {
         val sourceList = mutableListOf<String>()
-        for (sourceItem in resource.data!!) {
+        for (sourceItem in result.data!!) {
           if (sourceItem.source == "tv:dvbs") {
             sourceList.add(sourceItem.source + "#general")
             sourceList.add(sourceItem.source + "#preferred")
@@ -265,9 +245,8 @@ constructor(
           }
         }
         updateControl(_activeSonyControl.copy(sourceList = sourceList))
-      } else {
-        // _responseMessage.postValue(Event(resource.message))
       }
+      result
     }
   }
 
@@ -318,11 +297,11 @@ constructor(
       val source = sourceSplit[0]
       var type = ""
       if (sourceSplit.size > 1) type = sourceSplit[1]
-      val resource =
+      val result =
           avContentService<Array<ContentListItemResponse>>(
               ip, JsonRpcRequest.getContentList(source, stIdx, cnt, type))
-      if (resource.status == Status.SUCCESS) {
-        for (sonyChannelResponse in resource.data!!) {
+      if (result.status == Status.SUCCESS) {
+        for (sonyChannelResponse in result.data!!) {
           if (sonyChannelResponse.programMediaType.equals("tv", true) &&
               sonyChannelResponse.title != "." &&
               !sonyChannelResponse.title.isEmpty() &&
@@ -331,7 +310,7 @@ constructor(
             plist.add(sonyChannel)
           }
         }
-        resource.data.size
+        result.data.size
       } else {
         // _responseMessage.postValue(Event(resource.message))
         -1
@@ -549,14 +528,14 @@ constructor(
   private suspend inline fun <reified T> avContentService(
       host: String,
       jsonRpcRequest: JsonRpcRequest
-  ): Resource<T> = apiCall {
+  ): Result<T> = apiCall {
     api.sonyRpcService("http://" + host + SonyServiceUtil.SONY_AV_CONTENT_ENDPOINT, jsonRpcRequest)
   }
 
   private suspend inline fun <reified T> systemService(
       host: String,
       jsonRpcRequest: JsonRpcRequest
-  ): Resource<T> = apiCall {
+  ): Result<T> = apiCall {
     api.sonyRpcService("http://" + host + SonyServiceUtil.SONY_SYSTEM_ENDPOINT, jsonRpcRequest)
   }
 

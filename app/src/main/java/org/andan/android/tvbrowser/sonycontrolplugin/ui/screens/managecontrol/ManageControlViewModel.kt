@@ -17,7 +17,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
@@ -124,16 +124,16 @@ constructor(
     if (uiState.isLoading || uiState.sonyControl == null) return
     viewModelScope.launch {
       uiState = uiState.copy(isLoading = true, isSuccess = false)
-      val response = sonyControlRepository.getPowerStatus(uiState.sonyControl!!.ip)
+      val response = sonyControlRepository.fetchPowerStatus(uiState.sonyControl!!.ip)
       when (response) {
-        is Resource.Success -> {
+        is Result.Success -> {
           uiState =
               uiState.copy(
                   isLoading = false,
                   isSuccess = true,
                   message = IntEventMessage(R.string.add_control_host_success_msg))
         }
-        is Resource.Error -> {
+        is Result.Error -> {
           uiState =
               uiState.copy(
                   isLoading = false,

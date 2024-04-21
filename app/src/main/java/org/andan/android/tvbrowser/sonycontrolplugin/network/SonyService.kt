@@ -123,21 +123,21 @@ private fun getAndStoreNewToken(sessionManager: SessionManager): String {
   return newToken
 }
 
-sealed class Resource<T>(
+sealed class Result<T>(
     val data: T? = null,
     val code: Int = 0,
     val message: String? = null,
     val status: Status = Status.INIT
 ) {
-  class Success<T>(code: Int, data: T) : Resource<T>(data, code, status = Status.SUCCESS)
+  class Success<T>(code: Int, data: T) : Result<T>(data, code, status = Status.SUCCESS)
 
   // class Loading<T>(data: T? = null) : Resource<T>(data, status = Status.LOADING)
   class Error<T>(message: String, code: Int, data: T? = null) :
-      Resource<T>(data, code, message, Status.ERROR)
+      Result<T>(data, code, message, Status.ERROR)
 
-  class Loading<T>() : Resource<T>(status = Status.LOADING)
+  class Loading<T>() : Result<T>(status = Status.LOADING)
 
-  class Init<T>() : Resource<T>()
+  class Init<T>() : Result<T>()
 }
 
 enum class Status {
@@ -208,7 +208,7 @@ object SonyServiceUtil {
 
   val gson = GsonBuilder().create()
 
-  inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Resource<T> {
+  inline fun <reified T> apiCall(call: () -> Response<JsonRpcResponse>): Result<T> {
     return try {
       val response = call.invoke()
       if (response.isSuccessful) {
@@ -216,11 +216,11 @@ object SonyServiceUtil {
         when {
           jsonRpcResponse?.error != null -> {
             Timber.d("evaluate error")
-            Resource.Error(jsonRpcResponse.error.asJsonArray.get(1).asString, response.code())
+            Result.Error(jsonRpcResponse.error.asJsonArray.get(1).asString, response.code())
           }
           else -> {
             Timber.d("evaluate result")
-            Resource.Success(
+            Result.Success(
                 response.code(),
                 gson.fromJson(
                     when {
@@ -243,12 +243,12 @@ object SonyServiceUtil {
         }
       } else {
         Timber.d("evaluate response unsuccessful")
-        Resource.Error(response.message(), response.code())
+        Result.Error(response.message(), response.code())
       }
     } catch (e: Exception) {
       e.printStackTrace()
       Timber.d("evaluate exception ${e.message}")
-      return Resource.Error(e.message ?: "Unknown apiCall exception", 0)
+      return Result.Error(e.message ?: "Unknown apiCall exception", 0)
     }
   }
 }

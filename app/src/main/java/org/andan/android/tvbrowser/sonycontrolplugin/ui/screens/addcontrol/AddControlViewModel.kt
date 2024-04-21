@@ -19,7 +19,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
@@ -76,9 +76,9 @@ constructor(
     // Timber.d("checkAvailabilityOfHost")
     _addControlUiState.update { it.copy(isLoading = true) }
     viewModelScope.launch(Dispatchers.IO) {
-      val response = sonyControlRepository.getPowerStatus(host)
+      val response = sonyControlRepository.fetchPowerStatus(host)
       when (response) {
-        is Resource.Success -> {
+        is Result.Success -> {
           uiState =
               uiState.copy(
                   isLoading = false,
@@ -86,7 +86,7 @@ constructor(
                   status = AddControlStatus.REGISTER)
           addedControl = addedControl.copy(ip = host)
         }
-        is Resource.Error -> {
+        is Result.Error -> {
           uiState =
               uiState.copy(
                   isLoading = false,

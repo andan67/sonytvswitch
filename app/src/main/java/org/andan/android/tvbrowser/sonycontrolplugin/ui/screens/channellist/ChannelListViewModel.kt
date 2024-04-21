@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
-import org.andan.android.tvbrowser.sonycontrolplugin.network.Resource
+import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
 import org.andan.android.tvbrowser.sonycontrolplugin.network.asDomainModel
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
@@ -28,13 +29,22 @@ data class ChannelListUiState(
     val playingTvbChannel: String = ""
 )
 
+private const val LAST_URI_KEY = "LAST_URI"
+private const val CURRENT_URI_KEY = "CURRENT_URI"
+
 @HiltViewModel
 class ChannelListViewModel
 @Inject
-constructor(private val sonyControlRepository: SonyControlRepository) : ViewModel() {
+constructor(
+    private val sonyControlRepository: SonyControlRepository,
+    private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
   private val _channelListUiState = MutableStateFlow(ChannelListUiState())
   val channelListUiState: StateFlow<ChannelListUiState> = _channelListUiState.asStateFlow()
+
+  val lastUri = savedStateHandle.get<String>(LAST_URI_KEY)
+  val currentUri = savedStateHandle.get<String>(CURRENT_URI_KEY)
 
   private var uiState: ChannelListUiState
     get() = _channelListUiState.value
@@ -70,10 +80,24 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   fun switchToChannel(uri: String) {
     viewModelScope.launch(Dispatchers.IO) {
-      if (sonyControlRepository.setPlayContent(uri) == SonyControlRepository.SUCCESS_CODE) {
-        fetchPlayingContentInfo()
+      when (val result = sonyControlRepository.setPlayContent(uri)) {
+        is Result.Success -> {
+          fetchPlayingContentInfo()
+          if (savedStateHandle.contains(CURRENT_URI_KEY)) {
+            savedStateHandle[LAST_URI_KEY] = savedStateHandle.get<String>(CURRENT_URI_KEY)
+          }
+          savedStateHandle[CURRENT_URI_KEY] = uri
+        }
+        is Result.Error -> {
+          uiState = uiState.copy(message = result.message)
+        }
+        else -> {}
       }
     }
+  }
+
+  fun switchToLastChannel() {
+    savedStateHandle.get<String>(LAST_URI_KEY)?.let { switchToChannel(it) }
   }
 
   fun fetchPlayingContentInfo() =
@@ -81,15 +105,14 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
         uiState = uiState.copy(isLoading = true)
         _channelListUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
-          val response = sonyControlRepository.getPlayingContentInfo()
-          when (response) {
-            is Resource.Success -> {
+          when (val result = sonyControlRepository.fetchPlayingContentInfo()) {
+            is Result.Success -> {
               uiState =
                   uiState.copy(
-                      isLoading = false, playingContentInfo = response.data!!.asDomainModel())
+                      isLoading = false, playingContentInfo = result.data!!.asDomainModel())
             }
-            is Resource.Error -> {
-              uiState = uiState.copy(isLoading = false, message = response.message)
+            is Result.Error -> {
+              uiState = uiState.copy(isLoading = false, message = result.message)
             }
             else -> {}
           }

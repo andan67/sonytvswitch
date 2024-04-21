@@ -83,7 +83,7 @@ fun ChannelListScreen(
       },
       modifier = modifier.fillMaxSize(),
       floatingActionButton = {
-        FloatingActionButton(onClick = { Timber.d("Switch channel") }) {
+        FloatingActionButton(onClick = { Timber.d("Switch channel"); viewModel.switchToLastChannel() }) {
           Icon(
               painter = painterResource(id = R.drawable.baseline_autorenew_24),
               contentDescription = stringResource(id = R.string.switch_channel))

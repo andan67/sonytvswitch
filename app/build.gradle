@@ -98,8 +98,8 @@ dependencies {
 
     implementation 'androidx.test:core-ktx:1.5.0'
     implementation 'androidx.test.ext:junit-ktx:1.1.5'
-    implementation platform('androidx.compose:compose-bom:2024.03.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2024.03.00')
+    implementation platform('androidx.compose:compose-bom:2024.04.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2024.04.00')
     androidTestImplementation 'androidx.test:runner:1.5.2'
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -120,8 +120,8 @@ dependencies {
 
 
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
-    implementation 'com.google.dagger:hilt-android:2.51'
-    ksp 'com.google.dagger:hilt-compiler:2.51'
+    implementation 'com.google.dagger:hilt-android:2.51.1'
+    ksp 'com.google.dagger:hilt-compiler:2.51.1'
 
     implementation 'com.google.accompanist:accompanist-appcompat-theme:0.34.0'
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.34.0'
@@ -175,9 +175,9 @@ dependencies {
 
     // 3rd party
     // HTTP client - Retrofit with OkHttp
-    implementation 'com.squareup.retrofit2:retrofit:2.10.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     // JSON converter Gson for JSON to Java object mapping
-    implementation 'com.squareup.retrofit2:converter-gson:2.10.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
     testImplementation('com.squareup.okhttp3:mockwebserver:5.0.0-alpha.12')
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.12'
     implementation 'com.jakewharton.timber:timber:5.0.1'
