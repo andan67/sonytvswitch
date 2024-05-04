@@ -82,7 +82,6 @@ constructor(
           uiState =
               uiState.copy(
                   isLoading = false,
-                  // isHostAvailable = true
                   status = AddControlStatus.REGISTER)
           addedControl = addedControl.copy(ip = host)
         }
@@ -90,7 +89,6 @@ constructor(
           uiState =
               uiState.copy(
                   isLoading = false,
-                  // isHostAvailable = true
                   status = AddControlStatus.SPECIFY_HOST_NOT_AVAILABE)
         }
         else -> {}
@@ -173,18 +171,17 @@ constructor(
   fun addControl() {
     externalScope.launch(Dispatchers.IO) {
       sonyControlRepository.addControl(addedControl)
-      sonyControlRepository.fetchRemoteControllerInfo()
     }
+    postRegistrationFetches()
   }
 
   fun postRegistrationFetches() =
       externalScope.launch(Dispatchers.IO) {
+        sonyControlRepository.fetchSystemInformation()
         sonyControlRepository.fetchRemoteControllerInfo()
-        // sonyControlRepository.fetchSourceList()
         sonyControlRepository.setWolMode(true)
         sonyControlRepository.fetchWolMode()
-        sonyControlRepository.fetchSystemInformation()
-        // sonyControlRepository.fetchChannelList()
+        sonyControlRepository.fetchChannelList()
       }
 
   fun addSampleControl(context: Context, host: String) {

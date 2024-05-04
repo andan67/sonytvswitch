@@ -109,7 +109,7 @@ private fun RemoteControlContent() {
             modifier =
                 Modifier
                     // .background(color = Color.LightGray)
-                    .width(333.dp)
+                    .width(332.dp)
                     .height(148.dp)) {
               RemoteControlTextButton(
                   modifier = Modifier.align(Alignment.TopStart), command = "Display", text = "INFO")
@@ -162,9 +162,8 @@ private fun RemoteControlContent() {
                         text = "OK")
                   }
             }
-        Box(modifier = Modifier.align(Alignment.Start)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
           Column(
-              modifier = Modifier.padding(start = 39.dp),
               horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(24.dp))
                 RemoteControlIconButton(
@@ -173,7 +172,6 @@ private fun RemoteControlContent() {
                     painter = painterResource(id = R.drawable.outline_volume_mute_24))
               }
           Column(
-              modifier = Modifier.padding(start = 113.dp),
               horizontalAlignment = Alignment.CenterHorizontally) {
                 RemoteControlLabel("VOLUME")
                 Row() {
@@ -189,7 +187,6 @@ private fun RemoteControlContent() {
                 }
               }
           Column(
-              modifier = Modifier.padding(start = 252.dp),
               horizontalAlignment = Alignment.CenterHorizontally) {
                 RemoteControlLabel("PROG")
                 Row() {
