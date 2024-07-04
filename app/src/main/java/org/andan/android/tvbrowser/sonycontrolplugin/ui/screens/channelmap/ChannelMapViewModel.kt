@@ -35,9 +35,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
   val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()
 
-  private val activeControlStateFlow =
-      sonyControlRepository.activeSonyControlWithChannelsFlow.stateIn(
-          viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl())
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -53,7 +51,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
       activeControlStateFlow
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             // Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
-            activeControl.channelMap
+            activeControl!!.channelMap
                 .filter { channelMap -> channelMap.key.contains(filter, true) }
                 .mapValues {
                   //              Timber.d("it: $it");
@@ -100,15 +98,15 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
           channelMap.keys.forEach {
             val index1 =
                 ChannelNameFuzzyMatch.matchOne(
-                    it, activeControlStateFlow.value.sonyChannelTitleList, true)
+                    it, activeControlStateFlow.value!!.sonyChannelTitleList, true)
             if (index1 >= 0) {
-              channelMatchResult[it] = activeControlStateFlow.value.channelList[index1].uri
+              channelMatchResult[it] = activeControlStateFlow.value!!.channelList[index1].uri
               // control.channelMap[channelName] = control.channelList[index1].uri
             }
           }
           // Timber.d("Matched $channelMatchResult")
           sonyControlRepository.saveChannelMap(
-              activeControlStateFlow.value.uuid, channelMatchResult)
+              activeControlStateFlow.value!!.uuid, channelMatchResult)
         }
       }
     }
@@ -128,7 +126,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
             channelMap.keys.forEach { channelMatchResult[it] = ""
         }*/
         // Timber.d("Cleared $channelMatchResult")
-        sonyControlRepository.saveChannelMap(activeControlStateFlow.value.uuid, channelMatchResult)
+        sonyControlRepository.saveChannelMap(activeControlStateFlow.value!!.uuid, channelMatchResult)
       }
     }
   }

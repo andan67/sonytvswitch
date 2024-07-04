@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
-import org.andan.android.tvbrowser.sonycontrolplugin.network.asDomainModel
+import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse;
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 
@@ -52,7 +52,7 @@ constructor(
       _channelListUiState.update { newState }
     }
 
-  private val activeControlFlow = sonyControlRepository.activeSonyControlWithChannelsFlow
+  private val activeControlFlow = sonyControlRepository.activeSonyControlMutableStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -70,7 +70,7 @@ constructor(
       activeControlFlow
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             Timber.d("filteredChannelList")
-            activeControl.channelList
+            activeControl!!.channelList
                 .filter { channel -> channel.title.contains(filter, true) }
                 .map { sonyChannel ->
                   Pair(sonyChannel, activeControl.channelReverseMap[sonyChannel.uri])
@@ -109,7 +109,7 @@ constructor(
             is Result.Success -> {
               uiState =
                   uiState.copy(
-                      isLoading = false, playingContentInfo = result.data!!.asDomainModel())
+                      isLoading = false, playingContentInfo = result.data!!.toPlayingContentInfo())
             }
             is Result.Error -> {
               uiState = uiState.copy(isLoading = false, message = result.message)

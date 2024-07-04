@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ import timber.log.Timber
 @Composable
 fun ManageControlScreen(
     modifier: Modifier = Modifier,
-    navActions: NavigationActions,
+    navToNoControl: () -> Unit,
     // deleteSelectedControl: () -> Unit,
     openDrawer: () -> Unit
 ) {
@@ -59,6 +60,16 @@ fun ManageControlScreen(
 
   val manageControlViewModel: ManageControlViewModel = hiltViewModel()
   val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
+
+
+  // val currentNavToNoControl by rememberUpdatedState(navToNoControl)
+  if(uiState.sonyControl == null) {
+    Timber.d("navActions.navigateToNoControl()")
+    LaunchedEffect(Unit) {
+      navToNoControl()
+    }
+  }
+
 
   Timber.d(uiState.toString())
   uiState.message?.let {
@@ -109,50 +120,52 @@ fun ManageControlScreen(
       },
       modifier = modifier.fillMaxSize()) { innerPadding ->
         ManageControlContent(
-            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
+            modifier = Modifier
+              .padding(innerPadding)
+              .padding(horizontal = 16.dp),
             sonyControl = uiState.sonyControl)
       }
 }
 
 @Composable
-private fun ManageControlContent(modifier: Modifier, sonyControl: SonyControl) {
+private fun ManageControlContent(modifier: Modifier, sonyControl: SonyControl?) {
   val scrollState = rememberScrollState()
   Column(modifier = modifier.verticalScroll(scrollState)) {
     PropertyItem(
         label = stringResource(id = R.string.manage_control_host_name),
-        value = sonyControl.ip,
+        value = sonyControl?.ip ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_nick_name),
-        value = sonyControl.nickname,
+        value = sonyControl?.nickname ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_device_name),
-        value = sonyControl.devicename,
+        value = sonyControl?.devicename ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_uuid),
-        value = sonyControl.uuid,
+        value = sonyControl?.uuid ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_model),
-        value = sonyControl.systemModel,
+        value = sonyControl?.systemModel ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_mac),
-        value = sonyControl.systemMacAddr,
+        value = sonyControl?.systemMacAddr ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_wol_mode),
-        value = sonyControl.systemWolMode.toString(),
+        value = sonyControl?.systemWolMode.toString() ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_number_channels),
-        value = sonyControl.channelList.size.toString(),
+        value = sonyControl?.channelList?.size.toString() ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_sources),
-        value = sonyControl.sourceList.joinToString { source -> source.substringAfter("tv:") },
+        value = sonyControl?.sourceList?.joinToString { source -> source.substringAfter("tv:") } ?: "",
         showDivider = false)
   }
 }

@@ -76,7 +76,7 @@ fun SonyControlNavGraph(
 
     composable(NavDestinations.ManageControl.route) {
       ManageControlScreen(
-          navActions = navigationActions,
+          navToNoControl = {navigationActions.navigateToNoControl()},
           // deleteSelectedControl = {viewModel.deleteSelectedControl()},
           // selectedSonyControlState = selectedSonyControlState,
           openDrawer = openDrawer)

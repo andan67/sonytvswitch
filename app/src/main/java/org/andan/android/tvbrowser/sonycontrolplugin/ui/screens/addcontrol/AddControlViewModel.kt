@@ -168,21 +168,18 @@ constructor(
     }
   }
 
-  fun addControl() {
+  fun addControl(performFetches: Boolean = true) {
     externalScope.launch(Dispatchers.IO) {
       sonyControlRepository.addControl(addedControl)
-    }
-    postRegistrationFetches()
-  }
-
-  fun postRegistrationFetches() =
-      externalScope.launch(Dispatchers.IO) {
+      if(performFetches) {
         sonyControlRepository.fetchSystemInformation()
         sonyControlRepository.fetchRemoteControllerInfo()
         sonyControlRepository.setWolMode(true)
         sonyControlRepository.fetchWolMode()
         sonyControlRepository.fetchChannelList()
       }
+    }
+  }
 
   fun addSampleControl(context: Context, host: String) {
     addedControl =
@@ -193,6 +190,6 @@ constructor(
                 .use { it.readText() }
                 .replace("android sample", host)
                 .replace("sample uuid", UUID.randomUUID().toString()))
-    addControl()
+    addControl(false)
   }
 }

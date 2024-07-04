@@ -1,6 +1,7 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation
 
 import androidx.navigation.NavHostController
+import timber.log.Timber
 
 enum class NavDestinations(val route: String, label: String = "") {
   ChannelList(route = "channel_list"),
@@ -17,13 +18,14 @@ enum class NavDestinations(val route: String, label: String = "") {
 
 /** Models the navigation actions in the app. */
 class NavigationActions(
-    private val navController: NavHostController,
-    private val hasControls: () -> Boolean,
-    private val finish: () -> Unit
+  private val navController: NavHostController,
+  private val hasControls: () -> Boolean,
+  private val finish: () -> Unit
 ) {
 
   fun navigateToChannelList() {
-    if (hasControls()) {
+    Timber.d("navigateToChannelList")
+    if (true) {
       navController.navigate(NavDestinations.ChannelList.route)
     } else {
       navController.navigate(NavDestinations.NoControlDialog.route)
@@ -31,7 +33,8 @@ class NavigationActions(
   }
 
   fun navigateToChannelMap() {
-    if (hasControls()) {
+    Timber.d("navigateToChannelMap")
+    if (true) {
       navController.navigate(NavDestinations.ChannelMap.route)
     } else {
       navController.navigate(NavDestinations.NoControlDialog.route)
@@ -39,16 +42,19 @@ class NavigationActions(
   }
 
   fun navigateToChannelSingleMap(channelKey: String) {
+    Timber.d("navigateToChannelSingleMap")
     navController.navigate(
         NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))
   }
 
   fun navigateToPlayingContentInfoDetails() {
+    Timber.d("navigateToPlayingContentInfoDetails")
     navController.navigate(NavDestinations.PlayingContentInfoDetails.route)
   }
 
   fun navigateToRemoteControl() {
-    if (hasControls()) {
+    Timber.d("navigateToRemoteControl")
+    if (true) {
       navController.navigate(NavDestinations.RemoteControl.route)
     } else {
       navController.navigate(NavDestinations.NoControlDialog.route)
@@ -56,7 +62,8 @@ class NavigationActions(
   }
 
   fun navigateToManageControl() {
-    if (hasControls()) {
+    Timber.d("navigateToManageControl")
+    if (true) {
       navController.navigate(NavDestinations.ManageControl.route)
     } else {
       navController.navigate(NavDestinations.NoControlDialog.route)
@@ -64,22 +71,27 @@ class NavigationActions(
   }
 
   fun openAddControlDialog() {
+    Timber.d("openAddControlDialog")
     navController.navigate(NavDestinations.AddControl.route)
   }
 
   fun navigateToSettings() {
+    Timber.d("navigateToSettings")
     navController.navigate(NavDestinations.Settings.route)
   }
 
   fun navigateToHelp() {
+    Timber.d("navigateToHelp")
     navController.navigate(NavDestinations.Help.route)
   }
 
   fun navigateToNoControl() {
+    Timber.d("navigateToNoControl")
     navController.navigate(NavDestinations.NoControlDialog.route)
   }
 
   fun navigateUp() {
+    Timber.d("navigateUp")
     navController.navigateUp()
   }
 

@@ -43,9 +43,7 @@ constructor(
   val channelSingleMapUiState: StateFlow<ChannelSingleMapUiState> =
       _channelSingleMapUiState.asStateFlow()
 
-  private val activeControlStateFlow =
-      sonyControlRepository.activeSonyControlWithChannelsFlow.stateIn(
-          viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl())
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -58,7 +56,7 @@ constructor(
   val matchedChannels =
       activeControlStateFlow
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
-            matchSingleChannel(activeControl, filter).map {
+            matchSingleChannel(activeControl!!, filter).map {
               // Timber.d("activeControl.uriSonyChannelMap[it]
               // ${activeControl.uriSonyChannelMap[it]}")
               activeControl.uriSonyChannelMap[it]
@@ -83,7 +81,7 @@ constructor(
                 channelMapItem =
                     Pair(
                         channelKey,
-                        sonyControl.uriSonyChannelMap[sonyControl.channelMap[channelKey]]))
+                        sonyControl!!.uriSonyChannelMap[sonyControl.channelMap[channelKey]]))
       }
     }
   }
@@ -114,11 +112,11 @@ constructor(
 
   internal fun saveNewMap(channel: SonyChannel?) {
     if (channel != null) {
-      var channelMap = activeControlStateFlow.value.channelMap.toMutableMap()
+      var channelMap = activeControlStateFlow.value!!.channelMap.toMutableMap()
       if (channelMap.isNotEmpty()) {
         viewModelScope.launch {
           channelMap[channelKey] = channel.uri
-          sonyControlRepository.saveChannelMap(activeControlStateFlow.value.uuid, channelMap)
+          sonyControlRepository.saveChannelMap(activeControlStateFlow.value!!.uuid, channelMap)
         }
       }
     }

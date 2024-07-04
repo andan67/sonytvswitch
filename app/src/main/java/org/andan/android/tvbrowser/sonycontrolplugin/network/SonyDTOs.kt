@@ -12,32 +12,29 @@ data class PlayingContentInfoResponse(
     val programTitle: String,
     val startDateTime: String,
     val durationSec: Long
-)
-
-fun PlayingContentInfoResponse.asDomainModel(): PlayingContentInfo {
-  // Elvis operator is used here because parameters can be null as result of GSON not being null
-  // safe in the context of Kotlin!
-  return PlayingContentInfo(
-      source ?: "",
-      dispNum ?: "----",
-      programMediaType ?: "",
-      title ?: "Not available",
-      uri ?: "",
-      programTitle ?: "",
-      startDateTime ?: "",
-      durationSec ?: 0)
+) {
+    fun toPlayingContentInfo() : PlayingContentInfo {
+        return PlayingContentInfo(
+            source ?: "",
+            dispNum ?: "----",
+            programMediaType ?: "",
+            title ?: "Not available",
+            uri ?: "",
+            programTitle ?: "",
+            startDateTime ?: "",
+            durationSec ?: 0)
+    }
 }
-
 data class ContentListItemResponse(
     val dispNum: String,
     val index: Int,
     val programMediaType: String,
     val title: String,
     val uri: String
-)
-
-fun ContentListItemResponse.asDomainModel(source: String = ""): SonyChannel {
-  return SonyChannel(source, dispNum, index, programMediaType, title, uri)
+) {
+    fun toSonyChannel(source: String = ""): SonyChannel {
+        return SonyChannel(source, dispNum, index, programMediaType, title, uri)
+    }
 }
 
 data class SourceListItemResponse(val source: String)

@@ -14,19 +14,9 @@ class RemoteControlViewModel
 @Inject
 constructor(private val sonyControlRepository: SonyControlRepository) : ViewModel() {
 
-  private var _activeControl = SonyControl()
-
-  val activeSonyControlFlow = sonyControlRepository.activeSonyControlFlow
-
   fun sendCommand(command: String) {
     viewModelScope.launch(Dispatchers.IO) {
-      sonyControlRepository.sendCommand(_activeControl, command)
-    }
-  }
-
-  init {
-    viewModelScope.launch {
-      activeSonyControlFlow.collect { sonyControl -> _activeControl = sonyControl }
+      sonyControlRepository.sendCommand(command)
     }
   }
 

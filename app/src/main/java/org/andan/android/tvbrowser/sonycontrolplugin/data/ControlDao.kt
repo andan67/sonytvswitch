@@ -42,7 +42,11 @@ interface ControlDao {
 
   @Transaction
   @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
-  fun getActiveControlWithChannels(): Flow<ControlEntityWithChannels>
+  fun getActiveControlWithChannelsFlow(): Flow<ControlEntityWithChannels>
+
+  @Transaction
+  @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
+  suspend fun getActiveControlWithChannels(): ControlEntityWithChannels
 
   suspend fun setActiveControl(controlEntity: ControlEntity) {
     return setActiveControl(controlEntity.uuid)

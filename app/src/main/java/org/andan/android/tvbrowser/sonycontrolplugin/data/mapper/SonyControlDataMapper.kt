@@ -114,7 +114,7 @@ class SonyChannelListDTOMapper() : Mapper<SonyControl, List<ChannelEntity>> {
   }
 }
 
-class SonyChanneMapDTOMapper() : Mapper<SonyControl, List<ChannelMapEntity>> {
+class SonyChannelMapDTOMapper() : Mapper<SonyControl, List<ChannelMapEntity>> {
   override fun map(sonyControl: SonyControl): List<ChannelMapEntity> {
     var channelMapList: MutableList<ChannelMapEntity> = mutableListOf()
     for (entry in sonyControl.channelMap) {
@@ -134,7 +134,7 @@ class SonyControlDataMapper() {
   private val sonyChannelDomainMapper = SonyChannelDomainMapper()
   private val sonyControlDTOMapper = SonyControlDTOMapper()
   private val sonyChannelListDTOMapper = SonyChannelListDTOMapper()
-  private val sonyChanneMapDTOMapper = SonyChanneMapDTOMapper()
+  private val sonyChannelMapDTOMapper = SonyChannelMapDTOMapper()
 
   fun mapControlEntity2Domain(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl {
     return sonyControlWithChannelsDomainMapper.map(controlEntityWithChannels)
@@ -157,6 +157,6 @@ class SonyControlDataMapper() {
   }
 
   fun mapControl2ChannelMapList(sonyControl: SonyControl): List<ChannelMapEntity> {
-    return sonyChanneMapDTOMapper.map(sonyControl)
+    return sonyChannelMapDTOMapper.map(sonyControl)
   }
 }

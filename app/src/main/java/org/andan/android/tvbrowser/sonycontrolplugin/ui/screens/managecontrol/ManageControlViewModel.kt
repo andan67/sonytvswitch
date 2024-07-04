@@ -28,7 +28,7 @@ data class ManageControlUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val message: EventMessage? = null,
-    val sonyControl: SonyControl = SonyControl()
+    val sonyControl: SonyControl? = null
     // val isHostAvailable: Boolean = false,
     // val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
@@ -42,9 +42,7 @@ constructor(
 ) : ViewModel() {
   // TODO Inject repository
 
-  private val activeControlStateFlow =
-      sonyControlRepository.activeSonyControlWithChannelsFlow.stateIn(
-          viewModelScope, started = SharingStarted.WhileSubscribed(5000), SonyControl())
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
 
   private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
   val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()
@@ -62,6 +60,9 @@ constructor(
         Timber.d("collect flow $sonyControl")
       }
     }
+
+
+
   }
 
   fun fetchAllData() {

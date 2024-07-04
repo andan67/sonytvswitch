@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.andan.android.tvbrowser.sonycontrolplugin.di.NetworkModule
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
+import timber.log.Timber
 
 class SessionManager
 @Inject
@@ -45,6 +46,7 @@ constructor(
   }
 
   fun setContext(control: SonyControl) {
+    Timber.d("setContext from $this: ${control.ip}")
     activeControlUuid = control.uuid
     hostname = control.ip
     nickname = control.nickname
@@ -52,3 +54,4 @@ constructor(
     preSharedKey = control.preSharedKey
   }
 }
+

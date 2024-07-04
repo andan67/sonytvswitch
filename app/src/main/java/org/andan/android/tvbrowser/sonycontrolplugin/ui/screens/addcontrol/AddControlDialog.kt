@@ -60,7 +60,7 @@ fun AddControlDialog(
   if (uiState.status == AddControlStatus.REGISTER_SUCCESS) {
     addControlViewModel.addControl()
     // viewModel.postRegistrationFetches()
-    navActions.navigateUp()
+    navActions.navigateToManageControl()
   }
 
   AlertDialog(
@@ -85,7 +85,7 @@ fun AddControlDialog(
                 onClick = {
                   if (host.contains("sample")) {
                     addControlViewModel.addSampleControl(context, host)
-                    navActions.navigateUp()
+                    navActions.navigateToManageControl()
                   } else {
                     // viewModel.addedControlHostAddress = host
                     // fetch power status to check for host validity/connectivity
@@ -130,9 +130,9 @@ fun AddControlDialog(
           when (uiState.status) {
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
-              LaunchedEffect(true) {
+/*              LaunchedEffect(true) {
                 //addControlViewModel.fetchSonyIpAndDeviceList()
-                addControlViewModel.startDiscovery()}
+                addControlViewModel.startDiscovery()}*/
               var expanded by remember { mutableStateOf(false) }
               // val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
               Text(text = stringResource(id = R.string.add_control_host_instructions))
