@@ -9,9 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,7 +39,6 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
 import timber.log.Timber
 
@@ -61,15 +59,11 @@ fun ManageControlScreen(
   val manageControlViewModel: ManageControlViewModel = hiltViewModel()
   val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
 
-
   // val currentNavToNoControl by rememberUpdatedState(navToNoControl)
-  if(uiState.sonyControl == null) {
+  if (uiState.sonyControl == null) {
     Timber.d("navActions.navigateToNoControl()")
-    LaunchedEffect(Unit) {
-      navToNoControl()
-    }
+    LaunchedEffect(Unit) { navToNoControl() }
   }
-
 
   Timber.d(uiState.toString())
   uiState.message?.let {
@@ -120,9 +114,7 @@ fun ManageControlScreen(
       },
       modifier = modifier.fillMaxSize()) { innerPadding ->
         ManageControlContent(
-            modifier = Modifier
-              .padding(innerPadding)
-              .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
             sonyControl = uiState.sonyControl)
       }
 }
@@ -165,7 +157,8 @@ private fun ManageControlContent(modifier: Modifier, sonyControl: SonyControl?) 
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_sources),
-        value = sonyControl?.sourceList?.joinToString { source -> source.substringAfter("tv:") } ?: "",
+        value =
+            sonyControl?.sourceList?.joinToString { source -> source.substringAfter("tv:") } ?: "",
         showDivider = false)
   }
 }
@@ -175,7 +168,7 @@ fun PropertyItem(label: String, value: String?, showDivider: Boolean = true) {
   ListItem(
       headlineContent = { Text(text = label) },
       supportingContent = { Text(text = if (value.isNullOrEmpty()) "" else value) })
-  if (showDivider) Divider()
+  if (showDivider) HorizontalDivider()
 }
 
 @Composable

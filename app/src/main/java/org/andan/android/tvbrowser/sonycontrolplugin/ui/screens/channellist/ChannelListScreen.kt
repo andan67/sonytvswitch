@@ -9,19 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -40,7 +33,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
@@ -66,28 +58,31 @@ fun ChannelListScreen(
   Scaffold(
       topBar = {
         TopAppBarWithSearch(
-          title = stringResource(id = R.string.channel_list_title),
-          onIconClick = { openDrawer() },
-          searchText = searchText,
-          onSearchTextChanged = {
-            searchText = it
-            viewModel.filter = it
-          },
-          menuContent = {
-            WOLScreenOnOffMenu(
-              enableWOLAction = { viewModel.wakeOnLan() },
-              screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
-              screenOnAction = { viewModel.setPowerSavingMode("off") })
-          }
-        )
+            title = stringResource(id = R.string.channel_list_title),
+            onIconClick = { openDrawer() },
+            searchText = searchText,
+            onSearchTextChanged = {
+              searchText = it
+              viewModel.filter = it
+            },
+            menuContent = {
+              WOLScreenOnOffMenu(
+                  enableWOLAction = { viewModel.wakeOnLan() },
+                  screenOffAction = { viewModel.setPowerSavingMode("pictureOff") },
+                  screenOnAction = { viewModel.setPowerSavingMode("off") })
+            })
       },
       modifier = modifier.fillMaxSize(),
       floatingActionButton = {
-        FloatingActionButton(onClick = { Timber.d("Switch channel"); viewModel.switchToLastChannel() }) {
-          Icon(
-              painter = painterResource(id = R.drawable.baseline_autorenew_24),
-              contentDescription = stringResource(id = R.string.switch_channel))
-        }
+        FloatingActionButton(
+            onClick = {
+              Timber.d("Switch channel")
+              viewModel.switchToLastChannel()
+            }) {
+              Icon(
+                  painter = painterResource(id = R.drawable.baseline_autorenew_24),
+                  contentDescription = stringResource(id = R.string.switch_channel))
+            }
       }) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
           PlayingContentInfoHeaderContent(

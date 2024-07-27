@@ -99,7 +99,9 @@ private fun ChannelSingleMapTopAppBar(
 
   TopAppBar(
       title = { Text(text = stringResource(id = R.string.menu_match_single_channel)) },
-      navigationIcon = { IconButton(onClick = navigateUp) { Icon(Icons.Filled.ArrowBack, null) } },
+      navigationIcon = {
+        IconButton(onClick = navigateUp) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+      },
       actions = {
         if (searchIsActive) {
           SearchTextField(

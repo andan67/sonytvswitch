@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
-import org.andan.android.tvbrowser.sonycontrolplugin.network.PlayingContentInfoResponse;
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 
@@ -66,11 +66,13 @@ constructor(
       filterFlow.value = value
     }
 
+  @OptIn(FlowPreview::class)
   val filteredChannelList =
       activeControlFlow
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             Timber.d("filteredChannelList")
-            activeControl!!.channelList
+            activeControl!!
+                .channelList
                 .filter { channel -> channel.title.contains(filter, true) }
                 .map { sonyChannel ->
                   Pair(sonyChannel, activeControl.channelReverseMap[sonyChannel.uri])

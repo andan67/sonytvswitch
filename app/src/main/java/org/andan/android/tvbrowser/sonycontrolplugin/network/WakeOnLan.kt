@@ -17,9 +17,8 @@ object WakeOnLan {
           "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$"
   private val pattern = Pattern.compile(IPADDRESS_PATTERN)
 
-  fun validate(ipAddress: String?): Boolean {
-    matcher = pattern.matcher(ipAddress)
-    return matcher!!.matches()
+  private fun validate(ipAddress: String?): Boolean {
+    return if (ipAddress.isNullOrEmpty()) false else pattern.matcher(ipAddress).matches()
   }
 
   @JvmStatic
@@ -31,7 +30,7 @@ object WakeOnLan {
       println(address.hostAddress)
       if (validate(address.hostAddress)) {
         val broadcastAddress =
-            address.hostAddress.substring(0, address.hostAddress.lastIndexOf(".")) + ".255"
+            address.hostAddress!!.substring(0, address.hostAddress!!.lastIndexOf(".")) + ".255"
         println(broadcastAddress)
       }
     } catch (ex: UnknownHostException) {
@@ -49,7 +48,8 @@ object WakeOnLan {
       var broadcastIP: String? = null
       broadcastIP =
           if (validate(hostAddress.hostAddress)) {
-            hostAddress.hostAddress.substring(0, hostAddress.hostAddress.lastIndexOf(".")) + ".255"
+            hostAddress.hostAddress!!.substring(0, hostAddress.hostAddress!!.lastIndexOf(".")) +
+                ".255"
           } else {
             throw Exception("No valid IP4 address")
           }

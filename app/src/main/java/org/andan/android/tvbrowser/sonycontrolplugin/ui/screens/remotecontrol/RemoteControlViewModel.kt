@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 
 @HiltViewModel
@@ -15,9 +14,7 @@ class RemoteControlViewModel
 constructor(private val sonyControlRepository: SonyControlRepository) : ViewModel() {
 
   fun sendCommand(command: String) {
-    viewModelScope.launch(Dispatchers.IO) {
-      sonyControlRepository.sendCommand(command)
-    }
+    viewModelScope.launch(Dispatchers.IO) { sonyControlRepository.sendCommand(command) }
   }
 
   fun setPowerSavingMode(mode: String) =

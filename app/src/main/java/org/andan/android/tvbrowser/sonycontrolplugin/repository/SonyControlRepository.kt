@@ -7,15 +7,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -67,15 +63,13 @@ constructor(
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
 
-  val activeSonyControlMutableStateFlow: MutableStateFlow<SonyControl?> = MutableStateFlow(null
-  );
+  val activeSonyControlMutableStateFlow: MutableStateFlow<SonyControl?> = MutableStateFlow(null)
 
   var _activeSonyControl: SonyControl?
     get() = activeSonyControlMutableStateFlow.value
     set(value) {
       activeSonyControlMutableStateFlow.value = value
     }
-
 
   val sonyControlsStateFlow =
       controlDao
@@ -87,7 +81,6 @@ constructor(
           }
           .stateIn(externalScope, SharingStarted.Eagerly, emptyList<SonyControl>())
 
-
   companion object {
     const val SUCCESS_CODE = 0
     const val ERROR_CODE = -1
@@ -96,10 +89,9 @@ constructor(
   init {
     Timber.d("init")
     externalScope.launch {
-      activeSonyControlMutableStateFlow.collect {control ->
-        Timber.d("Active control: $control");
-        if(control != null) sessionManager.setContext(control)
-
+      activeSonyControlMutableStateFlow.collect { control ->
+        Timber.d("Active control: $control")
+        if (control != null) sessionManager.setContext(control)
       }
     }
 
@@ -145,12 +137,13 @@ constructor(
     Timber.d("end init")
   }
 
-  fun syncActiveControl(){
+  fun syncActiveControl() {
     externalScope.launch {
       _activeSonyControl =
-        sonyControlDataMapper.mapControlEntity2Domain(controlDao.getActiveControlWithChannels());
+          sonyControlDataMapper.mapControlEntity2Domain(controlDao.getActiveControlWithChannels())
     }
   }
+
   suspend fun setActiveControl(uuid: String) {
     Timber.d("setActiveControl $uuid")
     controlDao.setActiveControl(uuid)
@@ -201,11 +194,11 @@ constructor(
     return withContext(Dispatchers.IO) {
       val result =
           systemService<SystemInformationResponse>(
-            _activeSonyControl!!.ip, JsonRpcRequest.getSystemInformation())
+              _activeSonyControl!!.ip, JsonRpcRequest.getSystemInformation())
       Timber.d("fetchSystemInformation(): ${_activeSonyControl.toString()}")
       if (result.status == Status.SUCCESS) {
         updateControl(
-          _activeSonyControl!!.copy(
+            _activeSonyControl!!.copy(
                 systemName = result.data!!.name,
                 systemProduct = result.data!!.product,
                 systemModel = result.data!!.model,
@@ -363,7 +356,7 @@ constructor(
                     REGISTRATION_ERROR_NON_FATAL, jsonRpcResponse.error.asJsonArray.get(1).asString)
           } else if (!isPSK && !response.headers()["Set-Cookie"].isNullOrEmpty()) {
             // get token from set cookie and store
-            val cookieString: String? = response.headers()["Set-Cookie"]
+            val cookieString: String = response.headers()["Set-Cookie"]!!
             val pattern = Pattern.compile("auth=([A-Za-z0-9]+)")
             val matcher = pattern.matcher(cookieString)
             if (matcher.find()) {
@@ -403,11 +396,11 @@ constructor(
   }
 
   suspend fun sendCommand(command: String) {
-      val code = _activeSonyControl!!.commandMap[command]
-      Timber.d("sendCommand: $command $code")
-      if (!code.isNullOrBlank()) {
-        sendIRCC(code)
-      }
+    val code = _activeSonyControl!!.commandMap[command]
+    Timber.d("sendCommand: $command $code")
+    if (!code.isNullOrBlank()) {
+      sendIRCC(code)
+    }
   }
 
   suspend fun sendIRCC(code: String) {

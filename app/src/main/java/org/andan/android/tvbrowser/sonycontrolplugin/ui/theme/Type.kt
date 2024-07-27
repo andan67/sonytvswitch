@@ -11,7 +11,10 @@ val typography =
     Typography(
         titleLarge =
             TextStyle(
-                fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 20.sp, lineHeight = 26.sp)
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                lineHeight = 26.sp)
         /* Other default text styles to override
         button = TextStyle(
             fontFamily = FontFamily.Default,

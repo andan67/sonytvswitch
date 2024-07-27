@@ -18,16 +18,16 @@ object ChannelNameFuzzyMatch {
       regExMatch: Boolean
   ): Set<Int> {
     val topChannelNameToChannelNameListMatchIndexSet: MutableSet<Int> = LinkedHashSet()
-    val cs = channelName.toLowerCase()
+    val cs = channelName.lowercase()
     val whiteSpaceIndex = channelName.indexOf(" ")
     var cs1: String? = null
     if (whiteSpaceIndex > 0) {
-      cs1 = channelName.toLowerCase().substring(0, whiteSpaceIndex)
+      cs1 = channelName.lowercase().substring(0, whiteSpaceIndex)
     }
     var numberMatches = 0
     if (regExMatch) {
       for (i in channelNameList.indices) {
-        val ps = channelNameList[i].toLowerCase()
+        val ps = channelNameList[i].lowercase()
         if (ps.matches("$cs\\b.*".toRegex())) {
           topChannelNameToChannelNameListMatchIndexSet.add(i)
           numberMatches++
@@ -38,7 +38,7 @@ object ChannelNameFuzzyMatch {
           cs1 != null &&
           topChannelNameToChannelNameListMatchIndexSet.size == 0) {
         for (i in channelNameList.indices) {
-          val ps = channelNameList[i].toLowerCase()
+          val ps = channelNameList[i].lowercase()
           if (ps.matches("$cs1\\b.*".toRegex())) {
             topChannelNameToChannelNameListMatchIndexSet.add(i)
             numberMatches++
@@ -100,7 +100,7 @@ object ChannelNameFuzzyMatch {
 
   internal class NormalizeString : ToStringFunction<String> {
     override fun apply(s: String): String {
-      return s.replace("_", "").toLowerCase()
+      return s.replace("_", "").lowercase()
     }
   }
 }

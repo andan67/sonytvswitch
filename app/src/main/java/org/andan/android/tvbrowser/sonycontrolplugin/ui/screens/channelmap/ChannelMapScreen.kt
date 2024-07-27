@@ -11,18 +11,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -40,7 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
@@ -64,15 +57,16 @@ fun ChannelMapScreen(
   Scaffold(
       topBar = {
         TopAppBarWithSearch(
-          title = stringResource(id = R.string.channel_map_title),
-          onIconClick = { openDrawer() },
-          searchText = searchText,
-          onSearchTextChanged = {
-            searchText = it
-            viewModel.filter = it
-          },
-          menuContent = { ChannelMapMenu({viewModel.matchChannels()}, {viewModel.clearChannelMatches()})}
-        )
+            title = stringResource(id = R.string.channel_map_title),
+            onIconClick = { openDrawer() },
+            searchText = searchText,
+            onSearchTextChanged = {
+              searchText = it
+              viewModel.filter = it
+            },
+            menuContent = {
+              ChannelMapMenu({ viewModel.matchChannels() }, { viewModel.clearChannelMatches() })
+            })
       },
       modifier = modifier.fillMaxSize(),
   ) { innerPadding ->

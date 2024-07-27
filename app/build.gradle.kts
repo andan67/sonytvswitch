@@ -19,12 +19,12 @@ val localPropertiesFile = rootProject.file("local.properties")
 localProperties.load(FileInputStream(localPropertiesFile))
 
 
-val keystorePropertiesFile = file(localProperties["keystore.properties"])
+val keystorePropertiesFile = localProperties["keystore.properties"]?.let { file(it) }
 
 // Initialize a new Properties() object called keystoreProperties.
 val keystoreProperties = Properties()
 try {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    keystorePropertiesFile?.let {keystoreProperties.load(FileInputStream(keystorePropertiesFile))}
 }
 catch (e:FileNotFoundException) {
 }

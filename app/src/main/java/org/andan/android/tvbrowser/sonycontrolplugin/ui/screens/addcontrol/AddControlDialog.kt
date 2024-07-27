@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
@@ -130,9 +129,9 @@ fun AddControlDialog(
           when (uiState.status) {
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
-/*              LaunchedEffect(true) {
-                //addControlViewModel.fetchSonyIpAndDeviceList()
-                addControlViewModel.startDiscovery()}*/
+              /*              LaunchedEffect(true) {
+              //addControlViewModel.fetchSonyIpAndDeviceList()
+              addControlViewModel.startDiscovery()}*/
               var expanded by remember { mutableStateOf(false) }
               // val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
               Text(text = stringResource(id = R.string.add_control_host_instructions))

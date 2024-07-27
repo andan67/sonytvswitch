@@ -153,8 +153,7 @@ data class PlayingContentInfo(
 
   fun getStartDateTimeFormatted(): String? {
     return try {
-      val date = sdfInput.parse(startDateTime)
-      DateTimeFormat.format(date)
+      sdfInput.parse(startDateTime)?.let { DateTimeFormat.format(it) }
     } catch (e: Exception) {
       ""
     }
@@ -162,10 +161,11 @@ data class PlayingContentInfo(
 
   fun getEndDateTimeFormatted(): String? {
     return try {
-      val date = sdfInput.parse(startDateTime)
-      cal.time = date
-      cal.add(Calendar.SECOND, durationSec.toInt())
-      DateTimeFormat.format(cal.time)
+      sdfInput.parse(startDateTime)?.let {
+        cal.time = it
+        cal.add(Calendar.SECOND, durationSec.toInt())
+        DateTimeFormat.format(cal.time)
+      }
     } catch (e: Exception) {
       ""
     }
@@ -173,12 +173,13 @@ data class PlayingContentInfo(
 
   fun getStartEndTimeFormatted(): String? {
     return try {
-      val date = sdfInput.parse(startDateTime)
-      val startTime = TimeFormat.format(date)
-      cal.time = date
-      cal.add(Calendar.SECOND, durationSec.toInt())
-      val endTime = TimeFormat.format(cal.time)
-      "$startTime - $endTime"
+      sdfInput.parse(startDateTime)?.let {
+        val startTime = TimeFormat.format(it)
+        cal.time = it
+        cal.add(Calendar.SECOND, durationSec.toInt())
+        val endTime = TimeFormat.format(cal.time)
+        "$startTime - $endTime"
+      }
     } catch (e: Exception) {
       ""
     }

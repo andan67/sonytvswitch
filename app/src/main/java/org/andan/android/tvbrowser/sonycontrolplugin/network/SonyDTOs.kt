@@ -13,18 +13,19 @@ data class PlayingContentInfoResponse(
     val startDateTime: String,
     val durationSec: Long
 ) {
-    fun toPlayingContentInfo() : PlayingContentInfo {
-        return PlayingContentInfo(
-            source ?: "",
-            dispNum ?: "----",
-            programMediaType ?: "",
-            title ?: "Not available",
-            uri ?: "",
-            programTitle ?: "",
-            startDateTime ?: "",
-            durationSec ?: 0)
-    }
+  fun toPlayingContentInfo(): PlayingContentInfo {
+    return PlayingContentInfo(
+        source ?: "",
+        dispNum ?: "----",
+        programMediaType ?: "",
+        title ?: "Not available",
+        uri ?: "",
+        programTitle ?: "",
+        startDateTime ?: "",
+        durationSec ?: 0)
+  }
 }
+
 data class ContentListItemResponse(
     val dispNum: String,
     val index: Int,
@@ -32,9 +33,9 @@ data class ContentListItemResponse(
     val title: String,
     val uri: String
 ) {
-    fun toSonyChannel(source: String = ""): SonyChannel {
-        return SonyChannel(source, dispNum, index, programMediaType, title, uri)
-    }
+  fun toSonyChannel(source: String = ""): SonyChannel {
+    return SonyChannel(source, dispNum, index, programMediaType, title, uri)
+  }
 }
 
 data class SourceListItemResponse(val source: String)

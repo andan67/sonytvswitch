@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,11 +48,13 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   // private var controlChannelNames: MutableList<String> = ArrayList()
 
+  @OptIn(FlowPreview::class)
   val filteredChannelMap =
       activeControlStateFlow
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             // Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
-            activeControl!!.channelMap
+            activeControl!!
+                .channelMap
                 .filter { channelMap -> channelMap.key.contains(filter, true) }
                 .mapValues {
                   //              Timber.d("it: $it");
@@ -126,7 +129,8 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
             channelMap.keys.forEach { channelMatchResult[it] = ""
         }*/
         // Timber.d("Cleared $channelMatchResult")
-        sonyControlRepository.saveChannelMap(activeControlStateFlow.value!!.uuid, channelMatchResult)
+        sonyControlRepository.saveChannelMap(
+            activeControlStateFlow.value!!.uuid, channelMatchResult)
       }
     }
   }

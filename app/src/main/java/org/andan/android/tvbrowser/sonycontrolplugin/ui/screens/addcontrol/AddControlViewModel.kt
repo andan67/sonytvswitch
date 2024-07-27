@@ -79,17 +79,12 @@ constructor(
       val response = sonyControlRepository.fetchPowerStatus(host)
       when (response) {
         is Result.Success -> {
-          uiState =
-              uiState.copy(
-                  isLoading = false,
-                  status = AddControlStatus.REGISTER)
+          uiState = uiState.copy(isLoading = false, status = AddControlStatus.REGISTER)
           addedControl = addedControl.copy(ip = host)
         }
         is Result.Error -> {
           uiState =
-              uiState.copy(
-                  isLoading = false,
-                  status = AddControlStatus.SPECIFY_HOST_NOT_AVAILABE)
+              uiState.copy(isLoading = false, status = AddControlStatus.SPECIFY_HOST_NOT_AVAILABE)
         }
         else -> {}
       }
@@ -97,17 +92,15 @@ constructor(
   }
 
   suspend fun fetchSonyIpAndDeviceList() {
-    //viewModelScope.launch(Dispatchers.IO) {
-      uiState =
-        uiState.copy(discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList())
-    //}
+    // viewModelScope.launch(Dispatchers.IO) {
+    uiState = uiState.copy(discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList())
+    // }
   }
 
   suspend fun startDiscovery() {
-    lighthouseClient.discoverDevices()
-      .collect { deviceList: List<AbridgedMediaDevice> ->
-        Timber.d("Got an updated device list: $deviceList")
-      }
+    lighthouseClient.discoverDevices().collect { deviceList: List<AbridgedMediaDevice> ->
+      Timber.d("Got an updated device list: $deviceList")
+    }
   }
 
   fun registerControl(
@@ -171,7 +164,7 @@ constructor(
   fun addControl(performFetches: Boolean = true) {
     externalScope.launch(Dispatchers.IO) {
       sonyControlRepository.addControl(addedControl)
-      if(performFetches) {
+      if (performFetches) {
         sonyControlRepository.fetchSystemInformation()
         sonyControlRepository.fetchRemoteControllerInfo()
         sonyControlRepository.setWolMode(true)

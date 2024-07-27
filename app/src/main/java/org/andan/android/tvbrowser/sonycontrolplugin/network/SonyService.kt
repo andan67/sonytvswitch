@@ -110,7 +110,7 @@ private fun getAndStoreNewToken(sessionManager: SessionManager): String {
           .execute()
   if (response.code() == HTTP_OK) {
     if (!response.headers()["Set-Cookie"].isNullOrEmpty()) {
-      val cookieString: String? = response.headers()["Set-Cookie"]
+      val cookieString: String = response.headers()["Set-Cookie"]!!
       val pattern = Pattern.compile("auth=([A-Za-z0-9]+)")
       val matcher = pattern.matcher(cookieString)
       if (matcher.find()) {

@@ -44,10 +44,7 @@ fun TopAppBarWithSearch(
                 onClose = { isSearchActive = false })
       },
       navigationIcon = {
-        if (!isSearchActive)
-            IconButton(onClick = { onIconClick() }) {
-              Icon(iconImage, null)
-            }
+        if (!isSearchActive) IconButton(onClick = { onIconClick() }) { Icon(iconImage, null) }
         else
             IconButton(onClick = {}) {
               Icon(Icons.Filled.Search, stringResource(id = R.string.search_content_description))

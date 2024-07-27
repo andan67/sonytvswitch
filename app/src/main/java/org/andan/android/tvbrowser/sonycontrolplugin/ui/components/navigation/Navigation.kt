@@ -18,9 +18,9 @@ enum class NavDestinations(val route: String, label: String = "") {
 
 /** Models the navigation actions in the app. */
 class NavigationActions(
-  private val navController: NavHostController,
-  private val hasControls: () -> Boolean,
-  private val finish: () -> Unit
+    private val navController: NavHostController,
+    private val hasControls: () -> Boolean,
+    private val finish: () -> Unit
 ) {
 
   fun navigateToChannelList() {

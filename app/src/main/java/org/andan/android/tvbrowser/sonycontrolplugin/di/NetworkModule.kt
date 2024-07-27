@@ -105,11 +105,11 @@ object NetworkModule {
 
   @Singleton
   @Provides
-  fun provideLighthouseClient(@ApplicationContext context: Context) : LighthouseClient {
-    return     LighthouseClient.Builder(context)
-      .setLogger(object : LighthouseLogger() {}) // Optional: Setup a custom logging system
-      .setRetryCount(3) // Optional: Retry sending packets 3 times (4 packets will be sent in total)
-      .build()
+  fun provideLighthouseClient(@ApplicationContext context: Context): LighthouseClient {
+    return LighthouseClient.Builder(context)
+        .setLogger(object : LighthouseLogger() {}) // Optional: Setup a custom logging system
+        .setRetryCount(
+            3) // Optional: Retry sending packets 3 times (4 packets will be sent in total)
+        .build()
   }
-
 }

@@ -163,44 +163,41 @@ private fun RemoteControlContent() {
                   }
             }
         Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
-          Column(
-              horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(24.dp))
-                RemoteControlIconButton(
-                    width = dimensionResource(id = R.dimen.rc_button_small_width),
-                    command = "Mute",
-                    painter = painterResource(id = R.drawable.outline_volume_mute_24))
-              }
-          Column(
-              horizontalAlignment = Alignment.CenterHorizontally) {
-                RemoteControlLabel("VOLUME")
-                Row() {
-                  RemoteControlIconButton(
-                      width = dimensionResource(id = R.dimen.rc_button_small_width),
-                      command = "VolumeDown",
-                      painter = painterResource(id = R.drawable.outline_remove_24))
-                  Spacer(modifier = Modifier.width(8.dp))
-                  RemoteControlIconButton(
-                      width = dimensionResource(id = R.dimen.rc_button_small_width),
-                      command = "VolumeUp",
-                      painter = painterResource(id = R.drawable.outline_add_24))
-                }
-              }
-          Column(
-              horizontalAlignment = Alignment.CenterHorizontally) {
-                RemoteControlLabel("PROG")
-                Row() {
-                  RemoteControlIconButton(
-                      width = dimensionResource(id = R.dimen.rc_button_small_width),
-                      command = "ChannelDown",
-                      painter = painterResource(id = R.drawable.outline_remove_24))
-                  Spacer(modifier = Modifier.width(8.dp))
-                  RemoteControlIconButton(
-                      width = dimensionResource(id = R.dimen.rc_button_small_width),
-                      command = "ChannelUp",
-                      painter = painterResource(id = R.drawable.outline_add_24))
-                }
-              }
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(24.dp))
+            RemoteControlIconButton(
+                width = dimensionResource(id = R.dimen.rc_button_small_width),
+                command = "Mute",
+                painter = painterResource(id = R.drawable.outline_volume_mute_24))
+          }
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            RemoteControlLabel("VOLUME")
+            Row() {
+              RemoteControlIconButton(
+                  width = dimensionResource(id = R.dimen.rc_button_small_width),
+                  command = "VolumeDown",
+                  painter = painterResource(id = R.drawable.outline_remove_24))
+              Spacer(modifier = Modifier.width(8.dp))
+              RemoteControlIconButton(
+                  width = dimensionResource(id = R.dimen.rc_button_small_width),
+                  command = "VolumeUp",
+                  painter = painterResource(id = R.drawable.outline_add_24))
+            }
+          }
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            RemoteControlLabel("PROG")
+            Row() {
+              RemoteControlIconButton(
+                  width = dimensionResource(id = R.dimen.rc_button_small_width),
+                  command = "ChannelDown",
+                  painter = painterResource(id = R.drawable.outline_remove_24))
+              Spacer(modifier = Modifier.width(8.dp))
+              RemoteControlIconButton(
+                  width = dimensionResource(id = R.dimen.rc_button_small_width),
+                  command = "ChannelUp",
+                  painter = painterResource(id = R.drawable.outline_add_24))
+            }
+          }
         }
         Spacer(modifier = Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

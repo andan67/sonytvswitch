@@ -54,4 +54,3 @@ constructor(
     preSharedKey = control.preSharedKey
   }
 }
-

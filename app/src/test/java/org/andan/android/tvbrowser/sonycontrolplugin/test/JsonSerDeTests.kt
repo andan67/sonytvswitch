@@ -6,9 +6,9 @@ import java.io.File
 import java.net.URL
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import junit.framework.Assert.assertEquals
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControls
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -114,11 +114,13 @@ class JsonSerDeTests {
     val m: Matcher = p.matcher(data)
     val buf = StringBuffer(data.length)
     while (m.find()) {
-      println(m.group(1))
-      println(m.group(1).toInt(16).toChar())
-      val ch: String = m.group(1).toInt(16).toChar().toString()
-      println(ch)
-      m.appendReplacement(buf, Matcher.quoteReplacement(ch))
+      m.group(1)?.let {
+        println(it)
+        println(it.toInt(16).toChar())
+        val ch: String = it.toInt(16).toChar().toString()
+        println(ch)
+        m.appendReplacement(buf, Matcher.quoteReplacement(ch))
+      }
     }
     m.appendTail(buf)
     return buf.toString()
