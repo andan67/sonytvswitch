@@ -143,6 +143,13 @@ interface ControlDao {
     insertChannels(channelList.filter { channelEntity -> channelEntity.control_uuid == uuid })
   }
 
+  @Transaction
+  suspend fun setChannelMapsForControl(channelMapList: List<ChannelMapEntity>, uuid: String) {
+    deleteChannelMapsForControlUuid(uuid)
+    insertChannelMaps(
+        channelMapList.filter { channelMapEntity -> channelMapEntity.control_uuid == uuid })
+  }
+
   @Query("SELECT * FROM $CHANNEL_MAP_TABLE WHERE control_uuid LIKE :uuid")
   fun getChannelMapEntities(uuid: String): Flow<List<ChannelMapEntity>>
 

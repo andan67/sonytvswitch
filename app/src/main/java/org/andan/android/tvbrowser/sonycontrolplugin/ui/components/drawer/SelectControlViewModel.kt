@@ -24,7 +24,8 @@ class SelectControlViewModel
 constructor(private val sonyControlRepository: SonyControlRepository) : ViewModel() {
 
   private val controlsFlow = sonyControlRepository.sonyControlsStateFlow
-  private val activeControlFlow = sonyControlRepository.activeSonyControlMutableStateFlow
+
+  private val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val _selectControlUiState = MutableStateFlow(SelectControlUiState())
   // val selectControlUiState: StateFlow<SelectControlUiState> = _selectControlUiState.asStateFlow()

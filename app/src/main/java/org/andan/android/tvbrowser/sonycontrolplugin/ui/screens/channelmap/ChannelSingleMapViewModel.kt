@@ -44,7 +44,7 @@ constructor(
   val channelSingleMapUiState: StateFlow<ChannelSingleMapUiState> =
       _channelSingleMapUiState.asStateFlow()
 
-  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val filterFlow = MutableStateFlow("")
 

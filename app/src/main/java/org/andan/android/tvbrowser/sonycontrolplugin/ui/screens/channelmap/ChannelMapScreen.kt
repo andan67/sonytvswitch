@@ -65,7 +65,10 @@ fun ChannelMapScreen(
               viewModel.filter = it
             },
             menuContent = {
-              ChannelMapMenu({ viewModel.matchChannels() }, { viewModel.clearChannelMatches() })
+              ChannelMapMenu(
+                  { viewModel.matchChannels() },
+                  { viewModel.clearChannelMatches() },
+                  { viewModel.deleteChannelMap() })
             })
       },
       modifier = modifier.fillMaxSize(),
@@ -155,7 +158,11 @@ private fun ChannelMapItem(
 }
 
 @Composable
-private fun ChannelMapMenu(onMatchChannels: () -> Unit, onClearMappings: () -> Unit) {
+private fun ChannelMapMenu(
+    onMatchChannels: () -> Unit,
+    onClearMappings: () -> Unit,
+    onDeleteChannelMap: () -> Unit
+) {
   TopAppBarDropdownMenu(
       iconContent = { Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more)) }) {
           // Here closeMenu stands for the lambda expression parameter that is passed when this
@@ -172,6 +179,12 @@ private fun ChannelMapMenu(onMatchChannels: () -> Unit, onClearMappings: () -> U
             text = { Text(text = stringResource(id = R.string.menu_clear_mappings)) },
             onClick = {
               onClearMappings()
+              closeMenu()
+            })
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.menu_delete_map)) },
+            onClick = {
+              onDeleteChannelMap()
               closeMenu()
             })
       }

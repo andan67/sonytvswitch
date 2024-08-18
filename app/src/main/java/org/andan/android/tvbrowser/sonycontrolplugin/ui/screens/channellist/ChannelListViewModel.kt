@@ -52,7 +52,7 @@ constructor(
       _channelListUiState.update { newState }
     }
 
-  private val activeControlFlow = sonyControlRepository.activeSonyControlMutableStateFlow
+  private val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val filterFlow = MutableStateFlow("")
 

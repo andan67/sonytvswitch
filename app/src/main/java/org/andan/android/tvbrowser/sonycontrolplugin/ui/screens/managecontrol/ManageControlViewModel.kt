@@ -40,7 +40,7 @@ constructor(
 ) : ViewModel() {
   // TODO Inject repository
 
-  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val _manageControlUiState = MutableStateFlow(ManageControlUiState(isLoading = false))
   val manageControlUiState: StateFlow<ManageControlUiState> = _manageControlUiState.asStateFlow()

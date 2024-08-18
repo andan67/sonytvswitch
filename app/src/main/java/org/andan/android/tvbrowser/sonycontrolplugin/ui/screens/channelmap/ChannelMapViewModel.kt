@@ -36,7 +36,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
   val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()
 
-  private val activeControlStateFlow = sonyControlRepository.activeSonyControlMutableStateFlow
+  private val activeControlStateFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -94,23 +94,20 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
     // Timber.d("Matching ${channelMap} channels")
     if (channelMap.isNotEmpty()) {
       viewModelScope.launch {
-        val channelMap = filteredChannelMap.value
-        // Timber.d("Matching ${channelMap} channels")
-        if (channelMap.isNotEmpty()) {
-          val channelMatchResult: LinkedHashMap<String, String> = LinkedHashMap()
-          channelMap.keys.forEach {
-            val index1 =
-                ChannelNameFuzzyMatch.matchOne(
-                    it, activeControlStateFlow.value!!.sonyChannelTitleList, true)
-            if (index1 >= 0) {
-              channelMatchResult[it] = activeControlStateFlow.value!!.channelList[index1].uri
-              // control.channelMap[channelName] = control.channelList[index1].uri
-            }
+        val channelMatchResult: LinkedHashMap<String, String> = LinkedHashMap()
+        channelMap.keys.forEach {
+          val index1 =
+              ChannelNameFuzzyMatch.matchOne(
+                  it, activeControlStateFlow.value!!.sonyChannelTitleList, true)
+          if (index1 >= 0) {
+            channelMatchResult[it] = activeControlStateFlow.value!!.channelList[index1].uri
+            // control.channelMap[channelName] = control.channelList[index1].uri
           }
-          // Timber.d("Matched $channelMatchResult")
-          sonyControlRepository.saveChannelMap(
-              activeControlStateFlow.value!!.uuid, channelMatchResult)
         }
+        // Timber.d("Matched $channelMatchResult")
+
+        sonyControlRepository.saveChannelMap(
+            activeControlStateFlow.value!!.copy(channelMap = channelMatchResult))
       }
     }
   }
@@ -122,15 +119,19 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
       val channelMatchResult: LinkedHashMap<String, String> = LinkedHashMap()
       channelMap.keys.forEach { channelMatchResult[it] = "" }
       viewModelScope.launch {
-        /*            val channelMap = filteredChannelMap.value
-        Timber.d("Clearing ${channelMap.size} channel matches")
-        if(channelMap.isNotEmpty()) {
-            val channelMatchResult: LinkedHashMap<String, String> =  LinkedHashMap()
-            channelMap.keys.forEach { channelMatchResult[it] = ""
-        }*/
-        // Timber.d("Cleared $channelMatchResult")
         sonyControlRepository.saveChannelMap(
-            activeControlStateFlow.value!!.uuid, channelMatchResult)
+            activeControlStateFlow.value!!.copy(channelMap = channelMatchResult))
+      }
+    }
+  }
+
+  internal fun deleteChannelMap() {
+    val channelMap = filteredChannelMap.value
+    if (channelMap.isNotEmpty()) {
+      Timber.d("Deleting ${channelMap.size} channel map items")
+      viewModelScope.launch {
+        sonyControlRepository.saveChannelMap(
+            activeControlStateFlow.value!!.copy(channelMap = emptyMap()))
       }
     }
   }
