@@ -13,7 +13,7 @@ object ChannelNameFuzzyMatch {
 
   fun matchTop(
       channelName: String,
-      channelNameList: List<String>,
+      channelTitleList: List<String>,
       ntop: Int,
       regExMatch: Boolean
   ): Set<Int> {
@@ -26,8 +26,8 @@ object ChannelNameFuzzyMatch {
     }
     var numberMatches = 0
     if (regExMatch) {
-      for (i in channelNameList.indices) {
-        val ps = channelNameList[i].lowercase()
+      for (i in channelTitleList.indices) {
+        val ps = channelTitleList[i].lowercase()
         if (ps.matches("$cs\\b.*".toRegex())) {
           topChannelNameToChannelNameListMatchIndexSet.add(i)
           numberMatches++
@@ -37,8 +37,8 @@ object ChannelNameFuzzyMatch {
       if (numberMatches < ntop &&
           cs1 != null &&
           topChannelNameToChannelNameListMatchIndexSet.size == 0) {
-        for (i in channelNameList.indices) {
-          val ps = channelNameList[i].lowercase()
+        for (i in channelTitleList.indices) {
+          val ps = channelTitleList[i].lowercase()
           if (ps.matches("$cs1\\b.*".toRegex())) {
             topChannelNameToChannelNameListMatchIndexSet.add(i)
             numberMatches++
@@ -49,7 +49,7 @@ object ChannelNameFuzzyMatch {
     }
     if (numberMatches < ntop) {
       val matches =
-          FuzzySearch.extractTop(channelName, channelNameList, toStringFunction, tokenSet, ntop)
+          FuzzySearch.extractTop(channelName, channelTitleList, toStringFunction, tokenSet, ntop)
       for (match in matches) {
         val index = match.index
         if (index >= 0) {
@@ -62,14 +62,30 @@ object ChannelNameFuzzyMatch {
     return topChannelNameToChannelNameListMatchIndexSet
   }
 
-  suspend fun matchOne(
+  fun matchAll(
+      channelMap: Map<String, SonyChannel?>,
+      channelTitleList: List<String>,
+      channelList: List<SonyChannel>,
+      regExMatch: Boolean
+  ): LinkedHashMap<String, String> {
+    val channelMatchResult: LinkedHashMap<String, String> = LinkedHashMap()
+    channelMap.keys.forEach {
+      val index1 = matchOne(it, channelTitleList, regExMatch)
+      if (index1 >= 0) {
+        channelMatchResult[it] = channelList[index1].uri
+      }
+    }
+    return channelMatchResult
+  }
+
+  private fun matchOne(
       channelName: String,
-      channelNameList: List<String>,
+      channelTitleList: List<String>,
       regExMatch: Boolean
   ): Int {
     var index = -1
     val topChannelNameToChannelNAmeListMatchIndexSet =
-        matchTop(channelName, channelNameList, 1, regExMatch)
+        matchTop(channelName, channelTitleList, 1, regExMatch)
     val iter: Iterator<*> = topChannelNameToChannelNAmeListMatchIndexSet.iterator()
     if (iter.hasNext()) index = iter.next() as Int
     return index

@@ -2,6 +2,7 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channelmap
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,12 +13,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
@@ -47,35 +56,72 @@ fun ChannelMapScreen(
     openDrawer: () -> Unit
 ) {
   // val viewModel: ChannelMapViewModel = hiltViewModel()
+  val snackbarHostState = remember { SnackbarHostState() }
+  val uiState by viewModel.channelMapUiState.collectAsStateWithLifecycle()
   val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
   val onMapItemClick =
-      remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
+    remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
   var searchText by rememberSaveable { mutableStateOf("") }
 
   Timber.d("ChannelMapScreen")
+  uiState.message?.let {
+    val messageString =
+      when (it) {
+        is IntEventMessage -> stringResource(id = it.message)
+        is StringEventMessage -> it.message
+      }
+    LaunchedEffect(uiState.message, uiState.isLoading) {
+      Timber.d(messageString)
+      snackbarHostState.showSnackbar(messageString)
+      viewModel.onConsumedMessage()
+    }
+  }
+
+  if (uiState.isLoading) {
+    Box(Modifier.fillMaxSize()) { CircularProgressIndicator(Modifier.align(Alignment.Center)) }
+  }
 
   Scaffold(
-      topBar = {
-        TopAppBarWithSearch(
-            title = stringResource(id = R.string.channel_map_title),
-            onIconClick = { openDrawer() },
-            searchText = searchText,
-            onSearchTextChanged = {
-              searchText = it
-              viewModel.filter = it
-            },
-            menuContent = {
-              ChannelMapMenu(
-                  { viewModel.matchChannels() },
-                  { viewModel.clearChannelMatches() },
-                  { viewModel.deleteChannelMap() })
-            })
-      },
-      modifier = modifier.fillMaxSize(),
+    snackbarHost = {
+      SnackbarHost(snackbarHostState) { data ->
+        Snackbar(
+          containerColor =
+          if (uiState.isSuccess) SnackbarDefaults.color
+          else MaterialTheme.colorScheme.errorContainer,
+          contentColor =
+          if (uiState.isSuccess) SnackbarDefaults.contentColor
+          else MaterialTheme.colorScheme.error
+        ) {
+          Text(data.visuals.message)
+        }
+      }
+    },
+    topBar = {
+      TopAppBarWithSearch(
+        title = stringResource(id = R.string.channel_map_title),
+        onIconClick = { openDrawer() },
+        searchText = searchText,
+        onSearchTextChanged = {
+          searchText = it
+          viewModel.filter = it
+        },
+        menuContent = {
+          ChannelMapMenu(
+            { viewModel.matchChannels() },
+            { viewModel.clearChannelMatches() },
+            { viewModel.deleteChannelMap() })
+        })
+    },
+    modifier = modifier.fillMaxSize(),
   ) { innerPadding ->
-    Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
-      ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
-    }
+      Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
+        ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
+      }
+      Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (uiState.isLoading) {
+          CircularProgressIndicator()
+        }
+      }
   }
 }
 
