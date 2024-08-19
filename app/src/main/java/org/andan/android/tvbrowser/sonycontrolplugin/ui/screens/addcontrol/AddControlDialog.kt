@@ -129,9 +129,7 @@ fun AddControlDialog(
           when (uiState.status) {
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
-              /*              LaunchedEffect(true) {
-              //addControlViewModel.fetchSonyIpAndDeviceList()
-              addControlViewModel.startDiscovery()}*/
+              LaunchedEffect(true) { addControlViewModel.fetchSonyIpAndDeviceList() }
               var expanded by remember { mutableStateOf(false) }
               // val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
               Text(text = stringResource(id = R.string.add_control_host_instructions))

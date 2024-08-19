@@ -60,16 +60,16 @@ fun ChannelMapScreen(
   val uiState by viewModel.channelMapUiState.collectAsStateWithLifecycle()
   val channelMapState = viewModel.filteredChannelMap.collectAsStateWithLifecycle()
   val onMapItemClick =
-    remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
+      remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
   var searchText by rememberSaveable { mutableStateOf("") }
 
   Timber.d("ChannelMapScreen")
   uiState.message?.let {
     val messageString =
-      when (it) {
-        is IntEventMessage -> stringResource(id = it.message)
-        is StringEventMessage -> it.message
-      }
+        when (it) {
+          is IntEventMessage -> stringResource(id = it.message)
+          is StringEventMessage -> it.message
+        }
     LaunchedEffect(uiState.message, uiState.isLoading) {
       Timber.d(messageString)
       snackbarHostState.showSnackbar(messageString)
@@ -82,46 +82,45 @@ fun ChannelMapScreen(
   }
 
   Scaffold(
-    snackbarHost = {
-      SnackbarHost(snackbarHostState) { data ->
-        Snackbar(
-          containerColor =
-          if (uiState.isSuccess) SnackbarDefaults.color
-          else MaterialTheme.colorScheme.errorContainer,
-          contentColor =
-          if (uiState.isSuccess) SnackbarDefaults.contentColor
-          else MaterialTheme.colorScheme.error
-        ) {
-          Text(data.visuals.message)
+      snackbarHost = {
+        SnackbarHost(snackbarHostState) { data ->
+          Snackbar(
+              containerColor =
+                  if (uiState.isSuccess) SnackbarDefaults.color
+                  else MaterialTheme.colorScheme.errorContainer,
+              contentColor =
+                  if (uiState.isSuccess) SnackbarDefaults.contentColor
+                  else MaterialTheme.colorScheme.error) {
+                Text(data.visuals.message)
+              }
         }
-      }
-    },
-    topBar = {
-      TopAppBarWithSearch(
-        title = stringResource(id = R.string.channel_map_title),
-        onIconClick = { openDrawer() },
-        searchText = searchText,
-        onSearchTextChanged = {
-          searchText = it
-          viewModel.filter = it
-        },
-        menuContent = {
-          ChannelMapMenu(
-            { viewModel.matchChannels() },
-            { viewModel.clearChannelMatches() },
-            { viewModel.deleteChannelMap() })
-        })
-    },
-    modifier = modifier.fillMaxSize(),
+      },
+      topBar = {
+        TopAppBarWithSearch(
+            title = stringResource(id = R.string.channel_map_title),
+            onIconClick = { openDrawer() },
+            searchText = searchText,
+            onSearchTextChanged = {
+              searchText = it
+              viewModel.filter = it
+            },
+            menuContent = {
+              ChannelMapMenu(
+                  { viewModel.matchChannels() },
+                  { viewModel.clearChannelMatches() },
+                  { viewModel.deleteChannelMap() })
+            })
+      },
+      modifier = modifier.fillMaxSize(),
   ) { innerPadding ->
-      Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
-        ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
+    Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
+      ChannelMapContent(channelMapState = channelMapState, onChannelClick = onMapItemClick)
+    }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      if (uiState.isLoading) {
+        CircularProgressIndicator()
       }
-      Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (uiState.isLoading) {
-          CircularProgressIndicator()
-        }
-      }
+    }
   }
 }
 

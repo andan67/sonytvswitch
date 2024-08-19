@@ -25,8 +25,6 @@ constructor(
   var preSharedKey: String = ""
   var challenge: String = ""
 
-  private var tokens: Preferences? = null
-
   suspend fun saveToken(token: String) {
 
     tokenStore.edit { it[stringPreferencesKey(activeControlUuid)] = token }

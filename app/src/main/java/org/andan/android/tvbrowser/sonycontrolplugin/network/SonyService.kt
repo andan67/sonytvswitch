@@ -50,11 +50,9 @@ class AddTokenInterceptor @Inject constructor(private val sessionManager: Sessio
       var newRequest = builder.build()
       val response = chain.proceed(newRequest)
       return if (response.code == HTTP_FORBIDDEN) {
-        //  It seems that the Sony TV responses with 403 (FORBIDDEN) code instead of 401
-        // (UNAUTHORIZED)
-        //  if token has expired or is invalid. Thus this case will not be handled by the
-        // TokenAuthenticator
-        //  class.
+        // It seems that the Sony TV responses with 403 (FORBIDDEN) code instead of 401
+        // (UNAUTHORIZED) if token has expired or is invalid. Thus this case will not be handled
+        // by the TokenAuthenticator class.
         Timber.d("AuthorizationInterceptor: handle 403 for control ${sessionManager.nickname}")
         builder = newRequest.newBuilder()
         // get new token and build new request with new cookie value

@@ -7,8 +7,6 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.ivanempire.lighthouse.LighthouseClient
-import com.ivanempire.lighthouse.LighthouseLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,15 +99,5 @@ object NetworkModule {
         .client(okHttpClient)
         .build()
         .create(SonyService::class.java)
-  }
-
-  @Singleton
-  @Provides
-  fun provideLighthouseClient(@ApplicationContext context: Context): LighthouseClient {
-    return LighthouseClient.Builder(context)
-        .setLogger(object : LighthouseLogger() {}) // Optional: Setup a custom logging system
-        .setRetryCount(
-            3) // Optional: Retry sending packets 3 times (4 packets will be sent in total)
-        .build()
   }
 }

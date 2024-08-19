@@ -3,8 +3,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.addcontrol
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ivanempire.lighthouse.LighthouseClient
-import com.ivanempire.lighthouse.models.devices.AbridgedMediaDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
@@ -50,7 +48,6 @@ class AddControlViewModel
 @Inject
 constructor(
     private val sonyControlRepository: SonyControlRepository,
-    private val lighthouseClient: LighthouseClient,
     @ApplicationScope private val externalScope: CoroutineScope
 ) : ViewModel() {
 
@@ -92,14 +89,8 @@ constructor(
   }
 
   suspend fun fetchSonyIpAndDeviceList() {
-    // viewModelScope.launch(Dispatchers.IO) {
-    uiState = uiState.copy(discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList())
-    // }
-  }
-
-  suspend fun startDiscovery() {
-    lighthouseClient.discoverDevices().collect { deviceList: List<AbridgedMediaDevice> ->
-      Timber.d("Got an updated device list: $deviceList")
+    viewModelScope.launch(Dispatchers.IO) {
+      uiState = uiState.copy(discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList())
     }
   }
 
