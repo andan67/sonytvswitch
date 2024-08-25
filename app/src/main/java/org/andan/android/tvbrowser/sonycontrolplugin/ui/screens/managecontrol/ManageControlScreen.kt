@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -50,22 +49,17 @@ fun ManageControlScreen(
     // deleteSelectedControl: () -> Unit,
     openDrawer: () -> Unit
 ) {
-  /*    val sonyControl by remember {
-      selectedSonyControlState
-  }*/
+
   val snackbarHostState = remember { SnackbarHostState() }
-  val scope = rememberCoroutineScope()
 
   val manageControlViewModel: ManageControlViewModel = hiltViewModel()
   val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
 
-  // val currentNavToNoControl by rememberUpdatedState(navToNoControl)
   if (uiState.sonyControl == null) {
     Timber.d("navActions.navigateToNoControl()")
     LaunchedEffect(Unit) { navToNoControl() }
   }
 
-  Timber.d(uiState.toString())
   uiState.message?.let {
     val messageString =
         when (it) {

@@ -14,12 +14,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,6 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
@@ -45,17 +52,42 @@ fun ChannelListScreen(
     viewModel: ChannelListViewModel = hiltViewModel(),
     openDrawer: () -> Unit
 ) {
-  val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
 
-  val channelListUIState = viewModel.channelListUiState.collectAsStateWithLifecycle()
+  val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
+  val uiState by viewModel.channelListUiState.collectAsStateWithLifecycle()
 
   var searchText by rememberSaveable { mutableStateOf("") }
 
   LaunchedEffect(Unit) { viewModel.fetchPlayingContentInfo() }
 
-  Timber.d("ChannelListScreen")
+  uiState.message?.let {
+    val messageString =
+        when (it) {
+          is IntEventMessage -> stringResource(id = it.message)
+          is StringEventMessage -> it.message
+        }
+    LaunchedEffect(uiState.message, uiState.isLoading) {
+      Timber.d(messageString)
+      snackbarHostState.showSnackbar(messageString)
+      viewModel.onConsumedMessage()
+    }
+  }
 
   Scaffold(
+      snackbarHost = {
+        SnackbarHost(snackbarHostState) { data ->
+          Snackbar(
+              containerColor =
+                  if (uiState.isSuccess) SnackbarDefaults.color
+                  else MaterialTheme.colorScheme.errorContainer,
+              contentColor =
+                  if (uiState.isSuccess) SnackbarDefaults.contentColor
+                  else MaterialTheme.colorScheme.error) {
+                Text(data.visuals.message)
+              }
+        }
+      },
       topBar = {
         TopAppBarWithSearch(
             title = stringResource(id = R.string.channel_list_title),
@@ -86,7 +118,7 @@ fun ChannelListScreen(
       }) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
           PlayingContentInfoHeaderContent(
-              playingContentInfo = channelListUIState.value.playingContentInfo,
+              playingContentInfo = uiState.playingContentInfo,
               onclick = { (_) -> navActions.navigateToPlayingContentInfoDetails() })
           ChannelListContent(
               channelListState = channelListState, onChannelClick = viewModel::switchToChannel)

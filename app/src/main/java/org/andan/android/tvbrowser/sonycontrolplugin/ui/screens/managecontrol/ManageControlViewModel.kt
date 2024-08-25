@@ -27,8 +27,6 @@ data class ManageControlUiState(
     val isSuccess: Boolean = false,
     val message: EventMessage? = null,
     val sonyControl: SonyControl? = null
-    // val isHostAvailable: Boolean = false,
-    // val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
 
 @HiltViewModel
@@ -90,25 +88,23 @@ constructor(
 
   fun registerControl() {
     if (uiState.isLoading || uiState.sonyControl == null) return
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       uiState = uiState.copy(isLoading = true, isSuccess = false)
-      viewModelScope.launch(Dispatchers.IO) {
-        val registrationStatus = sonyControlRepository.registerControl(uiState.sonyControl!!, null)
-        when (registrationStatus.code) {
-          RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
-            uiState =
-                uiState.copy(
-                    isLoading = false,
-                    isSuccess = true,
-                    message = StringEventMessage("Registration succeeded"))
-          }
-          else -> {
-            uiState =
-                uiState.copy(
-                    isLoading = false,
-                    isSuccess = false,
-                    message = StringEventMessage("Registration failed"))
-          }
+      val registrationStatus = sonyControlRepository.registerControl(uiState.sonyControl!!, null)
+      when (registrationStatus.code) {
+        RegistrationStatus.REGISTRATION_SUCCESSFUL -> {
+          uiState =
+              uiState.copy(
+                  isLoading = false,
+                  isSuccess = true,
+                  message = StringEventMessage("Registration succeeded"))
+        }
+        else -> {
+          uiState =
+              uiState.copy(
+                  isLoading = false,
+                  isSuccess = false,
+                  message = StringEventMessage("Registration failed"))
         }
       }
     }

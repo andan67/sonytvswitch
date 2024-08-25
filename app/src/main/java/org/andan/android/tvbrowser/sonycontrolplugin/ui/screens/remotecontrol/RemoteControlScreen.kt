@@ -12,7 +12,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,9 +31,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
+import timber.log.Timber
 
 val RemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { { _ -> Unit } }
 
@@ -43,9 +49,38 @@ fun RemoteControlScreen(
     openDrawer: () -> Unit
 ) {
 
+  val snackbarHostState = remember { SnackbarHostState() }
+
   val remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
+  val uiState by remoteControlViewModel.remoteControlUiState.collectAsStateWithLifecycle()
+
+  uiState.message?.let {
+    val messageString =
+        when (it) {
+          is IntEventMessage -> stringResource(id = it.message)
+          is StringEventMessage -> it.message
+        }
+    LaunchedEffect(uiState.message, uiState.isLoading) {
+      Timber.d(messageString)
+      snackbarHostState.showSnackbar(messageString)
+      remoteControlViewModel.onConsumedMessage()
+    }
+  }
 
   Scaffold(
+      snackbarHost = {
+        SnackbarHost(snackbarHostState) { data ->
+          Snackbar(
+              containerColor =
+                  if (uiState.isSuccess) SnackbarDefaults.color
+                  else MaterialTheme.colorScheme.errorContainer,
+              contentColor =
+                  if (uiState.isSuccess) SnackbarDefaults.contentColor
+                  else MaterialTheme.colorScheme.error) {
+                Text(data.visuals.message)
+              }
+        }
+      },
       topBar = {
         RemoteControlTopAppBar(
             openDrawer = { openDrawer() },

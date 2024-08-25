@@ -19,12 +19,14 @@ import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.PlayingContentInfo
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.EventMessage
+import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import timber.log.Timber
 
 data class ChannelListUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val message: String? = null,
+    val message: EventMessage? = null,
     val playingContentInfo: PlayingContentInfo = PlayingContentInfo(),
     val playingTvbChannel: String = ""
 )
@@ -91,7 +93,7 @@ constructor(
           savedStateHandle[CURRENT_URI_KEY] = uri
         }
         is Result.Error -> {
-          uiState = uiState.copy(message = result.message)
+          uiState = uiState.copy(message = StringEventMessage(result.message ?: "'Unknown failure"))
         }
         else -> {}
       }
@@ -114,7 +116,10 @@ constructor(
                       isLoading = false, playingContentInfo = result.data!!.toPlayingContentInfo())
             }
             is Result.Error -> {
-              uiState = uiState.copy(isLoading = false, message = result.message)
+              uiState =
+                  uiState.copy(
+                      isLoading = false,
+                      message = StringEventMessage(result.message ?: "'Unknown failure"))
             }
             else -> {}
           }
@@ -125,4 +130,9 @@ constructor(
       viewModelScope.launch(Dispatchers.IO) { sonyControlRepository.setPowerSavingMode(mode) }
 
   fun wakeOnLan() = viewModelScope.launch(Dispatchers.IO) { sonyControlRepository.wakeOnLan() }
+
+  fun onConsumedMessage() {
+    uiState = uiState.copy(message = null)
+    Timber.d("message consumed")
+  }
 }

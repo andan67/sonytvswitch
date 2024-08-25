@@ -87,51 +87,13 @@ constructor(
 
   init {
     Timber.d("init")
+    // reactively set session manager context with currently active control
     externalScope.launch {
       activeSonyControlStateFlow.collect { control ->
         Timber.d("Active control: $control")
         if (control != null) sessionManager.setContext(control)
       }
     }
-
-    // for backward compatibility
-    // val sonyControlsFromPreferenceStore = preferenceStore.loadControls()
-    val job =
-        externalScope.launch {
-          val numberOfControls = controlDao.getNumberOfControls()
-          Timber.d("numberOfControls: ${numberOfControls}")
-          /*            controlDao.getControls().collectLatest { entityList ->
-              Timber.d("entitList.size: ${entityList.size}");
-              val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
-              if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
-                  Timber.d("Insert from preference store")
-                  controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
-              }
-          }*/
-          /*            if(sonyControls.lastOrNull() == null) {
-              val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
-              if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
-                  Timber.d("Insert from preference store")
-                  controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
-              }
-          }*/
-          /*sonyControls.collectLatest { controls ->
-              if (controls.isEmpty()) {
-                  val sonyControlsFromPreferenceStore = preferenceStore.loadMockControls()
-                  if (!sonyControlsFromPreferenceStore.controls.isEmpty()) {
-                      Timber.d("Insert from preference store")
-                      controlDao.insertFromSonyControls(sonyControlsFromPreferenceStore)
-                  }
-              }
-          }*/
-          /*            activeSonyControlWithChannelsFlow.collect { control ->
-              sessionManager.setContext(control)
-              _activeSonyControlState.value = control
-          }*/
-
-        }
-    // job.cancel()
-    Timber.d("end init")
   }
 
   suspend fun setActiveControl(uuid: String) {
@@ -388,17 +350,18 @@ constructor(
     }
   }
 
-  suspend fun sendCommand(command: String) {
+  suspend fun sendCommand(command: String): Result<Any> {
     val code = getActiveSonyControl()!!.commandMap[command]
     Timber.d("sendCommand: $command $code")
     if (!code.isNullOrBlank()) {
-      sendIRCC(code)
+      return sendIRCC(code)
     }
+    return Result.Error("No valid code for command: $command", -1)
   }
 
-  suspend fun sendIRCC(code: String) {
+  suspend fun sendIRCC(code: String): Result<Any> {
 
-    withContext(Dispatchers.IO) {
+    return withContext(Dispatchers.IO) {
       if (sessionManager.hostname.isNotBlank()) {
         val requestBodyText =
             SonyServiceUtil.SONY_IRCC_REQUEST_TEMPLATE.replace("<IRCCCode>", "<IRCCCode>$code")
@@ -410,13 +373,21 @@ constructor(
               api.sendIRCC(
                   "http://" + sessionManager.hostname + SonyServiceUtil.SONY_IRCC_ENDPOINT,
                   requestBody)
+          Timber.d("response: $response")
           if (!response.isSuccessful) {
             // _responseMessage.postValue(Event(response.message()))
             Timber.e("IRCC send not successful: ${response.message()}")
+            return@withContext Result.Error<Any>(
+                "IRCC send not successful: ${response.message()}", -1)
+          } else {
+            return@withContext Result.Success(0, code)
           }
         } catch (se: SocketTimeoutException) {
           Timber.e("Error: ${se.message}")
+          return@withContext Result.Error<Any>("Error: ${se.message}", -1)
         }
+      } else {
+        return@withContext Result.Error<Any>("No host specified", -1)
       }
     }
   }

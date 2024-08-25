@@ -157,26 +157,6 @@ data class SonyServiceClientContext(
     var preSharedKey: String = ""
 )
 
-/*
-sealed class RegistrationStatus(val code: Int, val message: String) {
-    companion object {
-        const val INIT = -1
-        const val SUCCESSFUL = 0
-        const val REQUIRES_CHALLENGE_CODE = 1
-        const val UNAUTHORIZED = 2
-        const val ERROR_NON_FATAL = 3
-        const val ERROR_FATAL = 4
-    }
-
-    class Init: RegistrationStatus(INIT, "")
-    class Success: RegistrationStatus(SUCCESSFUL, "")
-    class Challenge: RegistrationStatus(REQUIRES_CHALLENGE_CODE, "")
-    class Unauthorized: RegistrationStatus(UNAUTHORIZED, "")
-    class Error(message: String): RegistrationStatus(ERROR_NON_FATAL, message )
-    class FatalError(message: String): RegistrationStatus(ERROR_FATAL, message )
-
-}
-*/
 data class RegistrationStatus(val code: Int, val message: String) {
   companion object {
     const val REGISTRATION_UNKNOWN = -1
