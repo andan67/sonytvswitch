@@ -9,8 +9,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 
 class SonyControlWithChannelsDomainMapper(
     private val channelListDomainMapper: ListMapper<ChannelEntity, SonyChannel>
-) : Mapper<ControlEntityWithChannels?, SonyControl> {
-  override fun map(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl {
+) : Mapper<ControlEntityWithChannels?, SonyControl?> {
+  override fun map(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl? {
     if (controlEntityWithChannels != null) {
       val controlEntity = controlEntityWithChannels.control
       val sonyControl: SonyControl =
@@ -34,7 +34,7 @@ class SonyControlWithChannelsDomainMapper(
                   controlEntityWithChannels.channelMaps.associate { it.channelLabel to it.uri })
       return sonyControl
     }
-    return SonyControl()
+    return null
   }
 }
 
@@ -136,11 +136,11 @@ class SonyControlDataMapper() {
   private val sonyChannelListDTOMapper = SonyChannelListDTOMapper()
   private val sonyChannelMapDTOMapper = SonyChannelMapDTOMapper()
 
-  fun mapControlEntity2Domain(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl {
+  fun mapControlEntity2Domain(controlEntityWithChannels: ControlEntityWithChannels?): SonyControl? {
     return sonyControlWithChannelsDomainMapper.map(controlEntityWithChannels)
   }
 
-  fun mapControlEntity2Domain(controlEntity: ControlEntity?): SonyControl {
+  fun mapControlEntity2Domain(controlEntity: ControlEntity?): SonyControl? {
     return sonyControlMapper.map(controlEntity)
   }
 

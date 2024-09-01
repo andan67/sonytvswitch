@@ -19,30 +19,20 @@ enum class NavDestinations(val route: String, label: String = "") {
 /** Models the navigation actions in the app. */
 class NavigationActions(
     private val navController: NavHostController,
-    private val hasControls: () -> Boolean,
     private val finish: () -> Unit
 ) {
 
   fun navigateToChannelList() {
     Timber.d("navigateToChannelList")
-    if (true) {
-      navController.navigate(NavDestinations.ChannelList.route)
-    } else {
-      navController.navigate(NavDestinations.NoControlDialog.route)
-    }
+    navController.navigate(NavDestinations.ChannelList.route)
   }
 
   fun navigateToChannelMap() {
     Timber.d("navigateToChannelMap")
-    if (true) {
-      navController.navigate(NavDestinations.ChannelMap.route)
-    } else {
-      navController.navigate(NavDestinations.NoControlDialog.route)
-    }
+    navController.navigate(NavDestinations.ChannelMap.route)
   }
 
   fun navigateToChannelSingleMap(channelKey: String) {
-    Timber.d("navigateToChannelSingleMap")
     navController.navigate(
         NavDestinations.ChannelSingleMap.route.replace("{channelKey}", channelKey))
   }
@@ -54,20 +44,12 @@ class NavigationActions(
 
   fun navigateToRemoteControl() {
     Timber.d("navigateToRemoteControl")
-    if (true) {
-      navController.navigate(NavDestinations.RemoteControl.route)
-    } else {
-      navController.navigate(NavDestinations.NoControlDialog.route)
-    }
+    navController.navigate(NavDestinations.RemoteControl.route)
   }
 
   fun navigateToManageControl() {
     Timber.d("navigateToManageControl")
-    if (true) {
-      navController.navigate(NavDestinations.ManageControl.route)
-    } else {
-      navController.navigate(NavDestinations.NoControlDialog.route)
-    }
+    navController.navigate(NavDestinations.ManageControl.route)
   }
 
   fun openAddControlDialog() {

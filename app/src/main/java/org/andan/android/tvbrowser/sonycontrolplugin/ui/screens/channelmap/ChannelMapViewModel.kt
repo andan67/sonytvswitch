@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   private val _channelMapUiState = MutableStateFlow(ChannelMapUiState(isLoading = false))
   val channelMapUiState: StateFlow<ChannelMapUiState> = _channelMapUiState.asStateFlow()
 
-  private val activeControlStateFlow = sonyControlRepository.activeSonyControlStateFlow
+  val activeControlStateFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -53,17 +54,12 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   @OptIn(FlowPreview::class)
   val filteredChannelMap =
       activeControlStateFlow
+          .filterNotNull()
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             // Timber.d("activeControl.uriSonyChannelMap: ${activeControl.uriSonyChannelMap}")
-            activeControl!!
-                .channelMap
+            activeControl.channelMap
                 .filter { channelMap -> channelMap.key.contains(filter, true) }
-                .mapValues {
-                  //              Timber.d("it: $it");
-                  // Timber.d("activeControl.uriSonyChannelMap[it.value]:
-                  // ${activeControl.uriSonyChannelMap[it.value]}");
-                  activeControl.uriSonyChannelMap[it.value]
-                }
+                .mapValues { activeControl.uriSonyChannelMap[it.value] }
           }
           .stateIn(
               viewModelScope,

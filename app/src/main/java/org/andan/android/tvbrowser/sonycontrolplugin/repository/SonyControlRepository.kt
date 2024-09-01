@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.repository
 
+import android.content.SharedPreferences
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
@@ -57,6 +58,7 @@ constructor(
     private val sessionManager: SessionManager,
     private val controlDao: ControlDao,
     private val sonyControlDataMapper: SonyControlDataMapper,
+    private val controlsPreferences: SharedPreferences,
     @ApplicationScope private val externalScope: CoroutineScope
 ) {
 
@@ -70,7 +72,7 @@ constructor(
       controlDao
           .getControls()
           .map { entityList ->
-            entityList.map { entityElement ->
+            entityList.mapNotNull { entityElement ->
               sonyControlDataMapper.mapControlEntity2Domain(entityElement)
             }
           }
@@ -92,6 +94,30 @@ constructor(
       activeSonyControlStateFlow.collect { control ->
         Timber.d("Active control: $control")
         if (control != null) sessionManager.setContext(control)
+      }
+    }
+
+    externalScope.launch {
+      val numberOfControls = controlDao.getNumberOfControls()
+      Timber.d("numberOfControls: ${numberOfControls}")
+      if (numberOfControls == 0) {
+        try {
+          val controlConfig = controlsPreferences.getString("controlConfig", "")
+          Timber.d("trying load of controls from shared preferences")
+          if (!controlConfig.isNullOrEmpty()) {
+            val sonyControls = SonyControls.fromJson(controlConfig)
+            if (sonyControls.controls.isNotEmpty()) {
+              externalScope.launch {
+                controlDao.insertFromSonyControls(sonyControls)
+                // clear shared preference#
+                controlsPreferences.edit().clear().apply()
+                Timber.d("Loaded ${sonyControls.controls.size} controls from shared preferences")
+              }
+            }
+          }
+        } catch (e: Exception) {
+          Timber.e("Cannot load controls from shared preference; ${e.message}")
+        }
       }
     }
   }
@@ -271,7 +297,6 @@ constructor(
         }
         result.data.size
       } else {
-        // _responseMessage.postValue(Event(resource.message))
         -1
       }
     }
@@ -375,7 +400,6 @@ constructor(
                   requestBody)
           Timber.d("response: $response")
           if (!response.isSuccessful) {
-            // _responseMessage.postValue(Event(response.message()))
             Timber.e("IRCC send not successful: ${response.message()}")
             return@withContext Result.Error<Any>(
                 "IRCC send not successful: ${response.message()}", -1)
@@ -409,24 +433,26 @@ constructor(
   suspend fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
     Timber.d("updateChannelMapsFromChannelNameList: ${channelNameList.size}")
     sonyControlsStateFlow.value.onEach { control ->
-      var newEntries = 0
-      val channelMap = mutableMapOf<String, String>()
-      val channelMapList = controlDao.getChannelMapEntities(control.uuid).first()
-      channelMapList.onEach { channelMapEntity ->
-        channelMap[channelMapEntity.channelLabel] = channelMapEntity.uri
-      }
-      for (channelName in channelNameList) {
-        if (!channelMap.containsKey(channelName)) {
-          Timber.d("updateChannelMapsFromChannelNameList: $channelName")
-          channelMap[channelName] = ""
-          newEntries++
+      if (control != null) {
+        var newEntries = 0
+        val channelMap = mutableMapOf<String, String>()
+        val channelMapList = controlDao.getChannelMapEntities(control.uuid).first()
+        channelMapList.onEach { channelMapEntity ->
+          channelMap[channelMapEntity.channelLabel] = channelMapEntity.uri
         }
-      }
-      if (newEntries > 0) {
-        saveChannelMap(control.copy(channelMap = channelMap))
-        Timber.d("updated channel map for ${control.nickname} with $newEntries new entries")
-      } else {
-        Timber.d("no channel map updates for ${control.nickname}")
+        for (channelName in channelNameList) {
+          if (!channelMap.containsKey(channelName)) {
+            Timber.d("updateChannelMapsFromChannelNameList: $channelName")
+            channelMap[channelName] = ""
+            newEntries++
+          }
+        }
+        if (newEntries > 0) {
+          saveChannelMap(control.copy(channelMap = channelMap))
+          Timber.d("updated channel map for ${control.nickname} with $newEntries new entries")
+        } else {
+          Timber.d("no channel map updates for ${control.nickname}")
+        }
       }
     }
     Timber.d("updateChannelMapsFromChannelNameList: finished")
@@ -446,7 +472,8 @@ constructor(
     externalScope.launch { controlDao.deleteChannelMapsForControlUuid(uuid) }
   }
 
-  suspend fun saveChannelMap(control: SonyControl) {
+  suspend fun saveChannelMap(control: SonyControl?) {
+    if (control == null) return
     externalScope.launch {
       Timber.d("setting channel maps for control: $control}")
       controlDao.setChannelMapForControl(
@@ -454,7 +481,8 @@ constructor(
     }
   }
 
-  suspend fun saveChannelList(control: SonyControl) {
+  suspend fun saveChannelList(control: SonyControl?) {
+    if (control == null) return
     externalScope.launch {
       Timber.d("setting channels for control: $control}")
       controlDao.setChannelsForControl(
@@ -462,27 +490,33 @@ constructor(
     }
   }
 
-  suspend fun deleteControl(control: SonyControl) {
+  suspend fun deleteControl(control: SonyControl?) {
+    if (control == null) return
     externalScope.launch {
       val hasBeenActive = control.isActive
-      Timber.d(" deleteControl ${control.uuid}")
-      controlDao.deleteControl(control.uuid)
       sessionManager.removeToken(control.uuid)
       Timber.d("deleteControl hasBeenActive ${hasBeenActive}")
-      if (hasBeenActive && sonyControlsStateFlow.value.isNotEmpty()) {
-        setActiveControl(sonyControlsStateFlow.value.first().uuid)
+      if (hasBeenActive && sonyControlsStateFlow.value.size > 1) {
+        val uuidActive = sonyControlsStateFlow.value[1].uuid
+        Timber.d("deleting control ${control.uuid} and set new active $uuidActive")
+        controlDao.deleteControlAndSetActive(control.uuid, uuidActive)
+      } else {
+        Timber.d("deleting control ${control.uuid}")
+        controlDao.deleteControl(control.uuid)
       }
     }
   }
 
-  suspend fun updateControl(control: SonyControl) {
+  suspend fun updateControl(control: SonyControl?) {
+    if (control == null) return
     externalScope.launch {
       Timber.d("updating control: ${control.uuid}")
       controlDao.update(sonyControlDataMapper.mapControl2Entity(control))
     }
   }
 
-  suspend fun addControl(control: SonyControl) {
+  suspend fun addControl(control: SonyControl?) {
+    if (control == null) return
     externalScope.launch {
       Timber.d("adding control: ${control.uuid}")
       controlDao.insertControlWithChannels(

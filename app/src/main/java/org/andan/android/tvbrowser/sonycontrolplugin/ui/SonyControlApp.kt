@@ -30,13 +30,9 @@ fun SonyControlApp(startDestination: String, finish: () -> Unit) {
     val currentRoute = navBackStackEntry?.destination?.route ?: NavDestinations.ChannelList.route
 
     val drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
     val selectControlViewModel: SelectControlViewModel = hiltViewModel()
 
-    val navigationActions =
-        remember(navController) {
-          NavigationActions(navController, selectControlViewModel::hasControls, finish)
-        }
+    val navigationActions = remember(navController) { NavigationActions(navController, finish) }
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -52,9 +48,7 @@ fun SonyControlApp(startDestination: String, finish: () -> Unit) {
           SonyControlNavGraph(
               navController = navController,
               navigationActions = navigationActions,
-              startDestination =
-                  if (selectControlViewModel.hasControls()) startDestination
-                  else NavDestinations.NoControlDialog.route,
+              startDestination = startDestination,
               openDrawer = { coroutineScope.launch { drawerState.open() } })
         }
   }

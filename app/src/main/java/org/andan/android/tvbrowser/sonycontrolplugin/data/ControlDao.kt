@@ -104,6 +104,12 @@ interface ControlDao {
 
   @Query("DELETE FROM $CONTROL_TABLE WHERE uuid LIKE :uuid") suspend fun deleteControl(uuid: String)
 
+  @Transaction
+  suspend fun deleteControlAndSetActive(uuidDelete: String, uuidActive: String) {
+    deleteControl(uuidDelete)
+    setActiveControl(uuidActive)
+  }
+
   @Update suspend fun update(control: ControlEntity)
 
   @Query("SELECT * FROM $CHANNEL_TABLE WHERE control_uuid LIKE :uuid")

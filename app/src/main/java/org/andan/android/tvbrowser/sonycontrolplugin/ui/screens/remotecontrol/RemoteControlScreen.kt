@@ -53,6 +53,12 @@ fun RemoteControlScreen(
 
   val remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
   val uiState by remoteControlViewModel.remoteControlUiState.collectAsStateWithLifecycle()
+  val activeControlState = remoteControlViewModel.activeControlFlow.collectAsStateWithLifecycle()
+
+  if (activeControlState.value == null) {
+    Timber.d("navActions.navigateToNoControl()")
+    LaunchedEffect(Unit) { navActions.navigateToNoControl() }
+  }
 
   uiState.message?.let {
     val messageString =

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ constructor(
       _channelListUiState.update { newState }
     }
 
-  private val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
+  val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private val filterFlow = MutableStateFlow("")
 
@@ -71,10 +72,10 @@ constructor(
   @OptIn(FlowPreview::class)
   val filteredChannelList =
       activeControlFlow
+          .filterNotNull()
           .combine(filterFlow.debounce(500)) { activeControl, filter ->
             Timber.d("filteredChannelList")
-            activeControl!!
-                .channelList
+            activeControl.channelList
                 .filter { channel -> channel.title.contains(filter, true) }
                 .map { sonyChannel ->
                   Pair(sonyChannel, activeControl.channelReverseMap[sonyChannel.uri])

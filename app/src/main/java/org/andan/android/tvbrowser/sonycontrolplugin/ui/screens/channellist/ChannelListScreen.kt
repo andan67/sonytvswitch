@@ -56,10 +56,21 @@ fun ChannelListScreen(
 
   val channelListState = viewModel.filteredChannelList.collectAsStateWithLifecycle()
   val uiState by viewModel.channelListUiState.collectAsStateWithLifecycle()
+  val activeControlState = viewModel.activeControlFlow.collectAsStateWithLifecycle()
 
   var searchText by rememberSaveable { mutableStateOf("") }
 
-  LaunchedEffect(Unit) { viewModel.fetchPlayingContentInfo() }
+  LaunchedEffect(Unit) {
+    if (activeControlState.value != null) {
+      viewModel.fetchPlayingContentInfo()
+    }
+  }
+
+  Timber.d("activeControlState.value: ${activeControlState.value}")
+  if (activeControlState.value == null) {
+    Timber.d("navActions.navigateToNoControl()")
+    LaunchedEffect(Unit) { navActions.navigateToNoControl() }
+  }
 
   uiState.message?.let {
     val messageString =

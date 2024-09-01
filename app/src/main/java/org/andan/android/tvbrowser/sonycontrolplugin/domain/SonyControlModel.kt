@@ -34,6 +34,7 @@ data class SonyControl(
     @SerializedName(value = "channelMap", alternate = ["channelProgramMap"])
     val channelMap: Map<String, String> = mapOf(),
     val sourceList: List<String> = listOf(),
+    @SerializedName(value = "commandMap", alternate = ["commandList"])
     val commandMap: Map<String, String> = mapOf(),
     val systemModel: String = "",
     val systemName: String = "",

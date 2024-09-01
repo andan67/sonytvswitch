@@ -192,6 +192,7 @@ class DatabaseTest {
       val controlEntityList = controlDao.getControls().testIn(backgroundScope).awaitItem()
       Assert.assertEquals(2, controlEntityList.size)
       val sonyControl = controlEntityList.get(0)
+      Assert.assertEquals("AAAAAQAAAAEAAAAvAw==", sonyControl.commandMap.get("PowerOff"))
       val channelList1 =
           controlDao.getChannelEntitiesForControl(sonyControl).testIn(backgroundScope).awaitItem()
       Assert.assertEquals("ZDF HD", channelList1.get(1).title)

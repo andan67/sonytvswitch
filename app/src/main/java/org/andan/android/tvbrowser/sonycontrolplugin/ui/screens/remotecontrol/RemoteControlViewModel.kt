@@ -29,6 +29,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   private val _remoteControlUiState = MutableStateFlow(RemoteControlUiState(isLoading = false))
   val remoteControlUiState: StateFlow<RemoteControlUiState> = _remoteControlUiState.asStateFlow()
+  val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private var uiState: RemoteControlUiState
     get() = _remoteControlUiState.value
