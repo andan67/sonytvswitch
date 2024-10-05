@@ -17,6 +17,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
@@ -200,7 +201,7 @@ private fun DrawerHeader(
               expanded = expanded,
               onExpandedChange = { expanded = !expanded }) {
                 TextField(
-                    modifier = modifier.menuAnchor(),
+                    modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
                     // .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
                     // .padding(start = 16.dp),
                     readOnly = true,

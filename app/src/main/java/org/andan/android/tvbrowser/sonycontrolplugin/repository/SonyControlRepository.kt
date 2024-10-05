@@ -110,7 +110,7 @@ constructor(
               externalScope.launch {
                 controlDao.insertFromSonyControls(sonyControls)
                 // clear shared preference#
-                controlsPreferences.edit().clear().apply()
+                // controlsPreferences.edit().clear().apply()
                 Timber.d("Loaded ${sonyControls.controls.size} controls from shared preferences")
               }
             }
@@ -433,26 +433,24 @@ constructor(
   suspend fun updateChannelMapsFromChannelNameList(channelNameList: List<String>) {
     Timber.d("updateChannelMapsFromChannelNameList: ${channelNameList.size}")
     sonyControlsStateFlow.value.onEach { control ->
-      if (control != null) {
-        var newEntries = 0
-        val channelMap = mutableMapOf<String, String>()
-        val channelMapList = controlDao.getChannelMapEntities(control.uuid).first()
-        channelMapList.onEach { channelMapEntity ->
-          channelMap[channelMapEntity.channelLabel] = channelMapEntity.uri
+      var newEntries = 0
+      val channelMap = mutableMapOf<String, String>()
+      val channelMapList = controlDao.getChannelMapEntities(control.uuid).first()
+      channelMapList.onEach { channelMapEntity ->
+        channelMap[channelMapEntity.channelLabel] = channelMapEntity.uri
+      }
+      for (channelName in channelNameList) {
+        if (!channelMap.containsKey(channelName)) {
+          Timber.d("updateChannelMapsFromChannelNameList: $channelName")
+          channelMap[channelName] = ""
+          newEntries++
         }
-        for (channelName in channelNameList) {
-          if (!channelMap.containsKey(channelName)) {
-            Timber.d("updateChannelMapsFromChannelNameList: $channelName")
-            channelMap[channelName] = ""
-            newEntries++
-          }
-        }
-        if (newEntries > 0) {
-          saveChannelMap(control.copy(channelMap = channelMap))
-          Timber.d("updated channel map for ${control.nickname} with $newEntries new entries")
-        } else {
-          Timber.d("no channel map updates for ${control.nickname}")
-        }
+      }
+      if (newEntries > 0) {
+        saveChannelMap(control.copy(channelMap = channelMap))
+        Timber.d("updated channel map for ${control.nickname} with $newEntries new entries")
+      } else {
+        Timber.d("no channel map updates for ${control.nickname}")
       }
     }
     Timber.d("updateChannelMapsFromChannelNameList: finished")

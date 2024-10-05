@@ -10,6 +10,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -140,7 +141,9 @@ fun AddControlDialog(
                     // val focusRequester = remember { FocusRequester() }
                     // LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     TextField(
-                        modifier = Modifier.menuAnchor().focusRequester(focusRequester),
+                        modifier =
+                            Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                                .focusRequester(focusRequester),
                         value = host,
                         onValueChange = { host = it },
                         label = { Text(stringResource(id = R.string.add_control_host_title)) },
