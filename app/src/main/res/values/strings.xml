@@ -149,7 +149,7 @@
     <string name="pref_start_screen_label_channels">Channel list</string>
     <string name="pref_start_screen_value_control">remote_control</string>
     <string name="pref_start_screen_value_channels">channel_list</string>
-    <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_main2">Sony TV Switch</string>
     <string name="switch_channel">Switch channels</string>
     <string name="open_drawer">Open Drawer</string>
     <string name="search_clear_content_description">Clear search</string>
