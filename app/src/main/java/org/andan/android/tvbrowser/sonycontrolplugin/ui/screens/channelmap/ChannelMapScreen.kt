@@ -137,7 +137,7 @@ private fun ChannelMapContent(
     onChannelClick: (String) -> Unit
 ) {
   Timber.d("ChannelMapContent")
-  LazyColumn {
+  LazyColumn() {
     itemsIndexed(channelMapState.value.keys.toList()) { index, channelName ->
       ChannelMapItem(
           index + 1,

@@ -133,9 +133,9 @@ sealed class Result<T>(
   class Error<T>(message: String, code: Int, data: T? = null) :
       Result<T>(data, code, message, Status.ERROR)
 
-  class Loading<T> : Result<T>(status = Status.LOADING)
+  class Loading<T>() : Result<T>(status = Status.LOADING)
 
-  class Init<T> : Result<T>()
+  class Init<T>() : Result<T>()
 }
 
 enum class Status {

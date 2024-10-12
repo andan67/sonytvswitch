@@ -39,7 +39,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScree
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
 
-val RemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { { _ -> } }
+val RemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { { _ -> Unit } }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -213,7 +213,7 @@ private fun RemoteControlContent() {
           }
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             RemoteControlLabel("VOLUME")
-            Row {
+            Row() {
               RemoteControlIconButton(
                   width = dimensionResource(id = R.dimen.rc_button_small_width),
                   command = "VolumeDown",
@@ -227,7 +227,7 @@ private fun RemoteControlContent() {
           }
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             RemoteControlLabel("PROG")
-            Row {
+            Row() {
               RemoteControlIconButton(
                   width = dimensionResource(id = R.dimen.rc_button_small_width),
                   command = "ChannelDown",

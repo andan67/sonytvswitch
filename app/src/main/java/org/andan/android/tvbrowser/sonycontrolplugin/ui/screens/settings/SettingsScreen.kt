@@ -113,7 +113,7 @@ private fun SettingsContent(
     ListItem(
         headlineContent = { Text(stringResource(id = R.string.pref_copyright_title)) },
         supportingContent = { Text(stringResource(id = R.string.pref_copyright)) })
-    Box {
+    Box() {
       val openDialog = remember { mutableStateOf(false) }
       ListItem(
           modifier =
@@ -149,7 +149,7 @@ private fun startScreenPreference(
     onValueChange: (String) -> Unit
 ) {
   val openDialog = remember { mutableStateOf(false) }
-  Box {
+  Box() {
     ListItem(
         modifier =
             Modifier.clickable {

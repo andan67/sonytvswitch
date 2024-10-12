@@ -177,9 +177,9 @@ constructor(
         updateControl(
             getActiveSonyControl()!!.copy(
                 systemName = result.data!!.name,
-                systemProduct = result.data.product,
-                systemModel = result.data.model,
-                systemMacAddr = result.data.macAddr))
+                systemProduct = result.data!!.product,
+                systemModel = result.data!!.model,
+                systemMacAddr = result.data!!.macAddr))
       }
       result
     }

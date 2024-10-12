@@ -40,7 +40,8 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   fun sendCommand(command: String) {
     viewModelScope.launch(Dispatchers.IO) {
       uiState = uiState.copy(isLoading = true, isSuccess = false)
-      when (val response = sonyControlRepository.sendCommand(command)) {
+      val response = sonyControlRepository.sendCommand(command)
+      when (response) {
         is Result.Success -> {
           uiState = uiState.copy(isLoading = false, isSuccess = true)
         }

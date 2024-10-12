@@ -15,15 +15,14 @@ data class PlayingContentInfoResponse(
 ) {
   fun toPlayingContentInfo(): PlayingContentInfo {
     return PlayingContentInfo(
-      source,
-      dispNum,
-      programMediaType,
-      title,
-      uri,
-      programTitle,
-      startDateTime,
-      durationSec
-    )
+        source ?: "",
+        dispNum ?: "----",
+        programMediaType ?: "",
+        title ?: "Not available",
+        uri ?: "",
+        programTitle ?: "",
+        startDateTime ?: "",
+        durationSec ?: 0)
   }
 }
 
