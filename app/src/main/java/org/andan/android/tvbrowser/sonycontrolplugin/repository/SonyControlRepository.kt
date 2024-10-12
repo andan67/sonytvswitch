@@ -495,7 +495,17 @@ constructor(
       sessionManager.removeToken(control.uuid)
       Timber.d("deleteControl hasBeenActive ${hasBeenActive}")
       if (hasBeenActive && sonyControlsStateFlow.value.size > 1) {
-        val uuidActive = sonyControlsStateFlow.value[1].uuid
+        // determine a different active control
+        // get index of current control
+        var currentControlIndex = -1
+        for (controlItem in sonyControlsStateFlow.value) {
+          currentControlIndex++
+          if (controlItem.uuid.equals(control.uuid)) break
+        }
+        val uuidActive =
+            sonyControlsStateFlow.value[
+                    (currentControlIndex + 1) % sonyControlsStateFlow.value.size]
+                .uuid
         Timber.d("deleting control ${control.uuid} and set new active $uuidActive")
         controlDao.deleteControlAndSetActive(control.uuid, uuidActive)
       } else {
