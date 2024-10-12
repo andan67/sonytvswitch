@@ -165,7 +165,7 @@ private fun DrawerHeader(
     modifier: Modifier = Modifier,
     viewModel: SelectControlViewModel = hiltViewModel()
 ) {
-  Column() {
+  Column {
     val drawable = AppCompatResources.getDrawable(LocalContext.current, R.mipmap.ic_launcher)
 
     Row(

@@ -183,7 +183,7 @@ class DatabaseTest {
   @Test
   fun readFromFile() = runTest {
     turbineScope {
-      val appContext: Context = InstrumentationRegistry.getInstrumentation().getContext()
+      val appContext: Context = InstrumentationRegistry.getInstrumentation().context
       val sonyControls =
           SonyControls.fromJson(
               appContext.assets.open("controls.json").bufferedReader().use { it.readText() })

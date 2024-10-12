@@ -143,11 +143,11 @@ private fun ManageControlContent(modifier: Modifier, sonyControl: SonyControl?) 
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_wol_mode),
-        value = sonyControl?.systemWolMode.toString() ?: "",
+        value = sonyControl?.systemWolMode.toString(),
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_number_channels),
-        value = sonyControl?.channelList?.size.toString() ?: "",
+        value = sonyControl?.channelList?.size.toString(),
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_sources),

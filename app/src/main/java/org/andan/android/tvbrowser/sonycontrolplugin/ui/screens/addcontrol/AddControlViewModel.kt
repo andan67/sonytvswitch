@@ -22,7 +22,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 
-enum class AddControlStatus() {
+enum class AddControlStatus {
   SPECIFY_HOST,
   SPECIFY_HOST_NOT_AVAILABE,
   REGISTER,

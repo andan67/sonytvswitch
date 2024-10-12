@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenuItem
@@ -143,7 +142,7 @@ private fun ChannelSingleMapContent(
           text = stringResource(id = R.string.channel_map_select_channel_text),
       )
       HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
-      LazyColumn() {
+      LazyColumn {
         itemsIndexed(matchedChannelsState.value) { index, channel ->
           ChannelMatchItem(index = index + 1, channel = channel, onChannelClick = onChannelClick)
           // Divider(Modifier.height(1.dp))
@@ -159,7 +158,7 @@ private fun ChannelSingleMapItem(
     channel: SonyChannel?,
     onChannelClick: (SonyChannel?) -> Unit
 ) {
-  Row() {
+  Row {
     Column {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(

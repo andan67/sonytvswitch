@@ -117,7 +117,7 @@ fun SonyControlNavGraph(
 }
 
 @Composable
-public fun TopAppBarDropdownMenu(
+fun TopAppBarDropdownMenu(
     iconContent: @Composable () -> Unit,
     content: @Composable ColumnScope.(() -> Unit) -> Unit
 ) {
