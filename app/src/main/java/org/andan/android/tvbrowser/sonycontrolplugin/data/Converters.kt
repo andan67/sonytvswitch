@@ -17,15 +17,12 @@ class Converters {
   /** return map of String, String "key1": "value1" "key2": "value2" "key3": "value3" */
   @TypeConverter
   fun stringToMap(string: String): Map<String, String> {
-    if (string.isEmpty()) return emptyMap()
+    return if (string.isEmpty()) emptyMap()
     else
-        return string
-            .split(ENTRY_SEPARATOR)
-            .map {
-              val (key, value) = it.split(KEY_VALUE_SEPARATOR)
-              key to value
-            }
-            .toMap()
+        string.split(ENTRY_SEPARATOR).associate {
+          val (key, value) = it.split(KEY_VALUE_SEPARATOR)
+          key to value
+        }
   }
 
   /** return value1||value2||value3 */

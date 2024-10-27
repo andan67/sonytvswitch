@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
@@ -27,7 +27,6 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   private val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
-  private val _selectControlUiState = MutableStateFlow(SelectControlUiState())
   // val selectControlUiState: StateFlow<SelectControlUiState> = _selectControlUiState.asStateFlow()
 
   val selectControlUiState =
@@ -40,15 +39,11 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
               started = SharingStarted.WhileSubscribed(5000),
               initialValue = SelectControlUiState())
 
-  fun getNumberOfControls() {
-    controlsFlow.value.size
-  }
-
-  fun hasControls(): Boolean {
-    return controlsFlow.value.isNotEmpty()
-  }
-
   fun setActiveControl(uuid: String) {
     viewModelScope.launch { sonyControlRepository.setActiveControl(uuid) }
+  }
+
+  fun numberOfControls(): Int {
+    return runBlocking { sonyControlRepository.numberOfControls() }
   }
 }

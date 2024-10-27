@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -39,16 +38,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WebView
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
-    modifier: Modifier = Modifier,
-    navActions: NavigationActions,
-    openDrawer: () -> Unit
-) {
+fun SettingsScreen(modifier: Modifier = Modifier, openDrawer: () -> Unit) {
 
   val startScreenPreferenceLabels = stringArrayResource(id = R.array.pref_start_screen_labels)
   val startScreenPreferenceValues = stringArrayResource(id = R.array.pref_start_screen_values)
@@ -97,7 +91,7 @@ private fun SettingsContent(
         style = MaterialTheme.typography.bodyMedium,
         text = stringResource(id = R.string.pref_basic),
         color = MaterialTheme.colorScheme.primary)
-    startScreenPreference(startScreen, startScreenPreferences, onValueChange)
+    StartScreenPreference(startScreen, startScreenPreferences, onValueChange)
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     Text(
         modifier = Modifier.padding(start = 16.dp, top = 16.dp),
@@ -113,7 +107,7 @@ private fun SettingsContent(
     ListItem(
         headlineContent = { Text(stringResource(id = R.string.pref_copyright_title)) },
         supportingContent = { Text(stringResource(id = R.string.pref_copyright)) })
-    Box() {
+    Box {
       val openDialog = remember { mutableStateOf(false) }
       ListItem(
           modifier =
@@ -143,13 +137,13 @@ private fun SettingsContent(
 }
 
 @Composable
-private fun startScreenPreference(
+private fun StartScreenPreference(
     startScreen: String,
     startScreenPreferences: Map<String, String>,
     onValueChange: (String) -> Unit
 ) {
   val openDialog = remember { mutableStateOf(false) }
-  Box() {
+  Box {
     ListItem(
         modifier =
             Modifier.clickable {
@@ -157,7 +151,7 @@ private fun startScreenPreference(
               openDialog.value = true
             },
         headlineContent = { Text(stringResource(id = R.string.pref_start_screen_title)) },
-        supportingContent = { Text(startScreenPreferences.get(startScreen)!!) })
+        supportingContent = { Text(startScreenPreferences[startScreen]!!) })
     if (openDialog.value) {
       AlertDialog(
           // modifier = Modifier.wrapContentHeight().fillMaxWidth(0.8f),

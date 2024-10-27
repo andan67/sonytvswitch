@@ -36,29 +36,17 @@ import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.IntEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.StringEventMessage
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WOLScreenOnOffMenu
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 import timber.log.Timber
 
-val RemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { { _ -> Unit } }
+val LocalRemoteButtonClickFunction = compositionLocalOf<(String) -> Unit> { { _ -> } }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemoteControlScreen(
-    modifier: Modifier = Modifier,
-    navActions: NavigationActions,
-    openDrawer: () -> Unit
-) {
+fun RemoteControlScreen(openDrawer: () -> Unit) {
 
   val snackbarHostState = remember { SnackbarHostState() }
 
   val remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
   val uiState by remoteControlViewModel.remoteControlUiState.collectAsStateWithLifecycle()
-  val activeControlState = remoteControlViewModel.activeControlFlow.collectAsStateWithLifecycle()
-
-  if (activeControlState.value == null) {
-    Timber.d("navActions.navigateToNoControl()")
-    LaunchedEffect(Unit) { navActions.navigateToNoControl() }
-  }
 
   uiState.message?.let {
     val messageString =
@@ -99,7 +87,7 @@ fun RemoteControlScreen(
       },
       content = { contentPadding ->
         CompositionLocalProvider(
-            RemoteButtonClickFunction provides
+            LocalRemoteButtonClickFunction provides
                 { command: String ->
                   remoteControlViewModel.sendCommand(command)
                 }) {
@@ -112,7 +100,7 @@ fun RemoteControlScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemoteControlTopAppBar(openDrawer: () -> Unit, menuContent: @Composable() () -> Unit) {
+fun RemoteControlTopAppBar(openDrawer: () -> Unit, menuContent: @Composable () -> Unit) {
   TopAppBar(
       title = { Text(text = stringResource(id = R.string.menu_remote_control)) },
       navigationIcon = {
@@ -213,7 +201,7 @@ private fun RemoteControlContent() {
           }
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             RemoteControlLabel("VOLUME")
-            Row() {
+            Row {
               RemoteControlIconButton(
                   width = dimensionResource(id = R.dimen.rc_button_small_width),
                   command = "VolumeDown",
@@ -227,7 +215,7 @@ private fun RemoteControlContent() {
           }
           Column(horizontalAlignment = Alignment.CenterHorizontally) {
             RemoteControlLabel("PROG")
-            Row() {
+            Row {
               RemoteControlIconButton(
                   width = dimensionResource(id = R.dimen.rc_button_small_width),
                   command = "ChannelDown",
@@ -513,7 +501,7 @@ private fun RemoteControlButton(
     command: String = ""
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  val onRemoteControlButtonClicked = RemoteButtonClickFunction.current
+  val onRemoteControlButtonClicked = LocalRemoteButtonClickFunction.current
 
   FilledTonalButton(
       modifier = modifier.width(width).height(height).padding(all = 0.dp),

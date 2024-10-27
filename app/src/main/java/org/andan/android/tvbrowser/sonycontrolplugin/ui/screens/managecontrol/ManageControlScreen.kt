@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,8 +46,8 @@ import timber.log.Timber
 @Composable
 fun ManageControlScreen(
     modifier: Modifier = Modifier,
+    isAdded: Boolean = false,
     navToNoControl: () -> Unit,
-    // deleteSelectedControl: () -> Unit,
     openDrawer: () -> Unit
 ) {
 
@@ -54,10 +55,15 @@ fun ManageControlScreen(
 
   val manageControlViewModel: ManageControlViewModel = hiltViewModel()
   val uiState by manageControlViewModel.manageControlUiState.collectAsStateWithLifecycle()
+  val activeControl by manageControlViewModel.activeControlStateFlow.collectAsStateWithLifecycle()
 
-  if (uiState.sonyControl == null) {
-    Timber.d("navActions.navigateToNoControl()")
-    LaunchedEffect(Unit) { navToNoControl() }
+  val currentNavToNoControl by rememberUpdatedState(navToNoControl)
+
+  LaunchedEffect(activeControl) {
+    if (activeControl == null) {
+      Timber.d("navActions.navigateToNoControl()")
+      currentNavToNoControl()
+    }
   }
 
   uiState.message?.let {
@@ -72,6 +78,8 @@ fun ManageControlScreen(
       manageControlViewModel.onConsumedMessage()
     }
   }
+
+  Timber.d("sAdded: $isAdded")
 
   Scaffold(
       snackbarHost = {
@@ -103,13 +111,13 @@ fun ManageControlScreen(
                   requestChannelListAction = { manageControlViewModel.fetchChannelList() },
                   enableWOLAction = { manageControlViewModel.wakeOnLan() },
                   checkConnectivityAction = { manageControlViewModel.checkAvailability() },
-                  enabled = uiState.sonyControl != null)
+                  enabled = activeControl != null)
             })
       },
       modifier = modifier.fillMaxSize()) { innerPadding ->
         ManageControlContent(
             modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp),
-            sonyControl = uiState.sonyControl)
+            sonyControl = activeControl)
       }
 }
 
@@ -143,11 +151,11 @@ private fun ManageControlContent(modifier: Modifier, sonyControl: SonyControl?) 
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_wol_mode),
-        value = sonyControl?.systemWolMode.toString() ?: "",
+        value = sonyControl?.systemWolMode?.toString() ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_number_channels),
-        value = sonyControl?.channelList?.size.toString() ?: "",
+        value = sonyControl?.channelList?.size?.toString() ?: "",
         showDivider = true)
     PropertyItem(
         label = stringResource(id = R.string.manage_control_sources),
@@ -191,13 +199,10 @@ fun ManageControlMenu(
             enabled = enabled)
         DropdownMenuItem(
             text = {
-              DeleteControlDialog(
-                  deleteControlAction,
-                  openDialog.value,
-                  {
-                    openDialog.value = false
-                    closeMenu()
-                  })
+              DeleteControlDialog(deleteControlAction, openDialog.value) {
+                openDialog.value = false
+                closeMenu()
+              }
             },
             onClick = { openDialog.value = true /*closeMenu()*/ },
             enabled = enabled)

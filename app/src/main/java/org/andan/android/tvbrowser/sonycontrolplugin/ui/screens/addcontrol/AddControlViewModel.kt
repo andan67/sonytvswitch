@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.andan.android.tvbrowser.sonycontrolplugin.R
-import org.andan.android.tvbrowser.sonycontrolplugin.di.ApplicationScope
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyControl
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
@@ -22,7 +20,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.network.SSDP
 import org.andan.android.tvbrowser.sonycontrolplugin.repository.SonyControlRepository
 import timber.log.Timber
 
-enum class AddControlStatus() {
+enum class AddControlStatus {
   SPECIFY_HOST,
   SPECIFY_HOST_NOT_AVAILABE,
   REGISTER,
@@ -30,7 +28,8 @@ enum class AddControlStatus() {
   REGISTER_CHALLENGE,
   REGISTER_CHALLENGE_ERROR,
   REGISTER_SUCCESS,
-  REGISTER_ERROR_FATAL
+  REGISTER_ERROR_FATAL,
+  ADDED
 }
 
 data class AddControlUiState(
@@ -39,17 +38,12 @@ data class AddControlUiState(
     val messageId: Int? = null,
     val message: String? = null,
     val discoveredDevices: List<SSDP.IpDeviceItem> = emptyList()
-    // val isHostAvailable: Boolean = false,
-    // val registrationStatus: Int = RegistrationStatus.REGISTRATION_SUCCESSFUL
 )
 
 @HiltViewModel
 class AddControlViewModel
 @Inject
-constructor(
-    private val sonyControlRepository: SonyControlRepository,
-    @ApplicationScope private val externalScope: CoroutineScope
-) : ViewModel() {
+constructor(private val sonyControlRepository: SonyControlRepository) : ViewModel() {
 
   private val _addControlUiState = MutableStateFlow(AddControlUiState(isLoading = false))
   val addControlUiState: StateFlow<AddControlUiState> = _addControlUiState.asStateFlow()
@@ -153,7 +147,11 @@ constructor(
   }
 
   fun addControl(performFetches: Boolean = true) {
-    externalScope.launch(Dispatchers.IO) {
+    viewModelScope.launch() {
+      sonyControlRepository.addControl(addedControl, performFetches)
+      uiState = uiState.copy(status = AddControlStatus.ADDED)
+    }
+    /*    externalScope.launch(Dispatchers.IO) {
       sonyControlRepository.addControl(addedControl)
       if (performFetches) {
         sonyControlRepository.fetchSystemInformation()
@@ -162,7 +160,7 @@ constructor(
         sonyControlRepository.fetchWolMode()
         sonyControlRepository.fetchChannelList()
       }
-    }
+    }*/
   }
 
   fun addSampleControl(context: Context, host: String) {

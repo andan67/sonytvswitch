@@ -29,7 +29,7 @@ fun TopAppBarWithSearch(
     onIconClick: () -> Unit = {},
     searchText: String,
     onSearchTextChanged: (String) -> Unit = {},
-    menuContent: @Composable() () -> Unit = {}
+    menuContent: @Composable () -> Unit = {}
 ) {
   var isSearchActive by rememberSaveable { mutableStateOf(false) }
 

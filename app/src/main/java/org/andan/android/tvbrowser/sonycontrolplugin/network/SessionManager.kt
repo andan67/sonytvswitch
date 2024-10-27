@@ -39,10 +39,6 @@ constructor(
     tokenStore.edit { it.remove(stringPreferencesKey(uuid)) }
   }
 
-  suspend fun removeToken() {
-    tokenStore.edit { it.remove(stringPreferencesKey(activeControlUuid)) }
-  }
-
   fun setContext(control: SonyControl) {
     Timber.d("setContext from $this: ${control.ip}")
     activeControlUuid = control.uuid

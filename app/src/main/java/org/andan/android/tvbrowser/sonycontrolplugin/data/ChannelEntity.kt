@@ -8,14 +8,14 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = Constants.CHANNEL_TABLE,
-    indices = arrayOf(Index("control_uuid"), Index("uri")),
+    indices = [Index("control_uuid"), Index("uri")],
     foreignKeys =
-        arrayOf(
+        [
             ForeignKey(
                 entity = ControlEntity::class,
                 parentColumns = arrayOf("uuid"),
                 childColumns = arrayOf("control_uuid"),
-                onDelete = CASCADE)))
+                onDelete = CASCADE)])
 data class ChannelEntity(
     val displayNumber: String,
     val control_uuid: String,

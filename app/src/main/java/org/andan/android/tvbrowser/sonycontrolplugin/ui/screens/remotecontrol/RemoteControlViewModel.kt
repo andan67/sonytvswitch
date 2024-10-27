@@ -29,7 +29,6 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   private val _remoteControlUiState = MutableStateFlow(RemoteControlUiState(isLoading = false))
   val remoteControlUiState: StateFlow<RemoteControlUiState> = _remoteControlUiState.asStateFlow()
-  val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
   private var uiState: RemoteControlUiState
     get() = _remoteControlUiState.value
@@ -40,8 +39,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   fun sendCommand(command: String) {
     viewModelScope.launch(Dispatchers.IO) {
       uiState = uiState.copy(isLoading = true, isSuccess = false)
-      val response = sonyControlRepository.sendCommand(command)
-      when (response) {
+      when (val response = sonyControlRepository.sendCommand(command)) {
         is Result.Success -> {
           uiState = uiState.copy(isLoading = false, isSuccess = true)
         }

@@ -2,7 +2,6 @@ package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import java.net.URLDecoder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -51,8 +50,6 @@ data class SonyControl(
     const val PAGE_SIZE = 50
   }
 
-  @Transient private var _uriSonyChannelMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
-
   // @Transient
   val uriSonyChannelMap: LinkedHashMap<String, SonyChannel> by lazy {
     val uriMap: LinkedHashMap<String, SonyChannel> = LinkedHashMap()
@@ -90,18 +87,7 @@ data class SonyChannel(
     val uri: String
 ) {
 
-  companion object {
-    fun <T> fromUri(uri: String): SonyChannel {
-      // example uri"tv:dvbs?trip=d1.1107.17500&srvName=dSAT.1"
-      return SonyChannel(
-          uri.substringBefore("?"),
-          "",
-          -1,
-          uri.substringBefore(":"),
-          URLDecoder.decode(uri.substringAfter("srvName="), "UTF-8"),
-          uri)
-    }
-  }
+  companion object {}
 
   constructor(
       playingContentInfo: PlayingContentInfo
@@ -125,11 +111,6 @@ data class SonyChannel(
     get() {
       val i2 = source.indexOf("#")
       return if (i2 < 0) "" else "(" + source.substring(i2 + 1) + ")"
-    }
-
-  val sourceWithType: String
-    get() {
-      return "$shortSource $type"
     }
 }
 

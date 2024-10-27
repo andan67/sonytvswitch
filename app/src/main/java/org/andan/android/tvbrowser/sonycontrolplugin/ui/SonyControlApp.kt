@@ -34,6 +34,8 @@ fun SonyControlApp(startDestination: String, finish: () -> Unit) {
 
     val navigationActions = remember(navController) { NavigationActions(navController, finish) }
 
+    val numberOfControls = remember { selectControlViewModel.numberOfControls() }
+
     ModalNavigationDrawer(
         drawerContent = {
           AppDrawer(
@@ -48,7 +50,9 @@ fun SonyControlApp(startDestination: String, finish: () -> Unit) {
           SonyControlNavGraph(
               navController = navController,
               navigationActions = navigationActions,
-              startDestination = startDestination,
+              startDestination =
+                  if (numberOfControls > 0) startDestination
+                  else NavDestinations.NoControlDialog.route,
               openDrawer = { coroutineScope.launch { drawerState.open() } })
         }
   }

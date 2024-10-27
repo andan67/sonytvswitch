@@ -13,18 +13,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -41,10 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.domain.SonyChannel
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.SearchTextField
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.TopAppBarWithSearch
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.TopAppBarDropdownMenu
 import timber.log.Timber
 
 @Composable
@@ -88,42 +79,6 @@ fun ChannelSingleMapScreen(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ChannelSingleMapTopAppBar(
-    navigateUp: () -> Unit,
-    searchText: String,
-    onSearchTextChanged: (String) -> Unit = {}
-) {
-  var searchIsActive by rememberSaveable { mutableStateOf(false) }
-
-  TopAppBar(
-      title = { Text(text = stringResource(id = R.string.menu_match_single_channel)) },
-      navigationIcon = {
-        IconButton(onClick = navigateUp) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
-      },
-      actions = {
-        if (searchIsActive) {
-          SearchTextField(
-              modifier =
-                  Modifier
-                      // .padding(start = 48.dp)
-                      .padding(vertical = 2.dp)
-                      .width(148.dp),
-              searchText = searchText,
-              onSearchTextChanged = onSearchTextChanged,
-              onClose = { searchIsActive = false })
-        } else {
-          IconButton(modifier = Modifier, onClick = { searchIsActive = true }) {
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = stringResource(id = R.string.search_channels))
-          }
-        }
-        // ChannelMapMenu(onMatchChannels, onClearMatches)
-      })
-}
-
 @Composable
 private fun ChannelSingleMapContent(
     channelMapItem: Pair<String, SonyChannel?>?,
@@ -143,7 +98,7 @@ private fun ChannelSingleMapContent(
           text = stringResource(id = R.string.channel_map_select_channel_text),
       )
       HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
-      LazyColumn() {
+      LazyColumn {
         itemsIndexed(matchedChannelsState.value) { index, channel ->
           ChannelMatchItem(index = index + 1, channel = channel, onChannelClick = onChannelClick)
           // Divider(Modifier.height(1.dp))
@@ -159,7 +114,7 @@ private fun ChannelSingleMapItem(
     channel: SonyChannel?,
     onChannelClick: (SonyChannel?) -> Unit
 ) {
-  Row() {
+  Row {
     Column {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
@@ -221,28 +176,5 @@ private fun ChannelMatchItem(
               text = "--unmapped--",
               color = MaterialTheme.colorScheme.secondary)
         }
-      }
-}
-
-@Composable
-private fun ChannelMapMenu(onMatchChannels: () -> Unit, onClearMappings: () -> Unit) {
-  TopAppBarDropdownMenu(
-      iconContent = { Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more)) }) {
-          // Here closeMenu stands for the lambda expression parameter that is passed when this
-          // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
-          // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
-          closeMenu ->
-        DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.menu_match_channels)) },
-            onClick = {
-              onMatchChannels()
-              closeMenu()
-            })
-        DropdownMenuItem(
-            text = { Text(text = stringResource(id = R.string.menu_clear_mappings)) },
-            onClick = {
-              onClearMappings()
-              closeMenu()
-            })
       }
 }

@@ -60,16 +60,12 @@ fun ChannelListScreen(
 
   var searchText by rememberSaveable { mutableStateOf("") }
 
+  Timber.d("activeControlState.value: ${activeControlState.value}")
+
   LaunchedEffect(Unit) {
     if (activeControlState.value != null) {
       viewModel.fetchPlayingContentInfo()
     }
-  }
-
-  Timber.d("activeControlState.value: ${activeControlState.value}")
-  if (activeControlState.value == null) {
-    Timber.d("navActions.navigateToNoControl()")
-    LaunchedEffect(Unit) { navActions.navigateToNoControl() }
   }
 
   uiState.message?.let {

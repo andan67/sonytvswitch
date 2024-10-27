@@ -10,7 +10,7 @@ enum class NavDestinations(val route: String, label: String = "") {
   PlayingContentInfoDetails(route = "playing_content_info_details"),
   RemoteControl(route = "remote_control"),
   AddControl(route = "add_control"),
-  ManageControl(route = "manage_control"),
+  ManageControl(route = "manage_control?isAdded={isAdded}"),
   Settings(route = "settings"),
   Help(route = "help"),
   NoControlDialog(route = "no_control")
@@ -47,9 +47,18 @@ class NavigationActions(
     navController.navigate(NavDestinations.RemoteControl.route)
   }
 
-  fun navigateToManageControl() {
+  fun navigateToManageControl(isAdded: Boolean = false) {
     Timber.d("navigateToManageControl")
-    navController.navigate(NavDestinations.ManageControl.route)
+    navController.navigate(
+        NavDestinations.ManageControl.route.replace("{isAdded}", isAdded.toString()))
+  }
+
+  fun navigateToManageControlPopUp(isAdded: Boolean = false) {
+    Timber.d("navigateToManageControlPopUp")
+    navController.navigate(
+        NavDestinations.ManageControl.route.replace("{isAdded}", isAdded.toString())) {
+          popUpTo(navController.graph.id) { inclusive = true }
+        }
   }
 
   fun openAddControlDialog() {
@@ -69,7 +78,9 @@ class NavigationActions(
 
   fun navigateToNoControl() {
     Timber.d("navigateToNoControl")
-    navController.navigate(NavDestinations.NoControlDialog.route)
+    navController.navigate(NavDestinations.NoControlDialog.route) {
+      popUpTo(navController.graph.id) { inclusive = true }
+    }
   }
 
   fun navigateUp() {

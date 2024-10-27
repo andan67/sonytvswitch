@@ -18,7 +18,7 @@ class SettingsViewModel
 @Inject
 constructor(
     private val prefRepo: PreferenceRepository,
-    @ApplicationScope private val externalScope: CoroutineScope
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) : ViewModel() {
 
   val startScreenStateFlow =
@@ -27,7 +27,7 @@ constructor(
           started = SharingStarted.WhileSubscribed(5000),
           NavDestinations.RemoteControl.route)
 
-  fun setStartScreen(startDestintation: String) {
-    externalScope.launch(Dispatchers.IO) { prefRepo.setStartScreen(startDestintation) }
+  fun setStartScreen(startDestination: String) {
+    applicationScope.launch(Dispatchers.IO) { prefRepo.setStartScreen(startDestination) }
   }
 }

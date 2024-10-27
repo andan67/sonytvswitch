@@ -10,6 +10,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,7 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +41,6 @@ fun AddControlDialog(
     navActions: NavigationActions,
 ) {
   var host by rememberSaveable { mutableStateOf("") }
-
   var nickname by rememberSaveable { mutableStateOf("") }
   var devicename by rememberSaveable { mutableStateOf("") }
   var preSharedKey by rememberSaveable { mutableStateOf("") }
@@ -53,14 +52,11 @@ fun AddControlDialog(
 
   val uiState by addControlViewModel.addControlUiState.collectAsStateWithLifecycle()
 
-  // Timber.d("addControlState: $addControlState")
-  Timber.d("host: $host")
-  Timber.d("uiState: $uiState")
-
-  if (uiState.status == AddControlStatus.REGISTER_SUCCESS) {
-    addControlViewModel.addControl()
-    // viewModel.postRegistrationFetches()
-    navActions.navigateToManageControl()
+  // handle successful registration and adding of control
+  when (uiState.status) {
+    AddControlStatus.REGISTER_SUCCESS -> addControlViewModel.addControl()
+    AddControlStatus.ADDED -> navActions.navigateToManageControl(isAdded = true)
+    else -> {}
   }
 
   AlertDialog(
@@ -85,7 +81,7 @@ fun AddControlDialog(
                 onClick = {
                   if (host.contains("sample")) {
                     addControlViewModel.addSampleControl(context, host)
-                    navActions.navigateToManageControl()
+                    // navActions.navigateToManageControl()
                   } else {
                     // viewModel.addedControlHostAddress = host
                     // fetch power status to check for host validity/connectivity
@@ -186,6 +182,7 @@ fun AddControlDialog(
                   onValueChange = { nickname = it },
                   label = { Text(stringResource(id = R.string.add_control_nick)) },
                   singleLine = true,
+                  isError = uiState.status == AddControlStatus.REGISTER_ERROR,
                   enabled = uiState.status < AddControlStatus.REGISTER_CHALLENGE)
               TextField(
                   modifier = Modifier.padding(top = 16.dp),
@@ -193,13 +190,16 @@ fun AddControlDialog(
                   onValueChange = { devicename = it },
                   label = { Text(stringResource(id = R.string.add_control_device)) },
                   singleLine = true,
+                  isError = uiState.status == AddControlStatus.REGISTER_ERROR,
                   enabled = uiState.status < AddControlStatus.REGISTER_CHALLENGE,
                   supportingText = {
                     if (uiState.isLoading) {
                       Text(text = stringResource(id = R.string.add_control_host_registering_msg))
                     } else if (uiState.status == AddControlStatus.REGISTER_ERROR &&
                         uiState.message != null) {
-                      Text(text = uiState.message!!)
+                      Text(
+                          text = uiState.message!!,
+                          color = MaterialTheme.colorScheme.onErrorContainer)
                     } else {
                       Text("")
                     }

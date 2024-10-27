@@ -75,9 +75,9 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
   internal fun matchChannels() {
     uiState = uiState.copy(isLoading = true, isSuccess = false)
     val channelMap = filteredChannelMap.value
-    Timber.d("Matching ${channelMap} channels")
+    Timber.d("Matching $channelMap channels")
     if (channelMap.isNotEmpty()) {
-      viewModelScope.launch(Dispatchers.IO) {
+      viewModelScope.launch(Dispatchers.Default) {
         val channelMatchResult =
             ChannelNameFuzzyMatch.matchAll(
                 channelMap,
@@ -86,8 +86,11 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
                 true)
         Timber.d("Matched $channelMatchResult")
 
-        sonyControlRepository.saveChannelMap(
-            activeControlStateFlow.value!!.copy(channelMap = channelMatchResult))
+        with(Dispatchers.IO) {
+          sonyControlRepository.saveChannelMap(
+              activeControlStateFlow.value!!.copy(channelMap = channelMatchResult))
+        }
+
         uiState =
             uiState.copy(
                 isLoading = false,

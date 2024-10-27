@@ -8,7 +8,7 @@ import org.andan.android.tvbrowser.sonycontrolplugin.data.Constants.CONTROL_TABL
 
 @Entity(tableName = CONTROL_TABLE)
 data class ControlEntity(
-    @PrimaryKey() val uuid: String,
+    @PrimaryKey val uuid: String,
     val host: String = "",
     val nickname: String = "",
     val devicename: String = "",

@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import app.cash.turbine.test
-import app.cash.turbine.testIn
 import app.cash.turbine.turbineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.mapLatest
@@ -46,7 +45,7 @@ class DatabaseTest {
       val controlEntityList = awaitItem()
       assert(controlEntityList.contains(controlEntity))
       val controlEntityFromList = controlEntityList[0]
-      assert(controlEntityFromList.systemModel.equals(controlEntity.systemModel))
+      assert(controlEntityFromList.systemModel == controlEntity.systemModel)
       cancel()
     }
   }
@@ -62,7 +61,7 @@ class DatabaseTest {
       val controlEntityList = awaitItem()
       assert(controlEntityList.contains(controlEntity))
       control = controlEntityList[0]
-      assert(control.systemModel.equals(controlEntity.systemModel))
+      assert(control.systemModel == controlEntity.systemModel)
       cancel()
     }
 
@@ -77,30 +76,30 @@ class DatabaseTest {
     controlDao.getChannelEntitiesForControl(control).test {
       val channelEntityList = awaitItem()
       assert(channelEntityList.size == 2)
-      assert(channelEntityList[0].displayNumber.equals("0001"))
+      assert(channelEntityList[0].displayNumber == "0001")
       cancel()
     }
 
     channelList.add(ChannelEntity("0003", uuid, "dvbs", 0, "tv", "PRO7", "tv:0003"))
-    channelList.get(0).title = "RTL2"
+    channelList[0].title = "RTL2"
     controlDao.setChannelsForControl(channelList, control)
     controlDao.getChannelEntitiesForControl(control).test {
       val channelEntityList = awaitItem()
       assert(channelEntityList.size == 3)
-      assert(channelEntityList[0].title.equals("RTL2"))
+      assert(channelEntityList[0].title == "RTL2")
       cancel()
     }
 
     controlDao.deleteControl(control)
     controlDao.getControls().test {
       val controlEntityList = awaitItem()
-      assert(controlEntityList.size == 0)
+      assert(controlEntityList.isEmpty())
     }
 
     // check cascading delete of channels
     controlDao.getChannels(uuid).test {
       val channelEntityList = awaitItem()
-      assert(channelEntityList.size == 0)
+      assert(channelEntityList.isEmpty())
     }
   }
 
@@ -151,7 +150,7 @@ class DatabaseTest {
       controlDao.insertControls(controlEntity1, controlEntity2)
       var control: ControlEntity? = null
 
-      var uuid1 = controlEntity1.uuid
+      val uuid1 = controlEntity1.uuid
       var uuid2 = controlEntity2.uuid
 
       controlDao.getControls().test {
@@ -165,9 +164,9 @@ class DatabaseTest {
       controlDao.setActiveControl(controlEntity1)
       val controlEntityList = controlDao.getControls().testIn(backgroundScope).awaitItem()
       val activeControl = controlDao.getActiveControl().testIn(backgroundScope).awaitItem()
-      assert(controlEntityList.get(0).isActive == true)
-      assert(controlEntityList.get(1).isActive == false)
-      assert(activeControl.uuid.equals(uuid1))
+      assert(controlEntityList[0].isActive)
+      assert(!controlEntityList.get(1).isActive)
+      assert(activeControl.uuid == uuid1)
       controlDao.getControls().test {
         val controlEntityList = awaitItem()
 
@@ -183,7 +182,7 @@ class DatabaseTest {
   @Test
   fun readFromFile() = runTest {
     turbineScope {
-      val appContext: Context = InstrumentationRegistry.getInstrumentation().getContext()
+      val appContext: Context = InstrumentationRegistry.getInstrumentation().context
       val sonyControls =
           SonyControls.fromJson(
               appContext.assets.open("controls.json").bufferedReader().use { it.readText() })
@@ -191,18 +190,18 @@ class DatabaseTest {
       controlDao.insertFromSonyControls(sonyControls)
       val controlEntityList = controlDao.getControls().testIn(backgroundScope).awaitItem()
       Assert.assertEquals(2, controlEntityList.size)
-      val sonyControl = controlEntityList.get(0)
-      Assert.assertEquals("AAAAAQAAAAEAAAAvAw==", sonyControl.commandMap.get("PowerOff"))
+      val sonyControl = controlEntityList[0]
+      Assert.assertEquals("AAAAAQAAAAEAAAAvAw==", sonyControl.commandMap["PowerOff"])
       val channelList1 =
           controlDao.getChannelEntitiesForControl(sonyControl).testIn(backgroundScope).awaitItem()
-      Assert.assertEquals("ZDF HD", channelList1.get(1).title)
+      Assert.assertEquals("ZDF HD", channelList1[1].title)
       /*val channelMapList = controlDao.getChannelMapEntities(sonyControl.uuid)
       .mapLatest { value -> value.associate { it.channelLabel to it.uri } }
       .testIn(backgroundScope).awaitItem()*/
       // Assert.assertEquals("tv:dvbs?trip=1.1089.12090&srvName=n-tv", channelMapList["n-tv"])
       val channelMapList =
           controlDao.getChannelMapEntities(sonyControl.uuid).testIn(backgroundScope).awaitItem()
-      Assert.assertEquals("tv:dvbs?trip=1.1089.12090&srvName=n-tv", channelMapList.get(13).uri)
+      Assert.assertEquals("tv:dvbs?trip=1.1089.12090&srvName=n-tv", channelMapList[13].uri)
       // as simple map
       val channelMap =
           controlDao
@@ -214,7 +213,7 @@ class DatabaseTest {
 
       val controlEntityWithChannelsList =
           controlDao.getControlsWithChannels().testIn(backgroundScope).awaitItem()
-      val sonyControlWithChannels = controlEntityWithChannelsList.get(0)
+      val sonyControlWithChannels = controlEntityWithChannelsList[0]
       Assert.assertEquals("ZDF HD", sonyControlWithChannels.channels[1].title)
 
       Assert.assertEquals(

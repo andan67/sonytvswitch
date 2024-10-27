@@ -30,7 +30,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
   /* The plugin manager of TV-Browser */
   @Inject lateinit var sonyControlRepository: SonyControlRepository
 
-  @Inject @ApplicationScope lateinit var externalScope: CoroutineScope
+  @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
   private var mPluginManager: PluginManager? = null
 
@@ -78,7 +78,7 @@ class TVBrowserSonyIPControlPlugin : Service() {
             Timber.d(
                 " onProgramContextMenuSelected:switch to channel: $program.channel.channelName")
             try {
-              externalScope.launch(Dispatchers.IO) {
+              applicationScope.launch(Dispatchers.IO) {
                 sonyControlRepository.setPlayContentFromChannelName(program.channel.channelName)
               }
             } catch (ex: java.lang.Exception) {
@@ -185,14 +185,12 @@ class TVBrowserSonyIPControlPlugin : Service() {
       channelNameList.add(channel.channelName)
     }
     Timber.d("updateChannelMap: ${channelNameList.size}")
-    externalScope.launch(Dispatchers.IO) {
+    applicationScope.launch(Dispatchers.IO) {
       sonyControlRepository.updateChannelMapsFromChannelNameList(channelNameList)
     }
   }
 
   companion object {
-    // const val CONTROL_CONFIG = "controlConfig"
-    const val CHANNELS_LIST_CONFIG = "channels_list_config"
 
     /* The id for the remove marking PluginMenu */
     private const val SWITCH_TO_CHANNEL = 4

@@ -75,7 +75,7 @@ private val DarkColors =
 @Composable
 fun SonyTVSwitchTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
   val colors =
       if (!useDarkTheme) {

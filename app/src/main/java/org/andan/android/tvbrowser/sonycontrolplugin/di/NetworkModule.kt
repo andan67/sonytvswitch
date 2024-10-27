@@ -18,7 +18,6 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Logger
 import org.andan.android.tvbrowser.sonycontrolplugin.BuildConfig
 import org.andan.android.tvbrowser.sonycontrolplugin.network.AddTokenInterceptor
 import org.andan.android.tvbrowser.sonycontrolplugin.network.SessionManager
@@ -62,12 +61,7 @@ object NetworkModule {
   @Singleton
   @Provides
   fun provideInterceptor(): HttpLoggingInterceptor =
-      HttpLoggingInterceptor(
-              object : Logger {
-                override fun log(message: String) {
-                  Timber.tag("OkHttp").d(message)
-                }
-              })
+      HttpLoggingInterceptor { message -> Timber.tag("OkHttp").d(message) }
           .setLevel(level = HttpLoggingInterceptor.Level.BODY)
 
   @Singleton

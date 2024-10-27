@@ -11,15 +11,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.NoControlDialog
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.addcontrol.AddControlDialog
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist.ChannelListScreen
@@ -31,8 +32,8 @@ import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.help.HelpScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.managecontrol.ManageControlScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.remotecontrol.RemoteControlScreen
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.settings.SettingsScreen
+import timber.log.Timber
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SonyControlNavGraph(
     navController: NavHostController = rememberNavController(),
@@ -40,6 +41,8 @@ fun SonyControlNavGraph(
     openDrawer: () -> Unit = {},
     startDestination: String = NavDestinations.RemoteControl.route,
 ) {
+
+  Timber.d("startDestination: $startDestination")
 
   NavHost(
       navController = navController,
@@ -70,17 +73,24 @@ fun SonyControlNavGraph(
       }
     }
 
-    composable(NavDestinations.RemoteControl.route) {
-      RemoteControlScreen(navActions = navigationActions, openDrawer = openDrawer)
-    }
+    composable(NavDestinations.RemoteControl.route) { RemoteControlScreen(openDrawer = openDrawer) }
 
-    composable(NavDestinations.ManageControl.route) {
-      ManageControlScreen(
-          navToNoControl = { navigationActions.navigateToNoControl() },
-          // deleteSelectedControl = {viewModel.deleteSelectedControl()},
-          // selectedSonyControlState = selectedSonyControlState,
-          openDrawer = openDrawer)
-    }
+    composable(
+        NavDestinations.ManageControl.route,
+        arguments =
+            listOf(
+                navArgument("isAdded") {
+                  type = NavType.BoolType
+                  defaultValue = false
+                })) { navBackStackEntry ->
+          val isAdded = navBackStackEntry.arguments?.getBoolean("isAdded") == true
+          ManageControlScreen(
+              isAdded = isAdded,
+              navToNoControl = { navigationActions.navigateToNoControl() },
+              // deleteSelectedControl = {viewModel.deleteSelectedControl()},
+              // selectedSonyControlState = selectedSonyControlState,
+              openDrawer = openDrawer)
+        }
 
     dialog(
         route = NavDestinations.AddControl.route,
@@ -95,13 +105,9 @@ fun SonyControlNavGraph(
       )
     }
 
-    composable(NavDestinations.Settings.route) {
-      SettingsScreen(navActions = navigationActions, openDrawer = openDrawer)
-    }
+    composable(NavDestinations.Settings.route) { SettingsScreen(openDrawer = openDrawer) }
 
-    composable(NavDestinations.Help.route) {
-      HelpScreen(navActions = navigationActions, openDrawer = openDrawer)
-    }
+    composable(NavDestinations.Help.route) { HelpScreen(openDrawer = openDrawer) }
 
     dialog(
         route = NavDestinations.NoControlDialog.route,
@@ -117,7 +123,7 @@ fun SonyControlNavGraph(
 }
 
 @Composable
-public fun TopAppBarDropdownMenu(
+fun TopAppBarDropdownMenu(
     iconContent: @Composable () -> Unit,
     content: @Composable ColumnScope.(() -> Unit) -> Unit
 ) {

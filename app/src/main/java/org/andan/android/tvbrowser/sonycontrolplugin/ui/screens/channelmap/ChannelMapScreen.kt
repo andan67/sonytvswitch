@@ -63,14 +63,6 @@ fun ChannelMapScreen(
       remember(navActions) { { s: String -> navActions.navigateToChannelSingleMap(s) } }
   var searchText by rememberSaveable { mutableStateOf("") }
 
-  val activeControlState = viewModel.activeControlStateFlow.collectAsStateWithLifecycle()
-
-  if (activeControlState.value == null) {
-    Timber.d("navActions.navigateToNoControl()")
-    LaunchedEffect(Unit) { navActions.navigateToNoControl() }
-  }
-
-  Timber.d("ChannelMapScreen")
   uiState.message?.let {
     val messageString =
         when (it) {
@@ -137,7 +129,7 @@ private fun ChannelMapContent(
     onChannelClick: (String) -> Unit
 ) {
   Timber.d("ChannelMapContent")
-  LazyColumn() {
+  LazyColumn {
     itemsIndexed(channelMapState.value.keys.toList()) { index, channelName ->
       ChannelMapItem(
           index + 1,

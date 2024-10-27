@@ -1,7 +1,7 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui
 
-sealed class EventMessage
+sealed class EventMessage()
 
-class StringEventMessage(val message: String) : EventMessage() {}
+class StringEventMessage(val message: String) : EventMessage()
 
-class IntEventMessage(val message: Int) : EventMessage() {}
+class IntEventMessage(val message: Int) : EventMessage()

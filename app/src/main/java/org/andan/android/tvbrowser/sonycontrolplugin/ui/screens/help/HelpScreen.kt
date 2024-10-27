@@ -17,15 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.misc.WebView
-import org.andan.android.tvbrowser.sonycontrolplugin.ui.components.navigation.NavigationActions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HelpScreen(
-    modifier: Modifier = Modifier,
-    navActions: NavigationActions,
-    openDrawer: () -> Unit
-) {
+fun HelpScreen(modifier: Modifier = Modifier, openDrawer: () -> Unit) {
 
   Scaffold(
       topBar = {

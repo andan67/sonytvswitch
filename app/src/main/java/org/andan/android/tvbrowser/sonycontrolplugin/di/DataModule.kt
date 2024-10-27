@@ -56,7 +56,7 @@ class DataModule {
             context.getString(R.string.pref_control_file_key), Context.MODE_PRIVATE)
     val controlConfig = context.assets.open("controls.json").bufferedReader().use { it.readText() }
     if (sharedPreferences.getString("controlConfig", "").isNullOrEmpty()) {
-      sharedPreferences.edit().putString("controlConfig", controlConfig).commit()
+      sharedPreferences.edit().putString("controlConfig", controlConfig).apply()
     }
     return sharedPreferences
   }

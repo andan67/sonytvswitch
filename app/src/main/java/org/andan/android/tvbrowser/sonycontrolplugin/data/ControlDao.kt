@@ -41,6 +41,16 @@ interface ControlDao {
   )
 
   @Transaction
+  suspend fun insertActiveControlWithChannels(
+      controlEntity: ControlEntity,
+      channels: List<ChannelEntity>,
+      channelMaps: List<ChannelMapEntity>
+  ) {
+    insertControlWithChannels(controlEntity, channels, channelMaps)
+    setActiveControl(controlEntity.uuid)
+  }
+
+  @Transaction
   @Query("SELECT * FROM $CONTROL_TABLE WHERE isActive = 1")
   fun getActiveControlWithChannelsFlow(): Flow<ControlEntityWithChannels>
 
@@ -71,7 +81,7 @@ interface ControlDao {
       controlEntity.sourceList = sonyControl.sourceList
       controlEntity.commandMap = sonyControl.commandMap
       controlEntity.isActive = index == sonyControls.selected
-      var channelList: MutableList<ChannelEntity> = mutableListOf()
+      val channelList: MutableList<ChannelEntity> = mutableListOf()
       for (sonyChannel in sonyControl.channelList) {
         val channelEntity =
             ChannelEntity(
@@ -84,7 +94,7 @@ interface ControlDao {
                 uri = sonyChannel.uri)
         channelList.add(channelEntity)
       }
-      var channelMapList: MutableList<ChannelMapEntity> = mutableListOf()
+      val channelMapList: MutableList<ChannelMapEntity> = mutableListOf()
       for (entry in sonyControl.channelMap) {
         val channelMapEntity =
             ChannelMapEntity(

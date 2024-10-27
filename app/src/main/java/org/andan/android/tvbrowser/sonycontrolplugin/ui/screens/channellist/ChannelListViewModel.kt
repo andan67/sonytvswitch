@@ -46,9 +46,6 @@ constructor(
   private val _channelListUiState = MutableStateFlow(ChannelListUiState())
   val channelListUiState: StateFlow<ChannelListUiState> = _channelListUiState.asStateFlow()
 
-  val lastUri = savedStateHandle.get<String>(LAST_URI_KEY)
-  val currentUri = savedStateHandle.get<String>(CURRENT_URI_KEY)
-
   private var uiState: ChannelListUiState
     get() = _channelListUiState.value
     set(newState) {

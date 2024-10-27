@@ -40,7 +40,7 @@ object WakeOnLan {
   }
 
   fun wakeOnLan(host: String?, macStr: String?): Int {
-    if (host == null || host.isEmpty() || macStr == null || macStr.isEmpty()) {
+    if (host.isNullOrEmpty() || macStr.isNullOrEmpty()) {
       return -1
     }
     try {

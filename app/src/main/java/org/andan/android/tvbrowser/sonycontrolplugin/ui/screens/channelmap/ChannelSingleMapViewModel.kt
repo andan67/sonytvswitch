@@ -88,7 +88,7 @@ constructor(
     }
   }
 
-  internal fun matchSingleChannel(
+  private fun matchSingleChannel(
       activeControl: SonyControl,
       channelTitleFilter: String
   ): ArrayList<String> {
@@ -114,7 +114,7 @@ constructor(
 
   internal fun saveNewMap(channel: SonyChannel?) {
     if (channel != null) {
-      var channelMap = activeControlStateFlow.value!!.channelMap.toMutableMap()
+      val channelMap = activeControlStateFlow.value!!.channelMap.toMutableMap()
       if (channelMap.isNotEmpty()) {
         viewModelScope.launch {
           channelMap[channelKey] = channel.uri
