@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channellist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -155,16 +156,19 @@ private fun ChannelListContent(
 @Composable
 fun PlayingContentInfoHeaderContent(
     playingContentInfo: PlayingContentInfo,
-    onclick: (SonyChannel) -> Unit
+    onclick: (SonyChannel) -> Unit,
+    modifier: Modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)
 ) {
-  ChannelItem(
-      channel = SonyChannel(playingContentInfo),
-      tvbChannelTitle = "",
-      // onclick = {Timber.d("Clicked ${playingContentInfoState.value}"); onclick},
-      onclick = onclick,
-      isHeader = true,
-      playingContentInfo = playingContentInfo)
-  HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+  Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)) {
+    ChannelItem(
+        channel = SonyChannel(playingContentInfo),
+        tvbChannelTitle = "",
+        onclick = onclick,
+        isHeader = true,
+        playingContentInfo = playingContentInfo)
+    HorizontalDivider(
+        modifier = Modifier.background(color = MaterialTheme.colorScheme.outline), thickness = 1.dp)
+  }
 }
 
 @Composable
@@ -178,15 +182,15 @@ private fun ChannelItem(
   Row(modifier = Modifier.padding(vertical = 2.dp).fillMaxWidth().clickable { onclick(channel) }) {
     Column {
       Text(
-          modifier = Modifier.padding(end = 8.dp).width(40.dp),
-          style = MaterialTheme.typography.titleSmall,
+          modifier = Modifier.padding(end = 8.dp).width(48.dp),
+          style = MaterialTheme.typography.titleLarge,
           text = channel.dispNumber,
           textAlign = TextAlign.Right)
     }
     Column {
       Text(
           modifier = Modifier.padding(horizontal = 0.dp),
-          style = MaterialTheme.typography.titleSmall,
+          style = MaterialTheme.typography.titleLarge,
           text = channel.title)
       if (isHeader) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -196,7 +200,7 @@ private fun ChannelItem(
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyLarge,
               text = playingContentInfo.programTitle,
               color = MaterialTheme.colorScheme.secondary)
         }
@@ -207,7 +211,7 @@ private fun ChannelItem(
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyLarge,
               text = playingContentInfo.getStartEndTimeFormatted()!!,
               color = MaterialTheme.colorScheme.secondary)
         }
@@ -219,7 +223,7 @@ private fun ChannelItem(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary)
         Text(
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             text = channel.shortSource,
             color = MaterialTheme.colorScheme.secondary)
         if (!tvbChannelTitle.isNullOrEmpty()) {
@@ -229,7 +233,7 @@ private fun ChannelItem(
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyLarge,
               text = tvbChannelTitle,
               color = MaterialTheme.colorScheme.secondary)
         }

@@ -126,7 +126,6 @@ fun AddControlDialog(
           when (uiState.status) {
             AddControlStatus.SPECIFY_HOST,
             AddControlStatus.SPECIFY_HOST_NOT_AVAILABE -> {
-              LaunchedEffect(true) { addControlViewModel.fetchSonyIpAndDeviceList() }
               var expanded by remember { mutableStateOf(false) }
               // val sonyIpAndDeviceList by addControlViewModel.sonyIpAndDeviceList.observeAsState()
               Text(text = stringResource(id = R.string.add_control_host_instructions))
@@ -139,7 +138,8 @@ fun AddControlDialog(
                     TextField(
                         modifier =
                             Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true)
-                                .focusRequester(focusRequester),
+                                .focusRequester(focusRequester)
+                                .fillMaxWidth(),
                         value = host,
                         onValueChange = { host = it },
                         label = { Text(stringResource(id = R.string.add_control_host_title)) },
@@ -177,7 +177,8 @@ fun AddControlDialog(
             else -> {
               Text(text = stringResource(id = R.string.add_control_register_instructions))
               TextField(
-                  modifier = Modifier.padding(top = 16.dp).focusRequester(focusRequester),
+                  modifier =
+                      Modifier.padding(top = 16.dp).focusRequester(focusRequester).fillMaxWidth(),
                   value = nickname,
                   onValueChange = { nickname = it },
                   label = { Text(stringResource(id = R.string.add_control_nick)) },
@@ -185,7 +186,7 @@ fun AddControlDialog(
                   isError = uiState.status == AddControlStatus.REGISTER_ERROR,
                   enabled = uiState.status < AddControlStatus.REGISTER_CHALLENGE)
               TextField(
-                  modifier = Modifier.padding(top = 16.dp),
+                  modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                   value = devicename,
                   onValueChange = { devicename = it },
                   label = { Text(stringResource(id = R.string.add_control_device)) },
@@ -206,14 +207,15 @@ fun AddControlDialog(
                   })
               if (uiState.status < AddControlStatus.REGISTER_CHALLENGE) {
                 TextField(
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                     value = preSharedKey,
                     onValueChange = { preSharedKey = it },
                     label = { Text(stringResource(id = R.string.add_control_psk)) },
                     singleLine = true)
               } else {
                 TextField(
-                    modifier = Modifier.padding(top = 16.dp).focusRequester(focusRequester),
+                    modifier =
+                        Modifier.padding(top = 16.dp).focusRequester(focusRequester).fillMaxWidth(),
                     value = challengeCode,
                     onValueChange = { challengeCode = it },
                     label = { Text(stringResource(id = R.string.add_control_challenge_hint)) },

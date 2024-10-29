@@ -1,5 +1,6 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.ui.screens.channelmap
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
@@ -87,17 +88,21 @@ private fun ChannelSingleMapContent(
 ) {
   if (channelMapItem != null) {
     Column {
-      ChannelSingleMapItem(
-          tvbChannelName = channelMapItem.first,
-          channel = channelMapItem.second,
-          onChannelClick = {})
-      Text(
-          modifier = Modifier.padding(all = 4.dp),
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.secondary,
-          text = stringResource(id = R.string.channel_map_select_channel_text),
-      )
-      HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
+      Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)) {
+        ChannelSingleMapItem(
+            tvbChannelName = channelMapItem.first,
+            channel = channelMapItem.second,
+            onChannelClick = {})
+        Text(
+            modifier = Modifier.padding(all = 4.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary,
+            text = stringResource(id = R.string.channel_map_select_channel_text),
+        )
+        HorizontalDivider(
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.outline),
+            thickness = 1.dp)
+      }
       LazyColumn {
         itemsIndexed(matchedChannelsState.value) { index, channel ->
           ChannelMatchItem(index = index + 1, channel = channel, onChannelClick = onChannelClick)
@@ -116,15 +121,15 @@ private fun ChannelSingleMapItem(
 ) {
   Row {
     Column {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
         Icon(
-            modifier = Modifier.padding(start = 20.dp, end = 12.dp).requiredWidth(20.dp),
+            modifier = Modifier.padding(start = 24.dp, end = 8.dp).requiredWidth(24.dp),
             painter = painterResource(id = R.drawable.tvb_2),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary)
         Text(
             modifier = Modifier.padding(horizontal = 0.dp),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleLarge,
             text = tvbChannelName)
       }
       Row { ChannelMatchItem(channel = channel, onChannelClick = onChannelClick) }
@@ -140,13 +145,13 @@ private fun ChannelMatchItem(
 ) {
   Row(
       modifier =
-          Modifier.padding(vertical = 4.dp).horizontalScroll(rememberScrollState()).clickable {
+          Modifier.padding(bottom = 4.dp).horizontalScroll(rememberScrollState()).clickable {
             onChannelClick(channel)
           },
       verticalAlignment = Alignment.CenterVertically) {
         // Row {
         Text(
-            modifier = Modifier.padding(end = 12.dp).width(40.dp),
+            modifier = Modifier.padding(end = 8.dp).width(48.dp),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.secondary,
             text = if (index >= 0) index.toString() else "",
@@ -158,7 +163,7 @@ private fun ChannelMatchItem(
             tint = MaterialTheme.colorScheme.secondary)
         if (channel != null) {
           Text(
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyLarge,
               text = channel.title,
               color = MaterialTheme.colorScheme.secondary)
           Icon(
@@ -167,13 +172,13 @@ private fun ChannelMatchItem(
               contentDescription = null,
               tint = MaterialTheme.colorScheme.secondary)
           Text(
-              style = MaterialTheme.typography.bodyMedium,
+              style = MaterialTheme.typography.bodyLarge,
               text = channel.shortSource,
               color = MaterialTheme.colorScheme.secondary)
         } else {
           Text(
-              style = MaterialTheme.typography.bodyMedium,
-              text = "--unmapped--",
+              style = MaterialTheme.typography.bodyLarge,
+              text = "<unmapped>",
               color = MaterialTheme.colorScheme.secondary)
         }
       }

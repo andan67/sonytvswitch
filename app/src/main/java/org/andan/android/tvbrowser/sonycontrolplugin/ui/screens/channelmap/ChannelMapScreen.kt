@@ -152,32 +152,32 @@ private fun ChannelMapItem(
 ) {
   Row(
       modifier =
-          Modifier.padding(vertical = 4.dp)
+          Modifier.padding(vertical = 2.dp)
               // .fillMaxWidth()
               .clickable { onChannelClick(tvbChannelName) }) {
         Column {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                modifier = Modifier.padding(end = 12.dp).width(40.dp),
-                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(end = 8.dp).width(48.dp),
+                style = MaterialTheme.typography.titleLarge,
                 text = index.toString(),
                 textAlign = TextAlign.Right)
             Text(
                 modifier = Modifier.padding(horizontal = 0.dp),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleLarge,
                 text = tvbChannelName)
           }
           Row(
               modifier = Modifier.horizontalScroll(rememberScrollState()),
               verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.padding(end = 4.dp, start = 52.dp).width(16.dp),
+                    modifier = Modifier.padding(end = 4.dp, start = 56.dp).width(16.dp),
                     painter = painterResource(id = R.drawable.baseline_tv_24),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary)
                 if (channel != null) {
                   Text(
-                      style = MaterialTheme.typography.bodyMedium,
+                      style = MaterialTheme.typography.bodyLarge,
                       text = channel.title,
                       color = MaterialTheme.colorScheme.secondary)
                   Icon(
@@ -186,12 +186,12 @@ private fun ChannelMapItem(
                       contentDescription = null,
                       tint = MaterialTheme.colorScheme.secondary)
                   Text(
-                      style = MaterialTheme.typography.bodyMedium,
+                      style = MaterialTheme.typography.bodyLarge,
                       text = channel.shortSource,
                       color = MaterialTheme.colorScheme.secondary)
                 } else {
                   Text(
-                      style = MaterialTheme.typography.bodyMedium,
+                      style = MaterialTheme.typography.bodyLarge,
                       text = "--unmapped--",
                       color = MaterialTheme.colorScheme.secondary)
                 }

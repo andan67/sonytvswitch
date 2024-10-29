@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -52,7 +54,8 @@ fun AppDrawer(
     viewModel: SelectControlViewModel = hiltViewModel()
 ) {
   ModalDrawerSheet(modifier) {
-    Column(modifier = modifier.fillMaxSize()) {
+    val scrollState = rememberScrollState()
+    Column(modifier = modifier.fillMaxSize().verticalScroll(scrollState)) {
       // DrawerHeader(noControls = noControls, onNoControlsChange =  {noControls = it} )
       DrawerHeader(viewModel = viewModel)
       HorizontalDivider(Modifier.padding(horizontal = 28.dp))

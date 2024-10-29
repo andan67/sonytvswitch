@@ -49,7 +49,7 @@ object SSDP {
     val responseList = getSsdpResponses()
     println("Showing list of responses...")
     responseList.forEach { println(it) }
-    // getSonyIpAndDeviceList().forEach { println(it) }
+    getSonyIpAndDeviceList().forEach { println(it) }
   }
 
   fun getSonyIpAndDeviceList(): List<IpDeviceItem> {

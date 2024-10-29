@@ -193,11 +193,9 @@ object SonyServiceUtil {
         val jsonRpcResponse = response.body()
         when {
           jsonRpcResponse?.error != null -> {
-            Timber.d("evaluate error")
             Result.Error(jsonRpcResponse.error.asJsonArray.get(1).asString, response.code())
           }
           else -> {
-            Timber.d("evaluate result")
             Result.Success(
                 response.code(),
                 gson.fromJson(

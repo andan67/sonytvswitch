@@ -1,10 +1,12 @@
 package org.andan.android.tvbrowser.sonycontrolplugin.domain
 
+import android.annotation.SuppressLint
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 data class SonyControls(
     val controls: MutableList<SonyControl> = ArrayList(),
@@ -126,16 +128,17 @@ data class PlayingContentInfo(
 ) {
 
   companion object {
+    @SuppressLint("SimpleDateFormat")
     private val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZ")
-    private val DateTimeFormat =
-        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT)
-    private val TimeFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT)
     private val cal = Calendar.getInstance()
   }
 
   fun getStartDateTimeFormatted(): String? {
     return try {
-      sdfInput.parse(startDateTime)?.let { DateTimeFormat.format(it) }
+      sdfInput.parse(startDateTime)?.let {
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT, Locale.getDefault())
+            .format(it)
+      }
     } catch (e: Exception) {
       ""
     }
@@ -146,7 +149,8 @@ data class PlayingContentInfo(
       sdfInput.parse(startDateTime)?.let {
         cal.time = it
         cal.add(Calendar.SECOND, durationSec.toInt())
-        DateTimeFormat.format(cal.time)
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT, Locale.getDefault())
+            .format(cal.time)
       }
     } catch (e: Exception) {
       ""
@@ -156,10 +160,11 @@ data class PlayingContentInfo(
   fun getStartEndTimeFormatted(): String? {
     return try {
       sdfInput.parse(startDateTime)?.let {
-        val startTime = TimeFormat.format(it)
+        val startTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(it)
         cal.time = it
         cal.add(Calendar.SECOND, durationSec.toInt())
-        val endTime = TimeFormat.format(cal.time)
+        val endTime =
+            DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(cal.time)
         "$startTime - $endTime"
       }
     } catch (e: Exception) {

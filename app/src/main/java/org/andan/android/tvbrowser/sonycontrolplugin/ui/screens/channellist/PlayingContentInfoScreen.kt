@@ -68,9 +68,6 @@ fun PlayingContentInfoContent(modifier: Modifier, playingContentInfo: PlayingCon
         label = stringResource(id = R.string.active_program_program_title),
         value = playingContentInfo.programTitle)
     PropertyItem(
-        label = stringResource(id = R.string.active_program_dispNumber),
-        value = playingContentInfo.dispNum)
-    PropertyItem(
         label = stringResource(id = R.string.active_program_start_time),
         value = playingContentInfo.getStartDateTimeFormatted(),
         showDivider = true)

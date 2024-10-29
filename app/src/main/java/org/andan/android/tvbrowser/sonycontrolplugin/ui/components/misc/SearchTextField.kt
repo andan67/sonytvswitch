@@ -41,7 +41,7 @@ fun SearchTextField(
 
   OutlinedTextField(
       modifier = modifier.focusRequester(focusRequester),
-      textStyle = MaterialTheme.typography.titleSmall,
+      textStyle = MaterialTheme.typography.titleMedium,
       value = searchText,
       // TODO: Proper implementation
       // onValueChange = onSearchTextChanged,

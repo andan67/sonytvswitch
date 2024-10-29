@@ -61,6 +61,11 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   init {
     Timber.d("init")
+    viewModelScope.launch(Dispatchers.IO) {
+      val discoveredDevices = sonyControlRepository.getSonyIpAndDeviceList()
+      Timber.d("discovered ${discoveredDevices.size} devices")
+      uiState = uiState.copy(discoveredDevices = discoveredDevices)
+    }
   }
 
   fun checkAvailabilityOfHost(host: String) {

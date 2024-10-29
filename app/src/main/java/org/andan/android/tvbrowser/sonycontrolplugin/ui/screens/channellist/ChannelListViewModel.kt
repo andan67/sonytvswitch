@@ -88,7 +88,6 @@ constructor(
           if (savedStateHandle.contains(CURRENT_URI_KEY)) {
             savedStateHandle[LAST_URI_KEY] = savedStateHandle.get<String>(CURRENT_URI_KEY)
           }
-          savedStateHandle[CURRENT_URI_KEY] = uri
         }
         is Result.Error -> {
           uiState = uiState.copy(message = StringEventMessage(result.message ?: "'Unknown failure"))
@@ -112,6 +111,7 @@ constructor(
               uiState =
                   uiState.copy(
                       isLoading = false, playingContentInfo = result.data!!.toPlayingContentInfo())
+              savedStateHandle[CURRENT_URI_KEY] = uiState.playingContentInfo.uri
             }
             is Result.Error -> {
               uiState =
