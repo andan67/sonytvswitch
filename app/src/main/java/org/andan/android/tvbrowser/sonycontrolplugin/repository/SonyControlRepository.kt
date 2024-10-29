@@ -83,10 +83,6 @@ constructor(
           }
           .stateIn(applicationScope, SharingStarted.Eagerly, emptyList())
 
-  suspend fun numberOfControls(): Int {
-    return applicationScope.async { controlDao.getNumberOfControls() }.await()
-  }
-
   private fun getActiveSonyControl(): SonyControl? {
     return activeSonyControlStateFlow.value
   }
@@ -113,12 +109,17 @@ constructor(
         }
       }
     }
+  }
 
-    applicationScope.launch {
+  suspend fun hasControlsOnApplicationStart(): Boolean {
+    return applicationScope.async {
+      var hasControls = false;
       val numberOfControls = controlDao.getNumberOfControls()
       Timber.d("numberOfControls: $numberOfControls")
-      // for backward compatibility
-      if (numberOfControls == 0) {
+      if(numberOfControls > 0) {
+        hasControls = true
+      } else {
+        // check for controls defined by previous version and migrate
         try {
           val controlConfig = controlsPreferences.getString("controlConfig", "")
           Timber.d("trying load of controls from shared preferences")
@@ -129,13 +130,15 @@ constructor(
               // clear shared preference#
               controlsPreferences.edit().clear().apply()
               Timber.d("Loaded ${sonyControls.controls.size} controls from shared preferences")
+              hasControls = true
             }
           }
         } catch (e: Exception) {
-          Timber.e("Cannot load controls from shared preference; ${e.message}")
+          Timber.e("Cannot loadc ontrols from shared preferences: ${e.message}")
         }
       }
-    }
+      hasControls
+    }.await()
   }
 
   suspend fun registerControl(control: SonyControl, challenge: String?): RegistrationStatus {

@@ -79,7 +79,7 @@ fun ManageControlScreen(
     }
   }
 
-  Timber.d("sAdded: $isAdded")
+  Timber.d("isAdded: $isAdded")
 
   Scaffold(
       snackbarHost = {

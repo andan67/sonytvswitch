@@ -27,8 +27,6 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
 
   private val activeControlFlow = sonyControlRepository.activeSonyControlStateFlow
 
-  // val selectControlUiState: StateFlow<SelectControlUiState> = _selectControlUiState.asStateFlow()
-
   val selectControlUiState =
       combine(activeControlFlow, controlsFlow) { selectedControl, controls ->
             Timber.d("selectControlUiState")
@@ -43,7 +41,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
     viewModelScope.launch { sonyControlRepository.setActiveControl(uuid) }
   }
 
-  fun numberOfControls(): Int {
-    return runBlocking { sonyControlRepository.numberOfControls() }
+  fun hasControlsOnStart(): Boolean {
+    return runBlocking { sonyControlRepository.hasControlsOnApplicationStart() }
   }
 }
