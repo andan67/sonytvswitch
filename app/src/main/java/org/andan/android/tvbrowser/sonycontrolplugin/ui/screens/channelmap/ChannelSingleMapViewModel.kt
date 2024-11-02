@@ -113,13 +113,11 @@ constructor(
   }
 
   internal fun saveNewMap(channel: SonyChannel?) {
-    if (channel != null) {
-      val channelMap = activeControlStateFlow.value!!.channelMap.toMutableMap()
-      if (channelMap.isNotEmpty()) {
-        viewModelScope.launch {
-          channelMap[channelKey] = channel.uri
-          sonyControlRepository.saveChannelMap(activeControlStateFlow.value!!.uuid, channelMap)
-        }
+    val channelMap = activeControlStateFlow.value!!.channelMap.toMutableMap()
+    if (channelMap.isNotEmpty()) {
+      viewModelScope.launch {
+        channelMap[channelKey] = if (channel != null) channel.uri else ""
+        sonyControlRepository.saveChannelMap(activeControlStateFlow.value!!.uuid, channelMap)
       }
     }
   }

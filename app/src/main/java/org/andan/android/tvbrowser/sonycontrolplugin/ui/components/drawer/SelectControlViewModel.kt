@@ -37,6 +37,10 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
               started = SharingStarted.WhileSubscribed(5000),
               initialValue = SelectControlUiState())
 
+  init {
+    Timber.d("init SelectControlViewModel")
+  }
+
   fun setActiveControl(uuid: String) {
     viewModelScope.launch { sonyControlRepository.setActiveControl(uuid) }
   }

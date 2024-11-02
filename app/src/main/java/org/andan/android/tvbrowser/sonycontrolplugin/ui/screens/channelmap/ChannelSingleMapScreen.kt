@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -64,6 +65,14 @@ fun ChannelSingleMapScreen(
             onSearchTextChanged = {
               searchText = it
               viewModel.filter = it
+            },
+            menuContent = {
+              IconButton(onClick = { viewModel.saveNewMap(null) }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_clear_24),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary)
+              }
             })
       },
       modifier = modifier.fillMaxSize(),

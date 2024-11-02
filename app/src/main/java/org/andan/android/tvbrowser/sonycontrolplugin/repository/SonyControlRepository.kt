@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -20,7 +19,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.andan.android.tvbrowser.sonycontrolplugin.ProcessingEvents
+import org.andan.android.tvbrowser.sonycontrolplugin.ProcessingEvent
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ChannelMapEntity
 import org.andan.android.tvbrowser.sonycontrolplugin.data.ControlDao
 import org.andan.android.tvbrowser.sonycontrolplugin.data.mapper.SonyControlDataMapper
@@ -65,7 +64,7 @@ constructor(
     @ApplicationScope private val applicationScope: CoroutineScope
 ) {
 
-  val eventMessageStateFlow = MutableStateFlow<ProcessingEvents>(ProcessingEvents.Initial())
+  val eventMessageStateFlow = MutableStateFlow<ProcessingEvent>(ProcessingEvent.None())
 
   val activeSonyControlStateFlow =
       controlDao
@@ -104,41 +103,47 @@ constructor(
             setWolMode(true)
             fetchWolMode()
             fetchChannelList()
-            eventMessageStateFlow.emit(ProcessingEvents.PostAddedFetchesPerformed())
+            eventMessageStateFlow.emit(ProcessingEvent.PostAddedFetchesPerformed())
           }
         }
       }
     }
   }
 
+  suspend fun clearProcessingEvent() {
+    eventMessageStateFlow.emit(ProcessingEvent.None())
+  }
+
   suspend fun hasControlsOnApplicationStart(): Boolean {
-    return applicationScope.async {
-      var hasControls = false;
-      val numberOfControls = controlDao.getNumberOfControls()
-      Timber.d("numberOfControls: $numberOfControls")
-      if(numberOfControls > 0) {
-        hasControls = true
-      } else {
-        // check for controls defined by previous version and migrate
-        try {
-          val controlConfig = controlsPreferences.getString("controlConfig", "")
-          Timber.d("trying load of controls from shared preferences")
-          if (!controlConfig.isNullOrEmpty()) {
-            val sonyControls = SonyControls.fromJson(controlConfig)
-            if (sonyControls.controls.isNotEmpty()) {
-              controlDao.insertFromSonyControls(sonyControls)
-              // clear shared preference#
-              controlsPreferences.edit().clear().apply()
-              Timber.d("Loaded ${sonyControls.controls.size} controls from shared preferences")
-              hasControls = true
+    return applicationScope
+        .async {
+          var hasControls = false
+          val numberOfControls = controlDao.getNumberOfControls()
+          Timber.d("numberOfControls: $numberOfControls")
+          if (numberOfControls > 0) {
+            hasControls = true
+          } else {
+            // check for controls defined by previous version and migrate
+            try {
+              val controlConfig = controlsPreferences.getString("controlConfig", "")
+              Timber.d("trying load of controls from shared preferences")
+              if (!controlConfig.isNullOrEmpty()) {
+                val sonyControls = SonyControls.fromJson(controlConfig)
+                if (sonyControls.controls.isNotEmpty()) {
+                  controlDao.insertFromSonyControls(sonyControls)
+                  // clear shared preference#
+                  controlsPreferences.edit().clear().apply()
+                  Timber.d("Loaded ${sonyControls.controls.size} controls from shared preferences")
+                  hasControls = true
+                }
+              }
+            } catch (e: Exception) {
+              Timber.e("Cannot loadc ontrols from shared preferences: ${e.message}")
             }
           }
-        } catch (e: Exception) {
-          Timber.e("Cannot loadc ontrols from shared preferences: ${e.message}")
+          hasControls
         }
-      }
-      hasControls
-    }.await()
+        .await()
   }
 
   suspend fun registerControl(control: SonyControl, challenge: String?): RegistrationStatus {

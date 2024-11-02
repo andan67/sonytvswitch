@@ -59,6 +59,7 @@ class AddTokenInterceptor @Inject constructor(private val sessionManager: Sessio
         builder.removeHeader("Cookie")
         builder.addHeader("Cookie", getAndStoreNewToken(sessionManager))
         newRequest = builder.build()
+        response.close()
         chain.proceed(newRequest)
       } else response
     }

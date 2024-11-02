@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.andan.android.tvbrowser.sonycontrolplugin.ProcessingEvents
+import org.andan.android.tvbrowser.sonycontrolplugin.ProcessingEvent
 import org.andan.android.tvbrowser.sonycontrolplugin.R
 import org.andan.android.tvbrowser.sonycontrolplugin.network.RegistrationStatus
 import org.andan.android.tvbrowser.sonycontrolplugin.network.Result
@@ -49,7 +49,7 @@ constructor(private val sonyControlRepository: SonyControlRepository) : ViewMode
     viewModelScope.launch {
       eventMessageStateFlow.collect { processingEvent ->
         when (processingEvent) {
-          is ProcessingEvents.PostAddedFetchesPerformed ->
+          is ProcessingEvent.PostAddedFetchesPerformed ->
               uiState =
                   uiState.copy(
                       isSuccess = true, message = StringEventMessage(processingEvent.message))
