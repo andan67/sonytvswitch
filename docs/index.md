@@ -37,7 +37,7 @@ Switch to a TV channel directly from the program guide (EPG)
 
 ### Quick installation and set-up guide
 
-- Install <a href="https://play.google.com/store/apps/details?id=org.andan.android.tvbrowser.sonycontrolplugin">*Channel Browser and Remote Control for Sony TV*</a>
+- Install <a href="https://play.google.com/store/apps/details?id=org.andan.android.tvbrowser.sonycontrolplugin">*Smart Channel Switch (Sony TV) Sony TV*</a>
 - Open app
 - Add new control for TV from main menu
 - For use as <a href="https://play.google.com/store/apps/details?id=org.tvbrowser.tvbrowser.play">*TV Browser*</a> plugin
@@ -69,8 +69,8 @@ The following sections provide more detailed descriptions of the set-up steps an
 #### TV channel list
 <img src="images/channel_list.png" width="300"/><br>
 - List TV channels with additional information
-    - <img src="images/ic_input_black.png" width="16"/>: channel source
-    - <img src="images/ic_action_arrow_right.png" width="16"/>: mapped *TV Browser* channel name
+    - <img src="images/ic_input.png" width="14"/>: channel source
+    - <img src="images/tvb.png" width="14"/>: mapped *TV Browser* channel name
 - Highlighted header item shows selected channel with current program information (if available)
     - Click to show further details (see [below](#details-of-current-program))
     - Long click to refresh program information from TV
