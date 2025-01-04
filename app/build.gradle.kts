@@ -31,14 +31,14 @@ catch (e:FileNotFoundException) {
 
 android {
 
-    compileSdk = 34
+    compileSdk = 35
 
     namespace = "org.andan.android.tvbrowser.sonycontrolplugin"
 
     defaultConfig {
         applicationId = "org.andan.android.tvbrowser.sonycontrolplugin"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 31
         versionName = "@string/app_version"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -77,8 +77,6 @@ android {
         aidl = true
         buildConfig = true
     }
-    buildToolsVersion = "34.0.0"
-
 }
 
 dependencies {
