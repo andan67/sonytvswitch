@@ -17,11 +17,11 @@ fun WOLScreenOnOffMenu(
     screenOnAction: () -> Unit = {}
 ) {
   TopAppBarDropdownMenu(
-      iconContent = { Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more)) }) {
-          // Here closeMenu stands for the lambda expression parameter that is passed when this
-          // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
-          // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
-          closeMenu ->
+    iconContent = { Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more)) }) {
+    // Here closeMenu stands for the lambda expression parameter that is passed when this
+    // trailing lambda expression is called as 'content' variable in the TopAppBarDropdownMenu
+    // The specific expression is: {expanded = ! expanded}, which effectively closes the menu
+      closeMenu ->
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.wol_action)) },
             onClick = {

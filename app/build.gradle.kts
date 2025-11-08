@@ -11,7 +11,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 val localProperties = Properties()
@@ -31,15 +31,14 @@ catch (e:FileNotFoundException) {
 
 android {
 
-    compileSdk = 35
-
+    compileSdk = 36
     namespace = "org.andan.android.tvbrowser.sonycontrolplugin"
 
     defaultConfig {
         applicationId = "org.andan.android.tvbrowser.sonycontrolplugin"
         minSdk = 23
         targetSdk = 35
-        versionCode = 31
+        versionCode = 32
         versionName = "@string/app_version"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -91,6 +90,7 @@ dependencies {
 
     // Material3
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons)
     //implementation 'androidx.compose.ui:ui-tooling-preview'
     //debugImplementation 'androidx.compose.ui:ui-tooling'
 
@@ -103,9 +103,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-
-    implementation(libs.accompanist.theme)
-    implementation(libs.accompanist.swiperefresh)
     implementation(libs.accompanist.drawablepainter)
 
     implementation(libs.google.oss.licenses)
